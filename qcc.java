@@ -10,11 +10,11 @@ public class qcc
 {
     public static void main(String... args)
     {
-        out.println("QCC...");
+        out.println("Cociendo QCC...");
 
         Main.main(new String[]{
             "--boot-module-path"
-            , "target/hello.jar:/opt/qccrt/qccrt-java.base-11.0.1-SNAPSHOT.jar"
+            , "hello.jar:/opt/qccrt/qccrt-java.base-11.0.1-SNAPSHOT.jar"
             , "--output-path"
             , "target"
             , "Hello"
