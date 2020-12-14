@@ -17,7 +17,7 @@ git clone --recurse-submodules git@github.com:quarkuscc/qcc-class-library.git
 cd qcc-class-library
 mvn clean install -DskipTests
 cd /opt
-ln -s ${HOME}/1/qcc-class-library/openjdk/build/qccrt qccrt
+ln -s ${HOME}/.../qcc-class-library/java.base/target qccrt
 ```
 
 Download [JBang](https://github.com/jbangdev/jbang).
