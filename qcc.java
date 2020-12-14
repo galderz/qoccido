@@ -16,8 +16,8 @@ public class qcc
             "--boot-module-path"
             , "hello.jar:/opt/qccrt/qccrt-java.base-11.0.1-SNAPSHOT.jar"
             , "--output-path"
-            , "target"
-            , "Hello"
+            , "."
+            , "hello"
         });
     }
 }
