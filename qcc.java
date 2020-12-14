@@ -1,8 +1,8 @@
 ///usr/bin/env jbang "$0" "$@" ; exit $?
-//DEPS cc.quarkus:qcc-driver:1.0.0-SNAPSHOT
+//DEPS cc.quarkus:qcc-main:1.0.0-SNAPSHOT
+//DEPS cc.quarkus:qcc-plugin-native:1.0.0-SNAPSHOT
 
-import cc.quarkus.qcc.driver.Driver;
-import cc.quarkus.qcc.driver.Main;
+import cc.quarkus.qcc.main.Main;
 
 import static java.lang.System.*;
 
@@ -14,7 +14,9 @@ public class qcc
 
         Main.main(new String[]{
             "--boot-module-path"
-            , "hello.jar:/Users/g/1/qcc-class-library/openjdk/build/qccrt/jdk/modules/java.base"
+            , "target/hello.jar:/opt/qccrt/qccrt-java.base-11.0.1-SNAPSHOT.jar"
+            , "--output-path"
+            , "target"
             , "Hello"
         });
     }
