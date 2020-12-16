@@ -4,7 +4,7 @@ classfiles := $(patsubst %.java,%.class,$(javafiles))
 classpath := $(HOME)/.m2/repository/cc/quarkus/qcc-runtime-api/1.0.0-SNAPSHOT/qcc-runtime-api-1.0.0-SNAPSHOT.jar
 
 run: hello/output.ll
-	lli hello/output.ll
+	./a.out
 .PHONY: run
 
 hello/output.ll: hello.jar
@@ -23,4 +23,6 @@ run-jar: hello.jar
 clean:
 	rm -f *.class
 	rm -f *.jar
+	rm -drf hello
+	rm -f a.out
 .PHONY: clean
