@@ -38,3 +38,7 @@ clean:
 > rm -drf main
 > rm -f a.out
 .PHONY: clean
+
+debug:
+> jbang --debug ../qcc.java
+.PHONY: debug
