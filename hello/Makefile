@@ -23,7 +23,7 @@ a.out: main.jar
 > jbang ../qcc.java
 
 main.jar: $(classfiles)
-> jar cvfm $@ Manifest.txt $^
+> jar cvfe $@ main $^
 
 %.class: %.java
 > javac -d . -classpath $(classpath) $<
