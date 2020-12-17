@@ -2,7 +2,7 @@ import java.lang.System;
 
 import static cc.quarkus.qcc.runtime.CNative.*;
 
-public class hello
+public class main
 {
     @extern
     public static native int putchar(int arg);
