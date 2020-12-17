@@ -8,7 +8,7 @@ run: a.out
 .PHONY: run
 
 a.out: hello.jar
-	jbang ./qcc.java
+	jbang ../qcc.java
 
 hello.jar: $(classfiles)
 	jar cvfm $@ Manifest.txt $^
