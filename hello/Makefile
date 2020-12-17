@@ -29,7 +29,7 @@ main.jar: $(classfiles)
 > javac -d . -classpath $(classpath) $<
 
 run-jar: main.jar
->java -jar $<
+> java -jar $<
 .PHONY: run-jar
 
 clean:
