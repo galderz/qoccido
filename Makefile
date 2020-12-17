@@ -3,11 +3,11 @@ classfiles := $(patsubst %.java,%.class,$(javafiles))
 
 classpath := $(HOME)/.m2/repository/cc/quarkus/qcc-runtime-api/1.0.0-SNAPSHOT/qcc-runtime-api-1.0.0-SNAPSHOT.jar
 
-run: hello/output.ll
+run: a.out
 	./a.out
 .PHONY: run
 
-hello/output.ll: hello.jar
+a.out: hello.jar
 	jbang ./qcc.java
 
 hello.jar: $(classfiles)
