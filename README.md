@@ -22,6 +22,8 @@ ln -s ${HOME}/.../qcc-class-library/java.base/target qccrt
 
 Download [JBang](https://github.com/jbangdev/jbang).
 
+Makefiles require Make 4 or higher.
+
 # Run
 
 ```bash
