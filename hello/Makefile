@@ -10,6 +10,8 @@ ifeq ($(origin .RECIPEPREFIX), undefined)
 endif
 .RECIPEPREFIX = >
 
+QCC_HOME := $(HOME)/1/qcc-qcc
+
 javafiles := main.java
 classfiles := $(patsubst %.java,%.class,$(javafiles))
 
@@ -38,3 +40,12 @@ clean:
 > rm -drf main
 > rm -f a.out
 .PHONY: clean
+
+debug:
+> jbang --debug ../qcc.java
+.PHONY: debug
+
+qcc:
+> cd $(QCC_HOME)
+> mvn -DskipTests=true clean install
+.PHONY: qcc
