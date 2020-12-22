@@ -10,6 +10,9 @@ ifeq ($(origin .RECIPEPREFIX), undefined)
 endif
 .RECIPEPREFIX = >
 
+QCC_HOME := $(HOME)/1/qcc-qcc
+QCC_CL_HOME := $(HOME)/1/qcc-class-library
+
 all: hello
 .PHONY: all
 
@@ -23,4 +26,15 @@ clean:
 define submake
 cd ${1}
 make ${2}
+endef
+
+refresh:
+> $(call refresh,$(QCC_HOME))
+> $(call refresh,$(QCC_CL_HOME))
+
+define refresh
+cd ${1}
+git checkout master
+git pull
+mvn clean install
 endef
