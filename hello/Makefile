@@ -42,7 +42,7 @@ clean:
 .PHONY: clean
 
 debug:
-> jbang --debug ../qcc.java
+> jbang --debug=*:4004 ../qcc.java
 .PHONY: debug
 
 qcc:
