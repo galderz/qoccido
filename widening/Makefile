@@ -20,59 +20,14 @@ program = $(targetdir)/a.out
 javafiles := example/Example.java
 classfiles := $(patsubst %.java,%.class,$(javafiles))
 
-compilecp := $(HOME)/.m2/repository/cc/quarkus/qcc-runtime-api/1.0.0-SNAPSHOT/qcc-runtime-api-1.0.0-SNAPSHOT.jar
-
-jandex = $(HOME)/.m2/repository/org/jboss/jandex/2.1.3.Final/jandex-2.1.3.Final.jar
-
-jbosslogging = $(HOME)/.m2/repository/org/jboss/logging/jboss-logging/3.4.1.Final/jboss-logging-3.4.1.Final.jar
-
-asmrepo = $(HOME)/.m2/repository/org/ow2/asm
-asm := $\
-$(asmrepo)/asm/7.2/asm-7.2.jar:$\
-$(asmrepo)/asm-tree/7.2/asm-tree-7.2.jar:$\
-$(asmrepo)/asm-analysis/7.2/asm-analysis-7.2.jar:
-
-smallryerepo = $(HOME)/.m2/repository/io/smallrye
-smallrye := $\
-$(smallryerepo)/common/smallrye-common-constraint/1.4.1/smallrye-common-constraint-1.4.1.jar:$\
-$(smallryerepo)/common/smallrye-common-function/1.4.1/smallrye-common-function-1.4.1.jar:$\
-$(smallryerepo)/common/smallrye-common-version/1.4.1/smallrye-common-version-1.4.1.jar
-
 qccrepo := $(HOME)/.m2/repository/cc/quarkus
-qcc := $\
-$(qccrepo)/qcc-main/1.0.0-SNAPSHOT/qcc-main-1.0.0-SNAPSHOT.jar:$\
-$(qccrepo)/qcc-driver/1.0.0-SNAPSHOT/qcc-driver-1.0.0-SNAPSHOT.jar:$\
-$(qccrepo)/qcc-machine-file-object/1.0.0-SNAPSHOT/qcc-machine-file-object-1.0.0-SNAPSHOT.jar:$\
-$(qccrepo)/qcc-machine-arch/1.0.0-SNAPSHOT/qcc-machine-arch-1.0.0-SNAPSHOT.jar:$\
-$(qccrepo)/qcc-machine-tool-api/1.0.0-SNAPSHOT/qcc-machine-tool-api-1.0.0-SNAPSHOT.jar:$\
-$(qccrepo)/qcc-machine-probe/1.0.0-SNAPSHOT/qcc-machine-probe-1.0.0-SNAPSHOT.jar:$\
-$(qccrepo)/qcc-compiler/1.0.0-SNAPSHOT/qcc-compiler-1.0.0-SNAPSHOT.jar:$\
-$(qccrepo)/qcc-machine-file-elf/1.0.0-SNAPSHOT/qcc-machine-file-elf-1.0.0-SNAPSHOT.jar:$\
-$(qccrepo)/qcc-machine-file-bin/1.0.0-SNAPSHOT/qcc-machine-file-bin-1.0.0-SNAPSHOT.jar:$\
-$(qccrepo)/qcc-machine-file-macho/1.0.0-SNAPSHOT/qcc-machine-file-macho-1.0.0-SNAPSHOT.jar:$\
-$(qccrepo)/qcc-plugin-constants/1.0.0-SNAPSHOT/qcc-plugin-constants-1.0.0-SNAPSHOT.jar:$\
-$(qccrepo)/qcc-plugin-conversion/1.0.0-SNAPSHOT/qcc-plugin-conversion-1.0.0-SNAPSHOT.jar:$\
-$(qccrepo)/qcc-plugin-dispatch/1.0.0-SNAPSHOT/qcc-plugin-dispatch-1.0.0-SNAPSHOT.jar:$\
-$(qccrepo)/qcc-plugin-dot/1.0.0-SNAPSHOT/qcc-plugin-dot-1.0.0-SNAPSHOT.jar:$\
-$(qccrepo)/qcc-plugin-linker/1.0.0-SNAPSHOT/qcc-plugin-linker-1.0.0-SNAPSHOT.jar:$\
-$(qccrepo)/qcc-plugin-llvm/1.0.0-SNAPSHOT/qcc-plugin-llvm-1.0.0-SNAPSHOT.jar:$\
-$(qccrepo)/qcc-machine-llvm/1.0.0-SNAPSHOT/qcc-machine-llvm-1.0.0-SNAPSHOT.jar:$\
-$(qccrepo)/qcc-plugin-lowering/1.0.0-SNAPSHOT/qcc-plugin-lowering-1.0.0-SNAPSHOT.jar:$\
-$(qccrepo)/qcc-plugin-main-method/1.0.0-SNAPSHOT/qcc-plugin-main-method-1.0.0-SNAPSHOT.jar:$\
-$(qccrepo)/qcc-plugin-intrinsics/1.0.0-SNAPSHOT/qcc-plugin-intrinsics-1.0.0-SNAPSHOT.jar:$\
-$(qccrepo)/qcc-plugin-native/1.0.0-SNAPSHOT/qcc-plugin-native-1.0.0-SNAPSHOT.jar:$\
-$(qccrepo)/qcc-runtime-api/1.0.0-SNAPSHOT/qcc-runtime-api-1.0.0-SNAPSHOT.jar:$\
-$(qccrepo)/qcc-plugin-optimization/1.0.0-SNAPSHOT/qcc-plugin-optimization-1.0.0-SNAPSHOT.jar:$\
-$(qccrepo)/qcc-plugin-patcher/1.0.0-SNAPSHOT/qcc-plugin-patcher-1.0.0-SNAPSHOT.jar:$\
-$(qccrepo)/qcc-plugin-reachability/1.0.0-SNAPSHOT/qcc-plugin-reachability-1.0.0-SNAPSHOT.jar:$\
-$(qccrepo)/qcc-plugin-try-catch/1.0.0-SNAPSHOT/qcc-plugin-try-catch-1.0.0-SNAPSHOT.jar:$\
-$(qccrepo)/qcc-plugin-verification/1.0.0-SNAPSHOT/qcc-plugin-verification-1.0.0-SNAPSHOT.jar:$\
-$(qccrepo)/qcc-machine-tool-gnu/1.0.0-SNAPSHOT/qcc-machine-tool-gnu-1.0.0-SNAPSHOT.jar:$\
-$(qccrepo)/qcc-machine-tool-clang/1.0.0-SNAPSHOT/qcc-machine-tool-clang-1.0.0-SNAPSHOT.jar:$\
-$(qccrepo)/qcc-machine-tool-llvm/1.0.0-SNAPSHOT/qcc-machine-tool-llvm-1.0.0-SNAPSHOT.jar:$\
-$(compilecp)
+compilecp := $(qccrepo)/qcc-runtime-api/1.0.0-SNAPSHOT/qcc-runtime-api-1.0.0-SNAPSHOT.jar
+mainjar := $(qccrepo)/qcc-main/1.0.0-SNAPSHOT/qcc-main-1.0.0-SNAPSHOT.jar
+dependencies = $(shell find $(QCC_HOME)/main/target/libs -type f -name '*.jar')
 
-runcp := $(asm):$(jandex):$(jbosslogging):$(smallrye):$(qcc)
+noop=
+space = $(noop) $(noop)
+runcp := $(mainjar):$(subst $(space),:,$(dependencies))
 
 debug := -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:4004
 
@@ -107,6 +62,7 @@ debug:
 qcc:
 > cd $(QCC_HOME)
 > mvn -DskipTests=true clean install
+> mvn dependency:copy-dependencies -DoutputDirectory=target/libs
 .PHONY: qcc
 
 runbc: $(bitcode)
