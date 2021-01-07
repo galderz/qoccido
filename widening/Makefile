@@ -14,10 +14,13 @@ QCC_HOME := $(HOME)/1/qcc-qcc
 
 currentdir = $(notdir $(shell pwd))
 targetdir = /tmp/qoccido/$(currentdir)
+bitcode = output.ll
+bitcodepath = $(targetdir)/example/Example/$(bitcode)
+program = $(targetdir)/a.out
 javafiles := example/Example.java
 classfiles := $(patsubst %.java,%.class,$(javafiles))
 
-compileclasspath := $(HOME)/.m2/repository/cc/quarkus/qcc-runtime-api/1.0.0-SNAPSHOT/qcc-runtime-api-1.0.0-SNAPSHOT.jar
+compilecp := $(HOME)/.m2/repository/cc/quarkus/qcc-runtime-api/1.0.0-SNAPSHOT/qcc-runtime-api-1.0.0-SNAPSHOT.jar
 
 jandex = $(HOME)/.m2/repository/org/jboss/jandex/2.1.3.Final/jandex-2.1.3.Final.jar
 
@@ -49,6 +52,7 @@ $(qccrepo)/qcc-machine-file-bin/1.0.0-SNAPSHOT/qcc-machine-file-bin-1.0.0-SNAPSH
 $(qccrepo)/qcc-machine-file-macho/1.0.0-SNAPSHOT/qcc-machine-file-macho-1.0.0-SNAPSHOT.jar:$\
 $(qccrepo)/qcc-plugin-constants/1.0.0-SNAPSHOT/qcc-plugin-constants-1.0.0-SNAPSHOT.jar:$\
 $(qccrepo)/qcc-plugin-conversion/1.0.0-SNAPSHOT/qcc-plugin-conversion-1.0.0-SNAPSHOT.jar:$\
+$(qccrepo)/qcc-plugin-dispatch/1.0.0-SNAPSHOT/qcc-plugin-dispatch-1.0.0-SNAPSHOT.jar:$\
 $(qccrepo)/qcc-plugin-dot/1.0.0-SNAPSHOT/qcc-plugin-dot-1.0.0-SNAPSHOT.jar:$\
 $(qccrepo)/qcc-plugin-linker/1.0.0-SNAPSHOT/qcc-plugin-linker-1.0.0-SNAPSHOT.jar:$\
 $(qccrepo)/qcc-plugin-llvm/1.0.0-SNAPSHOT/qcc-plugin-llvm-1.0.0-SNAPSHOT.jar:$\
@@ -66,38 +70,58 @@ $(qccrepo)/qcc-plugin-verification/1.0.0-SNAPSHOT/qcc-plugin-verification-1.0.0-
 $(qccrepo)/qcc-machine-tool-gnu/1.0.0-SNAPSHOT/qcc-machine-tool-gnu-1.0.0-SNAPSHOT.jar:$\
 $(qccrepo)/qcc-machine-tool-clang/1.0.0-SNAPSHOT/qcc-machine-tool-clang-1.0.0-SNAPSHOT.jar:$\
 $(qccrepo)/qcc-machine-tool-llvm/1.0.0-SNAPSHOT/qcc-machine-tool-llvm-1.0.0-SNAPSHOT.jar:$\
-$(compileclasspath)
+$(compilecp)
+
+runcp := $(asm):$(jandex):$(jbosslogging):$(smallrye):$(qcc)
 
 debug := -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:4004
 
-run: a.out
-> $(targetdir)/a.out
+run: $(program)
+> $(program)
 .PHONY: run
 
-a.out: example.jar
-> java -classpath $(asm):$(jandex):$(jbosslogging):$(smallrye):$(qcc) cc.quarkus.qcc.main.Main --boot-module-path example.jar:/opt/qccrt/qccrt-java.base-11.0.1-SNAPSHOT.jar --output-path $(targetdir) example.Example
+$(program): example.jar
+> $(call run)
 
 example.jar: $(classfiles)
 > jar cvfe $@ example.Example $^
 
 %.class: %.java
-> javac -d . -classpath $(compileclasspath) $<
+> javac -d . -classpath $(compilecp) $<
 
-run-jar: example.jar
+runjar: example.jar
 > java -jar $<
 .PHONY: run-jar
 
 clean:
 > rm -f example/*.class
 > rm -f *.jar
+> rm -f output.ll
 > rm -drf $(targetdir)
 .PHONY: clean
 
 debug:
-> java $(debug) -classpath $(asm):$(smallrye):$(classpath):$(qcc) cc.quarkus.qcc.main.Main --boot-module-path example.jar:/opt/qccrt/qccrt-java.base-11.0.1-SNAPSHOT.jar --output-path . example.Example
+> $(call run,$(debug))
 .PHONY: debug
 
 qcc:
 > cd $(QCC_HOME)
 > mvn -DskipTests=true clean install
 .PHONY: qcc
+
+runbc: $(bitcode)
+> lli $(bitcode)
+.PHONY: run-bc
+
+$(bitcode): $(program)
+> cp -f $(bitcodepath) .
+
+define run
+java \
+  $(1) \
+  -classpath $(runcp) \
+  cc.quarkus.qcc.main.Main \
+  --boot-module-path example.jar:/opt/qccrt/qccrt-java.base-11.0.1-SNAPSHOT.jar \
+  --output-path $(targetdir) \
+  example.Example
+endef
