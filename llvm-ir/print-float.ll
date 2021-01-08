@@ -3,8 +3,6 @@ target triple = "x86_64-pc-linux-gnu"
 @pfmtf = constant [4 x i8] c"%f\0A\00"
 declare i32 @printf(i8*,...)
 
-%L0 = sitofp i32 2147483646 to float
-
 define i32 @main() {
 B0:
   %L0 = sitofp i32 1 to float
