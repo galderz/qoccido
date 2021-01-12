@@ -29,3 +29,9 @@ Makefiles require Make 4 or higher.
 ```bash
 make clean && make
 ```
+
+# Tips and Tricks
+
+See 
+[here](https://www.usna.edu/Users/cs/wcbrown/courses/F19SI413/lec/l19/lec.html)
+for ways to tweak the LLVM IR.a
