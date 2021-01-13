@@ -28,13 +28,27 @@ cd ${1}
 make ${2}
 endef
 
-refresh:
-> $(call refresh,$(QCC_HOME))
-> $(call refresh,$(QCC_CL_HOME))
+pull:
+> $(call pull,$(QCC_HOME))
+> $(call pull,$(QCC_CL_HOME))
 
-define refresh
+define pull
 cd ${1}
 git checkout master
 git pull
+endef
+
+install:
+> $(call install,$(QCC_HOME))
+> $(call install,$(QCC_CL_HOME))
+
+copy-dependencies:
+> cd $(QCC_HOME)
+> mvn -pl main dependency:copy-dependencies -DoutputDirectory=\$${project.build.directory}/libs
+
+refresh: pull install copy-dependencies
+
+define install
+cd ${1}
 mvn clean install
 endef
