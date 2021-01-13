@@ -69,8 +69,11 @@ runbc: $(bitcode)
 > lli $(bitcode)
 .PHONY: run-bc
 
-$(bitcode): $(program)
+copy-bc:
 > cp -f $(bitcodepath) .
+.PHONY: copy-bc
+
+$(bitcode): $(program) copy-bc
 
 define run
 java \
