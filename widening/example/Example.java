@@ -14,13 +14,13 @@ public class Example
     @export
     public static int main()
     {
-        putchar('b');
-        putchar('y');
-        putchar('t');
-        putchar('e');
-        putchar('\n');
-
         {
+            putchar('b');
+            putchar('y');
+            putchar('t');
+            putchar('e');
+            putchar('\t');
+
             byte low = Byte.MIN_VALUE + 1;
             byte high = Byte.MAX_VALUE - 1;
             putchar(low - low == 0 ? '.' : 'F');
@@ -35,17 +35,17 @@ public class Example
             putchar(high - (byte)((float) high) == 0 ? '.' : 'F');
             putchar(low - (byte)((double) low) == 0 ? '.' : 'F');
             putchar(high - (byte)((double) high) == 0 ? '.' : 'F');
+            putchar('\n');
         }
 
-        putchar('\n');
-        putchar('s');
-        putchar('h');
-        putchar('o');
-        putchar('r');
-        putchar('t');
-        putchar('\n');
-
         {
+            putchar('s');
+            putchar('h');
+            putchar('o');
+            putchar('r');
+            putchar('t');
+            putchar('\t');
+
             short low = Short.MIN_VALUE + 1;
             short high = Short.MAX_VALUE - 1;
             putchar(low - low == 0 ? '.' : 'F');
@@ -58,16 +58,16 @@ public class Example
             putchar(high - (short)((float) high) == 0 ? '.' : 'F');
             putchar(low - (short)((double) low) == 0 ? '.' : 'F');
             putchar(high - (short)((double) high) == 0 ? '.' : 'F');
+            putchar('\n');
         }
 
-        putchar('\n');
-        putchar('c');
-        putchar('h');
-        putchar('a');
-        putchar('r');
-        putchar('\n');
-
         {
+            putchar('c');
+            putchar('h');
+            putchar('a');
+            putchar('r');
+            putchar('\t');
+
             char low = Character.MIN_VALUE + 1;
             char high = Character.MAX_VALUE - 1;
             putchar(low - low == 0 ? '.' : 'F');
@@ -80,15 +80,15 @@ public class Example
             putchar(high - (char)((float) high) == 0 ? '.' : 'F');
             putchar(low - (char)((double) low) == 0 ? '.' : 'F');
             putchar(high - (char)((double) high) == 0 ? '.' : 'F');
+            putchar('\n');
         }
 
-        putchar('\n');
-        putchar('i');
-        putchar('n');
-        putchar('t');
-        putchar('\n');
-
         {
+            putchar('i');
+            putchar('n');
+            putchar('t');
+            putchar('\t');
+
             int low = Integer.MIN_VALUE + 1;
             int high = Integer.MAX_VALUE - 1;
             putchar(low - low == 0 ? '.' : 'F');
@@ -99,15 +99,16 @@ public class Example
             putchar(high - (int)((float) high) == -1 ? '.' : 'F'); // loss of precision
             putchar(low - (int)((double) low) == 0 ? '.' : 'F');
             putchar(high - (int)((double) high) == 0 ? '.' : 'F');
+            putchar('\n');
         }
 
-        putchar('\n');
-        putchar('l');
-        putchar('o');
-        putchar('n');
-        putchar('g');
-        putchar('\n');
         {
+            putchar('l');
+            putchar('o');
+            putchar('n');
+            putchar('g');
+            putchar('\t');
+
             long low = Long.MIN_VALUE + 1;
             long high = Long.MAX_VALUE - 1;
             putchar(low - low == 0 ? '.' : 'F');
@@ -116,9 +117,9 @@ public class Example
             putchar(high - (long)((float) high) == -1 ? '.' : 'F'); // loss of precision
             putchar(low - (long)((double) low) == 1 ? '.' : 'F'); // loss of precision
             putchar(high - (long)((double) high) == -1 ? '.' : 'F'); // loss of precision
+            putchar('\n');
         }
 
-        putchar('\n');
         return 0;
     }
 
