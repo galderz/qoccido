@@ -31,7 +31,7 @@ runcp := $(mainjar):$(subst $(space),:,$(dependencies))
 
 debug := -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:4004
 
-run: $(program)
+run: $(program) copy-bc
 > $(program)
 .PHONY: run
 
