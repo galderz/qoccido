@@ -8,7 +8,10 @@ define i32 @exact.example.Example.main.s32.0(i64 %thr) {
 B0:
   %L0 = sitofp i64 9223372036854775806 to float
   %L1 = fcmp oge float %L0, 0x43e0000000000000
-  %L3 = fptosi double 0x43e0000000000000 to i64
+
+  ; %L3 = fptosi double 0x43e0000000000000 to i64
+  %L3 = add i64 9223372036854775807, 0
+
   %L4 = fptosi float 0xc3e0000000000000 to i64
   %L5 = fptosi float %L0 to i64
   %L6 = fcmp olt float %L0, 0xc3e0000000000000
