@@ -14,6 +14,12 @@ public class Example
     @export
     public static int main()
     {
+        return testAll();
+    }
+
+    @export
+    public static int testAll()
+    {
         {
             putchar('b');
             putchar('y');
