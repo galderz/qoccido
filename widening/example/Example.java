@@ -14,11 +14,16 @@ public class Example
     @export
     public static int main()
     {
-        return testAll();
+        testAll();
+        // testErrors();
+        return 0;
     }
 
-    @export
-    public static int testAll()
+    public static void testErrors()
+    {
+    }
+
+    public static void testAll()
     {
         {
             putchar('b');
@@ -204,8 +209,6 @@ public class Example
 //            putchar(low - (float)((double) low) == 0 ? '.' : 'F');
 //            putchar(high - (float)((double) high) == 0 ? '.' : 'F');
 //        }
-
-        return 0;
     }
 
     public static void main(String[] args)
