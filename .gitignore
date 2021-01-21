@@ -4,3 +4,4 @@
 *.jar
 output.ll
 a.out
+*.dot
