@@ -1,9 +1,8 @@
 package example;
 
-import java.lang.System;
-
 import static cc.quarkus.qcc.runtime.CNative.*;
 
+// NaN comparisons 1 - https://github.com/quarkuscc/qcc/issues/179
 public class Example
 {
     private short low;
@@ -14,18 +13,48 @@ public class Example
     @export
     public static int main()
     {
-        testAll();
-        // testErrors();
+        all();
+        // errors();
         return 0;
     }
 
-    public static void testErrors()
+    public static void errors()
     {
     }
 
-    public static void testAll()
+    public static void all()
+    {
+        widening();
+        narrowing();
+    }
+
+    private static void narrowing()
+    {
+        putchar('n');
+        putchar('.');
+        putchar('s');
+        putchar('h');
+        putchar('o');
+        putchar('r');
+        putchar('t');
+        putchar('\t');
+
+        short low = Short.MIN_VALUE + 1;
+        short high = Short.MAX_VALUE - 1;
+        putchar(low - low == 0 ? '.' : 'F');
+        putchar(high - high == 0 ? '.' : 'F');
+        putchar(low - ((byte) low) == Short.MIN_VALUE ? '.' : 'F');
+        putchar(high - ((byte) high) == Short.MAX_VALUE + 1 ? '.' : 'F');
+        putchar(low - ((char) low) == Short.MIN_VALUE << 1 ? '.' : 'F');
+        putchar(high - ((char) high) == 0 ? '.' : 'F');
+        putchar('\n');
+    }
+
+    public static void widening()
     {
         {
+            putchar('w');
+            putchar('.');
             putchar('b');
             putchar('y');
             putchar('t');
@@ -64,6 +93,8 @@ public class Example
         }
 
         {
+            putchar('w');
+            putchar('.');
             putchar('s');
             putchar('h');
             putchar('o');
@@ -99,6 +130,8 @@ public class Example
         }
 
         {
+            putchar('w');
+            putchar('.');
             putchar('c');
             putchar('h');
             putchar('a');
@@ -133,6 +166,8 @@ public class Example
         }
 
         {
+            putchar('w');
+            putchar('.');
             putchar('i');
             putchar('n');
             putchar('t');
@@ -163,6 +198,8 @@ public class Example
         }
 
         {
+            putchar('w');
+            putchar('.');
             putchar('l');
             putchar('o');
             putchar('n');
@@ -189,6 +226,8 @@ public class Example
         }
 
         {
+            putchar('w');
+            putchar('.');
             putchar('f');
             putchar('l');
             putchar('o');
@@ -208,6 +247,15 @@ public class Example
             putchar(high - high == 0 ? '.' : 'F');
             putchar(low - (float)((double) low) == 0 ? '.' : 'F');
             putchar(high - (float)((double) high) == 0 ? '.' : 'F');
+
+            // NaN comparisons 1
+            // low = Float.NEGATIVE_INFINITY;
+            // high = Float.POSITIVE_INFINITY;
+            // putchar(low - low != low - low ? '.' : 'F');
+            // putchar(high - high != high - high ? '.' : 'F');
+            // putchar(low - (float)((double) low) != low - (float)((double) low) ? '.' : 'F');
+            // putchar(high - (float)((double) high) != high - (float)((double) high) ? '.' : 'F');
+
             putchar('\n');
         }
     }
