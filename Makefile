@@ -10,8 +10,8 @@ ifeq ($(origin .RECIPEPREFIX), undefined)
 endif
 .RECIPEPREFIX = >
 
-QCC_HOME := $(HOME)/1/qcc-qcc
-QCC_CL_HOME := $(HOME)/1/qcc-class-library
+QCC_HOME := /opt/qcc-qcc
+QCC_CL_HOME := /opt/qcc-class-library
 
 all: hello
 .PHONY: all
