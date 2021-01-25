@@ -1,34 +1,16 @@
-package example;
-
 import static cc.quarkus.qcc.runtime.CNative.*;
 
-// NaN comparisons 1 - https://github.com/quarkuscc/qcc/issues/179
-public class Example
+public class example
 {
-    private short low;
-
-    @extern
-    public static native int putchar(int arg);
-
     @export
     public static int main()
     {
-        all();
-        // errors();
+        widening();
+        narrowing();
         return 0;
     }
 
-    public static void errors()
-    {
-    }
-
-    public static void all()
-    {
-        widening();
-        narrowing();
-    }
-
-    private static void narrowing()
+    public static void narrowing()
     {
         putchar('n');
         putchar('.');
@@ -268,9 +250,11 @@ public class Example
         }
     }
 
+    @extern
+    public static native int putchar(int arg);
+
     public static void main(String[] args)
     {
         // make driver happy
     }
-
 }

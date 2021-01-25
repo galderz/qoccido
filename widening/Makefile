@@ -10,20 +10,20 @@ ifeq ($(origin .RECIPEPREFIX), undefined)
 endif
 .RECIPEPREFIX = >
 
-QCC_HOME := $(HOME)/1/qcc-qcc
+QCC_HOME := /opt/qcc-qcc
 
-currentdir = $(notdir $(shell pwd))
-targetdir = /tmp/qoccido/$(currentdir)
-bitcode = output.ll
-bitcodepath = $(targetdir)/example/Example/$(bitcode)
-program = $(targetdir)/a.out
-javafiles := example/Example.java
+currentdir := $(notdir $(shell pwd))
+targetdir := /tmp/qoccido/$(currentdir)
+bitcode := output.ll
+bitcodepath := $(targetdir)/example/$(bitcode)
+program := $(targetdir)/a.out
+javafiles := $(shell find . -type f -name '*.java')
 classfiles := $(patsubst %.java,%.class,$(javafiles))
 
 qccrepo := $(HOME)/.m2/repository/cc/quarkus
 compilecp := $(qccrepo)/qcc-runtime-api/1.0.0-SNAPSHOT/qcc-runtime-api-1.0.0-SNAPSHOT.jar
 mainjar := $(qccrepo)/qcc-main/1.0.0-SNAPSHOT/qcc-main-1.0.0-SNAPSHOT.jar
-dependencies = $(shell find $(QCC_HOME)/main/target/libs -type f -name '*.jar')
+dependencies := $(shell find $(QCC_HOME)/main/target/libs -type f -name '*.jar')
 
 noop=
 space = $(noop) $(noop)
@@ -39,17 +39,17 @@ $(program): example.jar
 > $(call run)
 
 example.jar: $(classfiles)
-> jar cvfe $@ example.Example $^
+> jar cvfe $@ example $^
 
 %.class: %.java
-> javac -d . -classpath $(compilecp) $<
+> javac -d . -classpath .:$(compilecp) $<
 
 runjar: example.jar
 > java -jar $<
 .PHONY: run-jar
 
 clean:
-> rm -f example/*.class
+> rm -f *.class
 > rm -f *.jar
 > rm -f output.ll
 > rm -drf $(targetdir)
@@ -82,5 +82,5 @@ java \
   cc.quarkus.qcc.main.Main \
   --boot-module-path example.jar:/opt/qccrt/qccrt-java.base-11.0.1-SNAPSHOT.jar:$(compilecp) \
   --output-path $(targetdir) \
-  example.Example
+  example
 endef
