@@ -80,7 +80,7 @@ java \
   $(1) \
   -classpath $(runcp) \
   cc.quarkus.qcc.main.Main \
-  --boot-module-path example.jar:/opt/qccrt/qccrt-java.base-11.0.1-SNAPSHOT.jar \
+  --boot-module-path example.jar:/opt/qccrt/qccrt-java.base-11.0.1-SNAPSHOT.jar:$(compilecp) \
   --output-path $(targetdir) \
   example.Example
 endef
