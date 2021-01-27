@@ -20,28 +20,32 @@ program := $(targetdir)/a.out
 javafiles := $(shell find . -type f -name '*.java')
 classfiles := $(patsubst %.java,%.class,$(javafiles))
 
-qccrepo := $(HOME)/.m2/repository/cc/quarkus
-compilecp := $(qccrepo)/qcc-runtime-api/1.0.0-SNAPSHOT/qcc-runtime-api-1.0.0-SNAPSHOT.jar
-mainjar := $(qccrepo)/qcc-main/1.0.0-SNAPSHOT/qcc-main-1.0.0-SNAPSHOT.jar
+javacmd := java
+javadebugcmd += $(javacmd)
+javadebugcmd += -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:4004
+
+qcc-repo := $(HOME)/.m2/repository/cc/quarkus
+qcc-jar-api := $(qcc-repo)/qcc-runtime-api/1.0.0-SNAPSHOT/qcc-runtime-api-1.0.0-SNAPSHOT.jar
+qcc-jar-main := $(qcc-repo)/qcc-main/1.0.0-SNAPSHOT/qcc-main-1.0.0-SNAPSHOT.jar
+qcc-sources := $(shell find $(QCC_HOME)/ -type f -name '*.java')
+compilecp := $(qcc-jar-api)
 dependencies := $(shell find $(QCC_HOME)/main/target/libs -type f -name '*.jar')
 
 noop=
 space = $(noop) $(noop)
-runcp := $(mainjar):$(subst $(space),:,$(dependencies))
-
-debug := -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:4004
+runcp := $(qcc-jar-main):$(subst $(space),:,$(dependencies))
 
 run: $(program) copy-bc
 > $(program)
 .PHONY: run
 
 $(program): example.jar
-> $(call run)
+> $(call run,$(javacmd))
 
 example.jar: $(classfiles)
 > jar cvfe $@ example $^
 
-%.class: %.java
+%.class: %.java $(qcc-jar-api)
 > javac -d . -classpath .:$(compilecp) $<
 
 runjar: example.jar
@@ -53,17 +57,18 @@ clean:
 > rm -f *.jar
 > rm -f output.ll
 > rm -drf $(targetdir)
+> cd $(QCC_HOME)
+> mvn clean
 .PHONY: clean
 
 debug:
-> $(call run,$(debug))
+> $(call run,$(javadebugcmd))
 .PHONY: debug
 
-qcc:
+$(qcc-jar-api): $(qcc-sources)
 > cd $(QCC_HOME)
-> mvn -DskipTests=true clean install
+> mvn -DskipTests=true install
 > mvn dependency:copy-dependencies -DoutputDirectory=target/libs
-.PHONY: qcc
 
 runbc: $(bitcode)
 > lli $(bitcode)
@@ -76,8 +81,7 @@ copy-bc:
 $(bitcode): $(program) copy-bc
 
 define run
-java \
-  $(1) \
+$(1) \
   -classpath $(runcp) \
   cc.quarkus.qcc.main.Main \
   --boot-module-path example.jar:/opt/qccrt/qccrt-java.base-11.0.1-SNAPSHOT.jar:$(compilecp) \
