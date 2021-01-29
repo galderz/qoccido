@@ -7,6 +7,7 @@ public class example
     {
         Widening.main();
         Narrowing.main();
+        UnaryPromotion.main();
         return 0;
     }
 

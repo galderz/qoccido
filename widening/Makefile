@@ -24,22 +24,24 @@ javacmd := java
 javadebugcmd += $(javacmd)
 javadebugcmd += -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:4004
 
-qcc-repo := $(HOME)/.m2/repository/cc/quarkus
-qcc-jar-api := $(qcc-repo)/qcc-runtime-api/1.0.0-SNAPSHOT/qcc-runtime-api-1.0.0-SNAPSHOT.jar
-qcc-jar-main := $(qcc-repo)/qcc-main/1.0.0-SNAPSHOT/qcc-main-1.0.0-SNAPSHOT.jar
+qcc-jar-api := $(QCC_HOME)/runtime/api/target/qcc-runtime-api-1.0.0-SNAPSHOT.jar
+qcc-jar-main := $(QCC_HOME)/main/target/qcc-main-1.0.0-SNAPSHOT.jar
 qcc-sources := $(shell find $(QCC_HOME)/ -type f -name '*.java')
 compilecp := $(qcc-jar-api)
-dependencies := $(shell find $(QCC_HOME)/main/target/libs -type f -name '*.jar')
 
 noop=
 space = $(noop) $(noop)
-runcp := $(qcc-jar-main):$(subst $(space),:,$(dependencies))
 
 run: $(program) copy-bc
 > $(program)
 .PHONY: run
 
-$(program): example.jar
+run-classpath:
+> $(eval dependencies := $(shell find $(QCC_HOME)/main/target/libs -type f -name '*.jar'))
+> $(eval runcp := $(qcc-jar-main):$(subst $(space),:,$(dependencies)))
+.PHONY: run-classpath
+
+$(program): example.jar run-classpath
 > $(call run,$(javacmd))
 
 example.jar: $(classfiles)
@@ -61,7 +63,7 @@ clean:
 > mvn clean
 .PHONY: clean
 
-debug:
+debug: run-classpath
 > $(call run,$(javadebugcmd))
 .PHONY: debug
 

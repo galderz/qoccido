@@ -221,6 +221,7 @@ public class Widening
             putchar('\n');
         }
     }
+
     @extern
     public static native int putchar(int arg);
 }
