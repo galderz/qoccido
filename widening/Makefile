@@ -1,3 +1,4 @@
+
 SHELL := bash
 .ONESHELL:
 .SHELLFLAGS := -eu -o pipefail -c
@@ -15,7 +16,6 @@ QCC_HOME := /opt/qcc-qcc
 currentdir := $(notdir $(shell pwd))
 targetdir := /tmp/qoccido/$(currentdir)
 bitcode := output.ll
-bitcodepath := $(targetdir)/example/$(bitcode)
 program := $(targetdir)/a.out
 javafiles := $(shell find . -type f -name '*.java')
 classfiles := $(patsubst %.java,%.class,$(javafiles))
@@ -26,13 +26,15 @@ javadebugcmd += -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:
 
 qcc-jar-api := $(QCC_HOME)/runtime/api/target/qcc-runtime-api-1.0.0-SNAPSHOT.jar
 qcc-jar-main := $(QCC_HOME)/main/target/qcc-main-1.0.0-SNAPSHOT.jar
+qcc-jar-unwind := $(QCC_HOME)/runtime/unwind/target/qcc-runtime-unwind-1.0.0-SNAPSHOT.jar
 qcc-sources := $(shell find $(QCC_HOME)/ -type f -name '*.java')
-compilecp := $(qcc-jar-api)
+compile-classpath := $(qcc-jar-api)
+boot-classpath := $(compile-classpath):$(qcc-jar-unwind)
 
 noop=
 space = $(noop) $(noop)
 
-run: $(program) copy-bc
+run: $(program)
 > $(program)
 .PHONY: run
 
@@ -48,7 +50,7 @@ example.jar: $(classfiles)
 > jar cvfe $@ example $^
 
 %.class: %.java $(qcc-jar-api)
-> javac -d . -classpath .:$(compilecp) $<
+> javac -d . -classpath .:$(compile-classpath) $<
 
 runjar: example.jar
 > java -jar $<
@@ -72,21 +74,11 @@ $(qcc-jar-api): $(qcc-sources)
 > mvn -DskipTests=true install
 > mvn dependency:copy-dependencies -DoutputDirectory=target/libs
 
-runbc: $(bitcode)
-> lli $(bitcode)
-.PHONY: run-bc
-
-copy-bc:
-> cp -f $(bitcodepath) .
-.PHONY: copy-bc
-
-$(bitcode): $(program) copy-bc
-
 define run
 $(1) \
   -classpath $(runcp) \
   cc.quarkus.qcc.main.Main \
-  --boot-module-path example.jar:/opt/qccrt/qccrt-java.base-11.0.1-SNAPSHOT.jar:$(compilecp) \
+  --boot-module-path example.jar:/opt/qccrt/qccrt-java.base-11.0.1-SNAPSHOT.jar:$(boot-classpath) \
   --output-path $(targetdir) \
   example
 endef

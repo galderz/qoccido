@@ -8,6 +8,9 @@ public class example
         Widening.main();
         Narrowing.main();
         UnaryPromotion.main();
+        Negate.main();
+        BinaryPromotion.main();
+//        Errors.errors();
         return 0;
     }
 
