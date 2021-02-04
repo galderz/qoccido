@@ -5,3 +5,5 @@
 output.ll
 a.out
 *.dot
+.jqwik-database
+target
