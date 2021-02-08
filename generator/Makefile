@@ -12,14 +12,29 @@ endif
 
 QCC_HOME := /opt/qcc-qcc
 
+gen-sources := $(shell find src/ -type f -name '*.java')
+gen-jar := target/generator.jar
+gen-target := target/generated-test-sources
+
+gen-main-name := Qoccido
+gen-java-files += $(gen-main-name).java
+gen-java-files += Double_doubleToRawLongBits.java
+gen-java-paths := $(patsubst %.java,$(gen-target)/%.java,$(gen-java-files))
+
+gen-class-files := $(patsubst %.java,%.class,$(gen-java-files))
+gen-class-paths := $(patsubst %.java,%.class,$(gen-java-paths))
+
+gen-jar-file := qoccido.jar
+gen-jar-path := $(gen-target)/$(gen-jar-file)
+
 currentdir := $(notdir $(shell pwd))
 targetdir := /tmp/qoccido/$(currentdir)
 bitcode := output.ll
 program := $(targetdir)/a.out
-javafiles := $(shell find . -type f -name '*.java')
-classfiles := $(patsubst %.java,%.class,$(javafiles))
 
-javacmd := java
+javacmd += java
+# Big enough thread stack size to avoid https://github.com/quarkuscc/qcc/issues/262
+javacmd += -Xss2m
 javadebugcmd += $(javacmd)
 javadebugcmd += -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:4004
 
@@ -42,26 +57,29 @@ run-classpath:
 > $(eval runcp := $(qcc-jar-main):$(subst $(space),:,$(dependencies)))
 .PHONY: run-classpath
 
-$(program): example.jar run-classpath
+$(program): $(gen-jar-path) run-classpath
 > $(call run,$(javacmd))
 
-example.jar: $(classfiles)
-> jar cvfe $@ example $^
+$(gen-jar-path): $(gen-class-paths)
+> cd $(gen-target) && jar cvfe $(gen-jar-file) $(gen-main-name) $(gen-class-files)
 
-%.class: %.java $(qcc-jar-api)
-> javac -d . -classpath .:$(compile-classpath) $<
+$(gen-class-paths): $(gen-java-paths) $(qcc-jar-api)
+> javac -d $(gen-target) -classpath $(gen-target):$(compile-classpath) $<
 
-runjar: example.jar
+$(gen-java-paths): $(gen-sources)
+> mvn test
+
+runjar: $(gen-jar-path)
 > java -jar $<
 .PHONY: run-jar
 
 clean:
+> mvn clean
 > rm -f *.class
 > rm -f *.jar
 > rm -f output.ll
 > rm -drf $(targetdir)
-> cd $(QCC_HOME)
-> mvn clean
+> cd $(QCC_HOME) && mvn clean
 .PHONY: clean
 
 debug: run-classpath
@@ -77,7 +95,7 @@ define run
 $(1) \
   -classpath $(runcp) \
   cc.quarkus.qcc.main.Main \
-  --boot-module-path example.jar:/opt/qccrt/qccrt-java.base-11.0.1-SNAPSHOT.jar:$(boot-classpath) \
+  --boot-module-path $(gen-jar-path):/opt/qccrt/qccrt-java.base-11.0.1-SNAPSHOT.jar:$(boot-classpath) \
   --output-path $(targetdir) \
-  example
+  $(gen-main-name)
 endef

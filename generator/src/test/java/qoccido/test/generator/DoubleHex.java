@@ -10,6 +10,11 @@ public class DoubleHex
         return prettyHex(Double.doubleToLongBits(d));
     }
 
+    static String doubleToRawLongBits(double d)
+    {
+        return prettyHex(Double.doubleToRawLongBits(d));
+    }
+
     static String prettyHex(long l)
     {
         final var hex = Long.toHexString(l).toUpperCase();

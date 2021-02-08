@@ -1,67 +1,126 @@
 package qoccido.test.generator;
 
-import net.jqwik.api.Arbitraries;
-import net.jqwik.api.Arbitrary;
-import net.jqwik.api.ForAll;
-import net.jqwik.api.Property;
-import net.jqwik.api.Provide;
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.CodeBlock;
+import com.squareup.javapoet.JavaFile;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.TypeSpec;
 
-public class Generator extends AbstractGenerator
+import javax.lang.model.element.Modifier;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.file.Path;
+import java.util.ArrayDeque;
+import java.util.Queue;
+
+public class Generator implements AutoCloseable
 {
-    int index = 0;
+    private static final Path TARGET = Path.of("target", "generated-test-sources");
 
-    public Generator()
+    private final Queue<TestCase> testCases = new ArrayDeque<>();
+
+    TestCase testCase(String name)
     {
-        super("Double_doubleToLongBits");
+        final var testCase = new TestCase(name);
+        testCases.add(testCase);
+        return testCase;
     }
 
-    @Provide
-    Arbitrary<Double> allDoubles()
+    @Override
+    public void close() throws Exception
     {
-        // MAX_VALUE and -MAX_VALUE included
-        return Arbitraries.doubles().edgeCases(edgeCasesConfig ->
-                edgeCasesConfig
-                    .add(Double.NaN)                                      // 0x7FF8_0000_0000_0000L
-                    .add(Double.NEGATIVE_INFINITY)                        // 0xFFF0_0000_0000_0000L
-                    .add(Double.MIN_VALUE)                                // 0x0000_0000_0000_0001L
-                    .add(-Double.MIN_VALUE)                               // 0x8000_0000_0000_0001L
-                    .add(Double.MIN_NORMAL)                               // 0x0010_0000_0000_0000L
-                    .add(-Double.MIN_NORMAL)                              // 0x8010_0000_0000_0000L
-                    .add(Double.POSITIVE_INFINITY)                        // 0x7FF0_0000_0000_0000L
-                    //.add(Double.longBitsToDouble(0x7FF8_0000_0000_0100L)) // 0x7FF8_0000_0000_0000L
-        );
+        testCases
+            .forEach(TestCase::close);
+
+        TypeSpec mainType = TypeSpec.classBuilder("Qoccido")
+            .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+            .addMethod(nativeMain())
+            .addMethod(javaMain())
+            .build();
+
+        JavaFile javaFile = JavaFile.builder("", mainType)
+            .build();
+
+        javaFile.writeTo(TARGET);
     }
 
-    @Property
-    boolean allDoubles(@ForAll("allDoubles") double aDouble)
+    private MethodSpec javaMain()
     {
-        String doubleString = show(aDouble);
-        methodBuilder.addCode(
-            "putchar($Ll == Double.doubleToLongBits($L) ? '.' : 'F'); // $L\n"
-            , Double.doubleToLongBits(aDouble)
-            , doubleString
-            , DoubleHex.doubleToLongBits(aDouble)
-        );
+        return MethodSpec.methodBuilder("main")
+            .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+            .returns(void.class)
+            .addParameter(String[].class, "args")
+            .build();
+    }
 
-        if (++index % 80 == 0)
+    private MethodSpec nativeMain()
+    {
+        final var nativeMain = MethodSpec.methodBuilder("main")
+            .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+            .addAnnotation(ClassName.get("cc.quarkus.qcc.runtime.CNative", "export"))
+            .returns(int.class);
+
+        testCases.stream()
+            .map(TestCase::callCode)
+            .forEach(nativeMain::addStatement);
+
+        nativeMain.addStatement("return 0");
+        return nativeMain.build();
+    }
+
+    static final class TestCase implements AutoCloseable
+    {
+        private final String name;
+        private final TypeSpec.Builder typeBuilder;
+
+        final MethodSpec.Builder methodBuilder;
+
+        public TestCase(String name)
         {
-            methodBuilder.addStatement("putchar('\\n')");
+            this.name = name;
+
+            this.typeBuilder = TypeSpec.classBuilder(name)
+                .addModifiers(Modifier.PUBLIC, Modifier.FINAL);
+
+            this.methodBuilder = MethodSpec.methodBuilder("main")
+                .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+                .returns(void.class);
         }
 
-        return true;
-    }
+        CodeBlock callCode()
+        {
+            return CodeBlock.of("$L.main()", name);
+        }
 
-    private String show(double aDouble)
-    {
-        if (Double.isNaN(aDouble))
-            return "Double.NaN";
+        @Override
+        public void close()
+        {
+            methodBuilder.addStatement("putchar('\\n')");
 
-        if (Double.POSITIVE_INFINITY == aDouble)
-            return "Double.POSITIVE_INFINITY";
+            final var putchar = MethodSpec.methodBuilder("putchar")
+                .addAnnotation(ClassName.get("cc.quarkus.qcc.runtime.CNative", "extern"))
+                .addModifiers(Modifier.STATIC, Modifier.NATIVE)
+                .addParameter(int.class, "arg")
+                .returns(int.class)
+                .build();
 
-        if (Double.NEGATIVE_INFINITY == aDouble)
-            return "Double.NEGATIVE_INFINITY";
+            final var type = typeBuilder
+                .addMethod(methodBuilder.build())
+                .addMethod(putchar)
+                .build();
 
-        return Double.toString(aDouble);
+            final var javaFile = JavaFile
+                .builder("", type)
+                .build();
+
+            try
+            {
+                javaFile.writeTo(Path.of("target", "generated-test-sources"));
+            }
+            catch (IOException e)
+            {
+                throw new UncheckedIOException(e);
+            }
+        }
     }
 }

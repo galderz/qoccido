@@ -33,6 +33,7 @@
     </dependencies>
 
     <build>
+        <finalName>generator</finalName>
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
