@@ -13,7 +13,7 @@ endif
 QCC_HOME := /opt/qcc-qcc
 
 gen-sources := $(shell find src/ -type f -name '*.java')
-gen-jar := target/generator.jar
+gen-jar := target/qoccinero.jar
 gen-target := target/generated-sources
 
 gen-main-name := Qoccido
