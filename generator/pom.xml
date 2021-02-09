@@ -22,13 +22,11 @@
             <groupId>com.squareup</groupId>
             <artifactId>javapoet</artifactId>
             <version>${javapoet.version}</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>net.jqwik</groupId>
             <artifactId>jqwik</artifactId>
             <version>${jqwik.version}</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -54,6 +52,21 @@
                         <include>**/*Examples.java</include>
                         <include>**/*Properties.java</include>
                     </includes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <mainClass>qoccinero.Qoccinero</mainClass>
                 </configuration>
             </plugin>
         </plugins>

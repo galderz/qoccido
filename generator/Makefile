@@ -14,7 +14,7 @@ QCC_HOME := /opt/qcc-qcc
 
 gen-sources := $(shell find src/ -type f -name '*.java')
 gen-jar := target/generator.jar
-gen-target := target/generated-test-sources
+gen-target := target/generated-sources
 
 gen-main-name := Qoccido
 gen-java-files += $(gen-main-name).java
@@ -67,7 +67,7 @@ $(gen-class-paths): $(gen-java-paths) $(qcc-jar-api)
 > javac -d $(gen-target) -classpath $(gen-target):$(compile-classpath) $<
 
 $(gen-java-paths): $(gen-sources)
-> mvn test
+> mvn compile exec:java -Dexec.mainClass=qoccinero.Qoccinero
 
 runjar: $(gen-jar-path)
 > java -jar $<
@@ -75,9 +75,6 @@ runjar: $(gen-jar-path)
 
 clean:
 > mvn clean
-> rm -f *.class
-> rm -f *.jar
-> rm -f output.ll
 > rm -drf $(targetdir)
 > cd $(QCC_HOME) && mvn clean
 .PHONY: clean

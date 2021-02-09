@@ -1,27 +1,26 @@
-package qoccido.test.generator;
+package qoccinero;
 
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
-import net.jqwik.api.ForAll;
-import net.jqwik.api.Property;
-import net.jqwik.api.Provide;
 
-public class GeneratorExamples implements AutoCloseable
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+final class Recetas
 {
-    private int index = 0;
-    private final Generator generator = new Generator();
-    private final Generator.TestCase testCase;
+    static final Receta<Double, Long> Double_doubleToRawLongBits = new Receta<>(
+        Recetas::doubles
+        , Recetas::doubleLiteral
+        , Double::doubleToRawLongBits
+        , Recetas::prettyHexDoubleToRawLongBits
+        , "Double.doubleToRawLongBits"
+    );
 
-    public GeneratorExamples()
-    {
-        testCase = generator.testCase("Double_doubleToRawLongBits");
-    }
-
-    @Provide
-    Arbitrary<Double> allDoubles()
+    static Arbitrary<Double> doubles()
     {
         // MAX_VALUE and -MAX_VALUE included
-        return Arbitraries.doubles().edgeCases(edgeCasesConfig ->
+        return Arbitraries.doubles()
+            .edgeCases(edgeCasesConfig ->
                 edgeCasesConfig
                     .add(Double.NaN)                                      // 0x7FF8_0000_0000_0000L
                     .add(Double.NEGATIVE_INFINITY)                        // 0xFFF0_0000_0000_0000L
@@ -34,26 +33,7 @@ public class GeneratorExamples implements AutoCloseable
         );
     }
 
-    @Property
-    boolean allDoubles(@ForAll("allDoubles") double aDouble)
-    {
-        String doubleString = show(aDouble);
-        testCase.methodBuilder.addCode(
-            "putchar($Ll == Double.doubleToRawLongBits($L) ? '.' : 'F'); // $L\n"
-            , Double.doubleToRawLongBits(aDouble)
-            , doubleString
-            , DoubleHex.doubleToRawLongBits(aDouble)
-        );
-
-        if (++index % 80 == 0)
-        {
-            testCase.methodBuilder.addStatement("putchar('\\n')");
-        }
-
-        return true;
-    }
-
-    private String show(double aDouble)
+    static String doubleLiteral(double aDouble)
     {
         if (Double.isNaN(aDouble))
             return "Double.NaN";
@@ -67,9 +47,23 @@ public class GeneratorExamples implements AutoCloseable
         return Double.toString(aDouble);
     }
 
-    @Override
-    public void close() throws Exception
+    static String prettyHexDoubleToLongBits(double d)
     {
-        generator.close();
+        return prettyHex(Double.doubleToLongBits(d));
+    }
+
+    static String prettyHexDoubleToRawLongBits(double d)
+    {
+        return prettyHex(Double.doubleToRawLongBits(d));
+    }
+
+    static String prettyHex(long l)
+    {
+        final var hex = Long.toHexString(l).toUpperCase();
+        final var padding = "0".repeat(16 - hex.length());
+        final var paddedHex = padding + hex;
+        return Stream
+            .of(paddedHex.split("(?<=\\G.{4})"))
+            .collect(Collectors.joining("_", "0x", "L"));
     }
 }
