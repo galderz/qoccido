@@ -6,6 +6,8 @@ import net.jqwik.api.Arbitrary;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+// TODO abstract Arbitrary logic to an API that returns a Stream<T>
+//      validate that the Stream<T> contains all the edge cases
 final class Recetas
 {
     static final Receta<Double, Long> Double_doubleToRawLongBits = new Receta<>(
@@ -26,7 +28,9 @@ final class Recetas
 
     static Arbitrary<Double> doubles()
     {
-        // MAX_VALUE and -MAX_VALUE included
+        // Already included:
+        //  MAX_VALUE  0x7FEF_FFFF_FFFF_FFFFL
+        // -MAX_VALUE  0xFFEF_FFFF_FFFF_FFFFL
         return Arbitraries.doubles()
             .edgeCases(edgeCasesConfig ->
                 edgeCasesConfig
@@ -43,7 +47,9 @@ final class Recetas
 
     static Arbitrary<Float> floats()
     {
-        // MAX_VALUE and -MAX_VALUE included
+        // Already included:
+        //  MAX_VALUE 0x7F7F_FFFFL
+        // -MAX_VALUE 0xFF7F_FFFFL
         return Arbitraries.floats()
             .edgeCases(edgeCasesConfig ->
                     edgeCasesConfig
@@ -74,14 +80,14 @@ final class Recetas
 
     static String floatLiteral(float aFloat)
     {
-//        if (Double.isNaN(aFloat))
-//            return "Double.NaN";
-//
-//        if (Double.POSITIVE_INFINITY == aFloat)
-//            return "Double.POSITIVE_INFINITY";
-//
-//        if (Double.NEGATIVE_INFINITY == aFloat)
-//            return "Double.NEGATIVE_INFINITY";
+        if (Float.isNaN(aFloat))
+            return "Float.NaN";
+
+        if (Float.POSITIVE_INFINITY == aFloat)
+            return "Float.POSITIVE_INFINITY";
+
+        if (Float.NEGATIVE_INFINITY == aFloat)
+            return "Float.NEGATIVE_INFINITY";
 
         return String.format("%sf", aFloat);
     }

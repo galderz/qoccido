@@ -5,6 +5,7 @@ import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
+import net.jqwik.api.Shrinkable;
 
 import javax.lang.model.element.Modifier;
 import java.io.IOException;
@@ -12,6 +13,7 @@ import java.io.UncheckedIOException;
 import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class Qoccinero implements AutoCloseable
 {
@@ -43,6 +45,10 @@ public class Qoccinero implements AutoCloseable
 
         AtomicInteger index = new AtomicInteger();
         receta.arbitrary.get().sampleStream().limit(1000)
+            .forEach(acceptUnary(receta, mainMethod, index));
+        receta.arbitrary.get().edgeCases().suppliers().stream()
+            .map(Supplier::get)
+            .map(Shrinkable::value)
             .forEach(acceptUnary(receta, mainMethod, index));
 
         mainMethod.addStatement("putchar('\\n')");
