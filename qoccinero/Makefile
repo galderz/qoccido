@@ -17,12 +17,11 @@ gen-jar := target/qoccinero.jar
 gen-target := target/generated-sources
 
 gen-main-name := Qoccido
-gen-java-files += $(gen-main-name).java
-gen-java-files += Double_doubleToRawLongBits.java
-gen-java-paths := $(patsubst %.java,$(gen-target)/%.java,$(gen-java-files))
-
+gen-java-file-names += $(gen-main-name)
+gen-java-file-names += Double_doubleToRawLongBits
+gen-java-file-names += Float_floatToRawIntBits
+gen-java-files := $(patsubst %,$(gen-target)/%.java,$(gen-java-file-names))
 gen-class-files := $(patsubst %.java,%.class,$(gen-java-files))
-gen-class-paths := $(patsubst %.java,%.class,$(gen-java-paths))
 
 gen-jar-file := qoccido.jar
 gen-jar-path := $(gen-target)/$(gen-jar-file)
@@ -34,7 +33,7 @@ program := $(targetdir)/a.out
 
 javacmd += java
 # Big enough thread stack size to avoid https://github.com/quarkuscc/qcc/issues/262
-javacmd += -Xss2m
+javacmd += -Xss4m
 javadebugcmd += $(javacmd)
 javadebugcmd += -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:4004
 
@@ -60,13 +59,13 @@ run-classpath:
 $(program): $(gen-jar-path) run-classpath
 > $(call run,$(javacmd))
 
-$(gen-jar-path): $(gen-class-paths)
-> cd $(gen-target) && jar cvfe $(gen-jar-file) $(gen-main-name) $(gen-class-files)
+$(gen-jar-path): $(gen-class-files)
+> cd $(gen-target) && jar cvfe $(gen-jar-file) $(gen-main-name) $(notdir $(gen-class-files))
 
-$(gen-class-paths): $(gen-java-paths) $(qcc-jar-api)
+$(gen-class-files): $(gen-java-files) $(qcc-jar-api)
 > javac -d $(gen-target) -classpath $(gen-target):$(compile-classpath) $<
 
-$(gen-java-paths): $(gen-sources)
+$(gen-java-files): $(gen-sources)
 > mvn compile exec:java -Dexec.mainClass=qoccinero.Qoccinero
 
 runjar: $(gen-jar-path)

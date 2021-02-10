@@ -78,12 +78,12 @@ public class Qoccinero implements AutoCloseable
     {
         return value ->
         {
-            String valueLiteral = receta.toLiteral.apply(value);
+            // TODO: why not just have Receta offer Function<MethodSpec.Builder, CodeBlock> ?
             mainMethod.addCode(
                 "putchar($Ll == $L($L) ? '.' : 'F'); // $L\n"
                 , receta.function.apply(value)
                 , receta.name
-                , valueLiteral
+                , receta.toLiteral.apply(value)
                 , receta.comment.apply(value)
             );
 
@@ -123,6 +123,7 @@ public class Qoccinero implements AutoCloseable
         try(Qoccinero qoccinero = new Qoccinero())
         {
             qoccinero.unary(Recetas.Double_doubleToRawLongBits);
+            qoccinero.unary(Recetas.Float_floatToRawIntBits);
         }
     }
 }
