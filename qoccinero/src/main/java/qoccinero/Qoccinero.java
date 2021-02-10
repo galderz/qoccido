@@ -44,9 +44,9 @@ public class Qoccinero implements AutoCloseable
             .returns(void.class);
 
         AtomicInteger index = new AtomicInteger();
-        receta.arbitrary.get().sampleStream().limit(1000)
+        receta.arbitrary.sampleStream().limit(1000)
             .forEach(acceptUnary(receta, mainMethod, index));
-        receta.arbitrary.get().edgeCases().suppliers().stream()
+        receta.arbitrary.edgeCases().suppliers().stream()
             .map(Supplier::get)
             .map(Shrinkable::value)
             .forEach(acceptUnary(receta, mainMethod, index));
@@ -84,9 +84,8 @@ public class Qoccinero implements AutoCloseable
     {
         return value ->
         {
-            // TODO: why not just have Receta offer Function<MethodSpec.Builder, CodeBlock> ?
             mainMethod.addCode(
-                "putchar($Ll == $L($L) ? '.' : 'F'); // $L\n"
+                "putchar($LL == $L($L) ? '.' : 'F'); // $L\n"
                 , receta.function.apply(value)
                 , receta.name
                 , receta.toLiteral.apply(value)

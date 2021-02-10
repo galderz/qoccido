@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 final class Recetas
 {
     static final Receta<Double, Long> Double_doubleToRawLongBits = new Receta<>(
-        Recetas::doubles
+        Recetas.doubles()
         , Recetas::doubleLiteral
         , Double::doubleToRawLongBits
         , Recetas::prettyHexDoubleToRawLongBits
@@ -19,7 +19,7 @@ final class Recetas
     );
 
     static final Receta<Float, Integer> Float_floatToRawIntBits = new Receta<>(
-        Recetas::floats
+        Recetas.floats()
         , Recetas::floatLiteral
         , Float::floatToRawIntBits
         , Recetas::prettyHexFloatToRawIntBits
