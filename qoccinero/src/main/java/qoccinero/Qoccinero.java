@@ -44,9 +44,9 @@ public class Qoccinero implements AutoCloseable
             .returns(void.class);
 
         AtomicInteger index = new AtomicInteger();
-        receta.arbitrary.sampleStream().limit(1000)
+        receta.paramType.arbitrary().sampleStream().limit(1000)
             .forEach(acceptUnary(receta, mainMethod, index));
-        receta.arbitrary.edgeCases().suppliers().stream()
+        receta.paramType.arbitrary().edgeCases().suppliers().stream()
             .map(Supplier::get)
             .map(Shrinkable::value)
             .forEach(acceptUnary(receta, mainMethod, index));
@@ -88,8 +88,8 @@ public class Qoccinero implements AutoCloseable
                 "putchar($LL == $L($L) ? '.' : 'F'); // $L\n"
                 , receta.function.apply(value)
                 , receta.name
-                , receta.toLiteral.apply(value)
-                , receta.comment.apply(value)
+                , receta.paramType.asLiteral(value)
+                , receta.paramType.asReadable(value)
             );
 
             if (index.incrementAndGet() % 80 == 0)

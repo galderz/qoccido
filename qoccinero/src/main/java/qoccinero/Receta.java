@@ -1,25 +1,29 @@
 package qoccinero;
 
-import net.jqwik.api.Arbitrary;
-
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 final class Receta<T, R>
 {
-    final Arbitrary<T> arbitrary;
-    final Function<T, String> toLiteral;
+//    final Arbitrary<T> arbitrary;
+//    final Function<T, String> toLiteral;
     final Function<T, R> function;
-    final Function<T, String> comment;
+//    final Function<T, String> comment;
     final String name;
+    final ParamType<T> paramType;
 
-    Receta(Arbitrary<T> arbitrary, Function<T, String> toLiteral, Function<T, R> function, Function<T, String> comment, String name) {
-        this.arbitrary = arbitrary;
-        this.toLiteral = toLiteral;
+    Receta(Function<T, R> function, String name, ParamType<T> paramType) {
         this.function = function;
-        this.comment = comment;
         this.name = name;
+        this.paramType = paramType;
     }
+
+//    Receta(Arbitrary<T> arbitrary, Function<T, String> toLiteral, Function<T, R> function, Function<T, String> comment, String name) {
+//        this.arbitrary = arbitrary;
+//        this.toLiteral = toLiteral;
+//        this.function = function;
+//        this.comment = comment;
+//        this.name = name;
+//    }
 
     String className()
     {
