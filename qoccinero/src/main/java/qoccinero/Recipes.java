@@ -10,6 +10,12 @@ final class Recetas
         , ParamType.doubleType()
     );
 
+    static final Receta<Double, Long> Double_doubleToLongBits = new Receta<>(
+        Double::doubleToLongBits
+        , "Double.doubleToLongBits"
+        , ParamType.doubleType()
+    );
+
     static final Receta<Float, Integer> Float_floatToRawIntBits = new Receta<>(
         Float::floatToRawIntBits
         , "Float.floatToRawIntBits"
