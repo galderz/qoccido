@@ -3,6 +3,7 @@ package qoccinero;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -10,18 +11,28 @@ interface ParamType<T>
 {
     Arbitrary<T> arbitrary();
 
-    String asLiteral(T value);
+    Function<T, String> toLiteral();
 
-    String asReadable(T value);
+    String toHex(T value);
 
     static ParamType<Double> doubleType()
     {
         return new DoubleType();
     }
 
+    static ParamType<Integer> integerType()
+    {
+        return new IntegerType();
+    }
+
     static ParamType<Float> floatType()
     {
         return new FloatType();
+    }
+
+    static ParamType<Long> longType()
+    {
+        return new LongType();
     }
 
     final class DoubleType implements ParamType<Double>
@@ -50,22 +61,25 @@ interface ParamType<T>
         }
 
         @Override
-        public String asLiteral(Double value)
+        public Function<Double, String> toLiteral()
         {
-            if (Double.isNaN(value))
-                return "Double.NaN";
+            return value ->
+            {
+                if (Double.isNaN(value))
+                    return "Double.NaN";
 
-            if (Double.POSITIVE_INFINITY == value)
-                return "Double.POSITIVE_INFINITY";
+                if (Double.POSITIVE_INFINITY == value)
+                    return "Double.POSITIVE_INFINITY";
 
-            if (Double.NEGATIVE_INFINITY == value)
-                return "Double.NEGATIVE_INFINITY";
+                if (Double.NEGATIVE_INFINITY == value)
+                    return "Double.NEGATIVE_INFINITY";
 
-            return Double.toString(value);
+                return Double.toString(value);
+            };
         }
 
         @Override
-        public String asReadable(Double value)
+        public String toHex(Double value)
         {
             return prettyHex(Double.doubleToRawLongBits(value));
         }
@@ -97,27 +111,80 @@ interface ParamType<T>
         }
 
         @Override
-        public String asLiteral(Float value)
+        public Function<Float, String> toLiteral()
         {
-            if (Float.isNaN(value))
-                return "Float.NaN";
+            return value ->
+            {
+                if (Float.isNaN(value))
+                    return "Float.NaN";
 
-            if (Float.POSITIVE_INFINITY == value)
-                return "Float.POSITIVE_INFINITY";
+                if (Float.POSITIVE_INFINITY == value)
+                    return "Float.POSITIVE_INFINITY";
 
-            if (Float.NEGATIVE_INFINITY == value)
-                return "Float.NEGATIVE_INFINITY";
+                if (Float.NEGATIVE_INFINITY == value)
+                    return "Float.NEGATIVE_INFINITY";
 
-            return String.format("%sf", value);
+                return String.format("%sf", value);
+            };
         }
 
         @Override
-        public String asReadable(Float value)
+        public String toHex(Float value)
         {
             return prettyHex(Float.floatToRawIntBits(value));
         }
-
     }
+
+    final class IntegerType implements ParamType<Integer>
+    {
+        // TODO double check edge cases
+        private final Arbitrary<Integer> arbitrary =
+            Arbitraries.integers();
+
+        @Override
+        public Arbitrary<Integer> arbitrary()
+        {
+            return arbitrary;
+        }
+
+        @Override
+        public Function<Integer, String> toLiteral()
+        {
+            return String::valueOf;
+        }
+
+        @Override
+        public String toHex(Integer value)
+        {
+            return prettyHex(value);
+        }
+    }
+
+    final class LongType implements ParamType<Long>
+    {
+        // TODO double check edge cases
+        private final Arbitrary<Long> arbitrary =
+            Arbitraries.longs();
+
+        @Override
+        public Arbitrary<Long> arbitrary()
+        {
+            return arbitrary;
+        }
+
+        @Override
+        public Function<Long, String> toLiteral()
+        {
+            return value -> String.format("%sL", value);
+        }
+
+        @Override
+        public String toHex(Long value)
+        {
+            return prettyHex(value);
+        }
+    }
+    
     private static String prettyHex(long l)
     {
         final var hex = Long.toHexString(l).toUpperCase();

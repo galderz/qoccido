@@ -34,9 +34,9 @@ public class Qoccinero implements AutoCloseable
             .returns(int.class);
     }
 
-    <T, R> void unary(Receta<T, R> receta)
+    <T> void unary(Recipe<T> recipe)
     {
-        TypeSpec.Builder type = TypeSpec.classBuilder(receta.className())
+        TypeSpec.Builder type = TypeSpec.classBuilder(recipe.name)
             .addModifiers(Modifier.PUBLIC, Modifier.FINAL);
 
         MethodSpec.Builder mainMethod = MethodSpec.methodBuilder("main")
@@ -44,12 +44,12 @@ public class Qoccinero implements AutoCloseable
             .returns(void.class);
 
         AtomicInteger index = new AtomicInteger();
-        receta.paramType.arbitrary().sampleStream().limit(1000)
-            .forEach(acceptUnary(receta, mainMethod, index));
-        receta.paramType.arbitrary().edgeCases().suppliers().stream()
+        recipe.paramType.arbitrary().sampleStream().limit(1000)
+            .forEach(acceptUnary(recipe, mainMethod, index));
+        recipe.paramType.arbitrary().edgeCases().suppliers().stream()
             .map(Supplier::get)
             .map(Shrinkable::value)
-            .forEach(acceptUnary(receta, mainMethod, index));
+            .forEach(acceptUnary(recipe, mainMethod, index));
 
         mainMethod.addStatement("putchar('\\n')");
 
@@ -77,19 +77,18 @@ public class Qoccinero implements AutoCloseable
             throw new UncheckedIOException(e);
         }
 
-        nativeMain.addStatement(CodeBlock.of("$L.main()", receta.className()));
+        nativeMain.addStatement(CodeBlock.of("$L.main()", recipe.name));
     }
 
-    private static <T, R> Consumer<T> acceptUnary(Receta<T, R> receta, MethodSpec.Builder mainMethod, AtomicInteger index)
+    private static <T> Consumer<T> acceptUnary(Recipe<T> recipe, MethodSpec.Builder mainMethod, AtomicInteger index)
     {
         return value ->
         {
             mainMethod.addCode(
-                "putchar($LL == $L($L) ? '.' : 'F'); // $L\n"
-                , receta.function.apply(value)
-                , receta.name
-                , receta.paramType.asLiteral(value)
-                , receta.paramType.asReadable(value)
+                "putchar($L == $L ? '.' : 'F'); // $L\n"
+                , recipe.expected.apply(value)
+                , recipe.function.apply(value)
+                , recipe.paramType.toHex(value)
             );
 
             if (index.incrementAndGet() % 80 == 0)
@@ -127,8 +126,10 @@ public class Qoccinero implements AutoCloseable
     {
         try(Qoccinero qoccinero = new Qoccinero())
         {
-            qoccinero.unary(Recetas.Double_doubleToRawLongBits);
-            qoccinero.unary(Recetas.Float_floatToRawIntBits);
+            qoccinero.unary(Recipes.Double_doubleToRawLongBits);
+            qoccinero.unary(Recipes.Double_longBitsToDouble);
+            qoccinero.unary(Recipes.Float_floatToRawIntBits);
+            // qoccinero.unary(Recetas.Double_doubleToLongBits);
         }
     }
 }

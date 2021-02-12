@@ -19,6 +19,8 @@ gen-target := target/generated-sources
 gen-main-name := Qoccido
 gen-java-file-names += $(gen-main-name)
 gen-java-file-names += Double_doubleToRawLongBits
+# gen-java-file-names += Double_doubleToLongBits
+gen-java-file-names += Double_longBitsToDouble
 gen-java-file-names += Float_floatToRawIntBits
 gen-java-files := $(patsubst %,$(gen-target)/%.java,$(gen-java-file-names))
 gen-class-files := $(patsubst %.java,%.class,$(gen-java-files))
@@ -33,7 +35,7 @@ program := $(targetdir)/a.out
 
 javacmd += java
 # Big enough thread stack size to avoid https://github.com/quarkuscc/qcc/issues/262
-javacmd += -Xss4m
+javacmd += -Xss8m
 javadebugcmd += $(javacmd)
 javadebugcmd += -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:4004
 
