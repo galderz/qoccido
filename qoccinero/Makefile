@@ -22,6 +22,7 @@ gen-java-file-names += Double_doubleToRawLongBits
 # gen-java-file-names += Double_doubleToLongBits
 gen-java-file-names += Double_longBitsToDouble
 gen-java-file-names += Float_floatToRawIntBits
+gen-java-file-names += Float_intBitsToFloat
 gen-java-files := $(patsubst %,$(gen-target)/%.java,$(gen-java-file-names))
 gen-class-files := $(patsubst %.java,%.class,$(gen-java-files))
 

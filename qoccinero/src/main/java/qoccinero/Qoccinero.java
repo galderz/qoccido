@@ -126,10 +126,11 @@ public class Qoccinero implements AutoCloseable
     {
         try(Qoccinero qoccinero = new Qoccinero())
         {
+            // qoccinero.unary(Recetas.Double_doubleToLongBits);
             qoccinero.unary(Recipes.Double_doubleToRawLongBits);
             qoccinero.unary(Recipes.Double_longBitsToDouble);
             qoccinero.unary(Recipes.Float_floatToRawIntBits);
-            // qoccinero.unary(Recetas.Double_doubleToLongBits);
+            qoccinero.unary(Recipes.Float_intBitsToFloat);
         }
     }
 }

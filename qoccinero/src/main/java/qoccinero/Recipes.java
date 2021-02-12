@@ -34,4 +34,10 @@ final class Recipes
         , ParamType.floatType()
     );
 
+    static final Recipe<Integer> Float_intBitsToFloat = new Recipe<>(
+        "Float_intBitsToFloat"
+        , ParamType.integerType().toLiteral()
+        , v -> String.format("Float.floatToRawIntBits(Float.intBitsToFloat(%s))", ParamType.integerType().toLiteral().apply(v))
+        , ParamType.integerType()
+    );
 }
