@@ -10,6 +10,7 @@ ifeq ($(origin .RECIPEPREFIX), undefined)
 endif
 .RECIPEPREFIX = >
 
+MVN_JAVA_HOME := /opt/java-java
 QCC_HOME := /opt/qcc-qcc
 
 gen-sources := $(shell find src/ -type f -name '*.java')
@@ -40,6 +41,9 @@ javacmd += -Xss8m
 javadebugcmd += $(javacmd)
 javadebugcmd += -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:4004
 
+mvncmd += JAVA_HOME=$(MVN_JAVA_HOME)
+mvncmd += mvn
+
 qcc-jar-api := $(QCC_HOME)/runtime/api/target/qcc-runtime-api-1.0.0-SNAPSHOT.jar
 qcc-jar-main := $(QCC_HOME)/main/target/qcc-main-1.0.0-SNAPSHOT.jar
 qcc-jar-unwind := $(QCC_HOME)/runtime/unwind/target/qcc-runtime-unwind-1.0.0-SNAPSHOT.jar
@@ -69,16 +73,16 @@ $(gen-class-files): $(gen-java-files) $(qcc-jar-api)
 > javac -d $(gen-target) -classpath $(gen-target):$(compile-classpath) $<
 
 $(gen-java-files): $(gen-sources)
-> mvn compile exec:java -Dexec.mainClass=qoccinero.Qoccinero
+> $(mvncmd) compile exec:java -Dexec.mainClass=qoccinero.Qoccinero
 
 runjar: $(gen-jar-path)
 > java -jar $<
 .PHONY: run-jar
 
 clean:
-> mvn clean
+> $(mvncmd) clean
 > rm -drf $(targetdir)
-> cd $(QCC_HOME) && mvn clean
+> cd $(QCC_HOME) && $(mvncmd) clean
 .PHONY: clean
 
 debug: run-classpath
@@ -87,8 +91,8 @@ debug: run-classpath
 
 $(qcc-jar-api): $(qcc-sources)
 > cd $(QCC_HOME)
-> mvn -DskipTests=true install
-> mvn dependency:copy-dependencies -DoutputDirectory=target/libs
+> $(mvncmd) -DskipTests=true install
+> $(mvncmd) dependency:copy-dependencies -DoutputDirectory=target/libs
 
 define run
 $(1) \

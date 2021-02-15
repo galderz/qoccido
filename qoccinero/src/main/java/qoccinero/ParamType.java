@@ -2,14 +2,16 @@ package qoccinero;
 
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
+import net.jqwik.api.Shrinkable;
 
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-interface ParamType<T>
+sealed interface ParamType<T>
 {
-    Arbitrary<T> arbitrary();
+    Stream<T> values();
 
     Function<T, String> toLiteral();
 
@@ -55,9 +57,9 @@ interface ParamType<T>
                 );
 
         @Override
-        public Arbitrary<Double> arbitrary()
+        public Stream<Double> values()
         {
-            return arbitrary;
+            return ParamType.values(arbitrary);
         }
 
         @Override
@@ -105,9 +107,9 @@ interface ParamType<T>
                 );
 
         @Override
-        public Arbitrary<Float> arbitrary()
+        public Stream<Float> values()
         {
-            return arbitrary;
+            return ParamType.values(arbitrary);
         }
 
         @Override
@@ -142,9 +144,9 @@ interface ParamType<T>
             Arbitraries.integers();
 
         @Override
-        public Arbitrary<Integer> arbitrary()
+        public Stream<Integer> values()
         {
-            return arbitrary;
+            return ParamType.values(arbitrary);
         }
 
         @Override
@@ -167,9 +169,9 @@ interface ParamType<T>
             Arbitraries.longs();
 
         @Override
-        public Arbitrary<Long> arbitrary()
+        public Stream<Long> values()
         {
-            return arbitrary;
+            return ParamType.values(arbitrary);
         }
 
         @Override
@@ -203,5 +205,15 @@ interface ParamType<T>
         return Stream
             .of(paddedHex.split("(?<=\\G.{4})"))
             .collect(Collectors.joining("_", "0x", "L"));
+    }
+
+    private static <T> Stream<T> values(Arbitrary<T> arbitrary)
+    {
+        return Stream.concat(
+            arbitrary.sampleStream().limit(1000)
+            , arbitrary.edgeCases().suppliers().stream()
+                .map(Supplier::get)
+                .map(Shrinkable::value)
+        );
     }
 }

@@ -5,15 +5,15 @@ import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
-import net.jqwik.api.Shrinkable;
 
 import javax.lang.model.element.Modifier;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Path;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Collection;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class Qoccinero implements AutoCloseable
 {
@@ -34,24 +34,21 @@ public class Qoccinero implements AutoCloseable
             .returns(int.class);
     }
 
-    <T> void unary(Recipe<T> recipe)
+    <T> void unary(Recipe.Unary<T> recipe)
     {
-        TypeSpec.Builder type = TypeSpec.classBuilder(recipe.name)
+        cook(recipe.name(), unaryMain(recipe));
+    }
+
+    void cook(String recipeName, Consumer<MethodSpec.Builder> mainConsumer)
+    {
+        TypeSpec.Builder type = TypeSpec.classBuilder(recipeName)
             .addModifiers(Modifier.PUBLIC, Modifier.FINAL);
 
         MethodSpec.Builder mainMethod = MethodSpec.methodBuilder("main")
             .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
             .returns(void.class);
 
-        AtomicInteger index = new AtomicInteger();
-        recipe.paramType.arbitrary().sampleStream().limit(1000)
-            .forEach(acceptUnary(recipe, mainMethod, index));
-        recipe.paramType.arbitrary().edgeCases().suppliers().stream()
-            .map(Supplier::get)
-            .map(Shrinkable::value)
-            .forEach(acceptUnary(recipe, mainMethod, index));
-
-        mainMethod.addStatement("putchar('\\n')");
+        mainConsumer.accept(mainMethod);
 
         final var putchar = MethodSpec.methodBuilder("putchar")
             .addAnnotation(ClassName.get("cc.quarkus.qcc.runtime.CNative", "extern"))
@@ -77,24 +74,43 @@ public class Qoccinero implements AutoCloseable
             throw new UncheckedIOException(e);
         }
 
-        nativeMain.addStatement(CodeBlock.of("$L.main()", recipe.name));
+        nativeMain.addStatement(CodeBlock.of("$L.main()", recipeName));
     }
 
-    private static <T> Consumer<T> acceptUnary(Recipe<T> recipe, MethodSpec.Builder mainMethod, AtomicInteger index)
+    private static <T> Consumer<MethodSpec.Builder> unaryMain(Recipe.Unary<T> recipe)
+    {
+        return method ->
+        {
+            Streams.batched(recipe.paramType().values(), 80).stream()
+                .map(batch ->
+                    batch.stream()
+                        .map(toCode(recipe))
+                        .collect(Collectors.collectingAndThen(
+                            Collectors.toList()
+                            , Qoccinero::appendLineEnd
+                        ))
+                )
+                .flatMap(Collection::stream)
+                .forEach(method::addCode);
+        };
+    }
+
+    private static Collection<CodeBlock> appendLineEnd(Collection<CodeBlock> codeBlocks)
+    {
+        codeBlocks.add(CodeBlock.of("putchar('\\n');"));
+        return codeBlocks;
+    }
+
+    private static <T> Function<T, CodeBlock> toCode(Recipe.Unary<T> recipe)
     {
         return value ->
         {
-            mainMethod.addCode(
+            return CodeBlock.of(
                 "putchar($L == $L ? '.' : 'F'); // $L\n"
-                , recipe.expected.apply(value)
-                , recipe.function.apply(value)
-                , recipe.paramType.toHex(value)
+                , recipe.expected().apply(value)
+                , recipe.function().apply(value)
+                , recipe.paramType().toHex(value)
             );
-
-            if (index.incrementAndGet() % 80 == 0)
-            {
-                mainMethod.addStatement("putchar('\\n')");
-            }
         };
     }
 
@@ -131,6 +147,7 @@ public class Qoccinero implements AutoCloseable
             qoccinero.unary(Recipes.Double_longBitsToDouble);
             qoccinero.unary(Recipes.Float_floatToRawIntBits);
             qoccinero.unary(Recipes.Float_intBitsToFloat);
+
         }
     }
 }
