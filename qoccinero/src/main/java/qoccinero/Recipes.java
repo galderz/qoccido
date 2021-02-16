@@ -50,7 +50,7 @@ final class Recipes
             , ParamType.longType().toLiteral().apply(by)
         )
         , ParamType.longType()
-        , ParamType.longType()
+        , ParamType.longType(v -> v != 0)
     );
 
     private static BiFunction<Long, Long, Long> longDivideUnsigned()

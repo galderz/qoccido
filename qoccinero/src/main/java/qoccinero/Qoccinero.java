@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Path;
 import java.util.Collection;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -37,6 +38,11 @@ public class Qoccinero implements AutoCloseable
     <T> void unary(Recipe.Unary<T> recipe)
     {
         cook(recipe.name(), unaryMain(recipe));
+    }
+
+    <T, U> void binary(Recipe.Binary<T, U> recipe)
+    {
+        cook(recipe.name(), binaryMain(recipe));
     }
 
     void cook(String recipeName, Consumer<MethodSpec.Builder> mainConsumer)
@@ -81,7 +87,25 @@ public class Qoccinero implements AutoCloseable
     {
         return method ->
         {
-            Streams.batched(recipe.paramType().values(), 80).stream()
+            Streams.batched(ParamType.values(recipe.paramType().arbitrary()), 80).stream()
+                .map(batch ->
+                    batch.stream()
+                        .map(toCode(recipe))
+                        .collect(Collectors.collectingAndThen(
+                            Collectors.toList()
+                            , Qoccinero::appendLineEnd
+                        ))
+                )
+                .flatMap(Collection::stream)
+                .forEach(method::addCode);
+        };
+    }
+
+    private <U, T> Consumer<MethodSpec.Builder> binaryMain(Recipe.Binary<T, U> recipe)
+    {
+        return method ->
+        {
+            Streams.batched(ParamType.values(recipe.firstType().arbitrary(), recipe.secondType().arbitrary()), 80).stream()
                 .map(batch ->
                     batch.stream()
                         .map(toCode(recipe))
@@ -104,14 +128,24 @@ public class Qoccinero implements AutoCloseable
     private static <T> Function<T, CodeBlock> toCode(Recipe.Unary<T> recipe)
     {
         return value ->
-        {
-            return CodeBlock.of(
+            CodeBlock.of(
                 "putchar($L == $L ? '.' : 'F'); // $L\n"
                 , recipe.expected().apply(value)
                 , recipe.function().apply(value)
                 , recipe.paramType().toHex(value)
             );
-        };
+    }
+
+    private static <T, U> Function<Map.Entry<T, U>, CodeBlock> toCode(Recipe.Binary<T, U> recipe)
+    {
+        return entry ->
+            CodeBlock.of(
+                "putchar($L == $L ? '.' : 'F'); // $L:$L\n"
+                , recipe.expected().apply(entry.getKey(), entry.getValue())
+                , recipe.function().apply(entry.getKey(), entry.getValue())
+                , recipe.firstType().toHex(entry.getKey())
+                , recipe.secondType().toHex(entry.getValue())
+            );
     }
 
     private MethodSpec javaMain()
@@ -147,7 +181,7 @@ public class Qoccinero implements AutoCloseable
             qoccinero.unary(Recipes.Double_longBitsToDouble);
             qoccinero.unary(Recipes.Float_floatToRawIntBits);
             qoccinero.unary(Recipes.Float_intBitsToFloat);
-
+            qoccinero.binary(Recipes.Long_divideUnsigned);
         }
     }
 }

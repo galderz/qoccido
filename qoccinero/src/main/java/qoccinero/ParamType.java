@@ -4,14 +4,16 @@ import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Shrinkable;
 
+import java.util.Map;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 sealed interface ParamType<T>
 {
-    Stream<T> values();
+    Arbitrary<T> arbitrary();
 
     Function<T, String> toLiteral();
 
@@ -34,7 +36,12 @@ sealed interface ParamType<T>
 
     static ParamType<Long> longType()
     {
-        return new LongType();
+        return new LongType(Arbitraries.longs());
+    }
+
+    static ParamType<Long> longType(Predicate<Long> filter)
+    {
+        return new LongType(Arbitraries.longs().filter(filter));
     }
 
     final class DoubleType implements ParamType<Double>
@@ -57,9 +64,9 @@ sealed interface ParamType<T>
                 );
 
         @Override
-        public Stream<Double> values()
+        public Arbitrary<Double> arbitrary()
         {
-            return ParamType.values(arbitrary);
+            return arbitrary;
         }
 
         @Override
@@ -107,9 +114,9 @@ sealed interface ParamType<T>
                 );
 
         @Override
-        public Stream<Float> values()
+        public Arbitrary<Float> arbitrary()
         {
-            return ParamType.values(arbitrary);
+            return arbitrary;
         }
 
         @Override
@@ -144,9 +151,9 @@ sealed interface ParamType<T>
             Arbitraries.integers();
 
         @Override
-        public Stream<Integer> values()
+        public Arbitrary<Integer> arbitrary()
         {
-            return ParamType.values(arbitrary);
+            return arbitrary;
         }
 
         @Override
@@ -165,13 +172,17 @@ sealed interface ParamType<T>
     final class LongType implements ParamType<Long>
     {
         // TODO double check edge cases
-        private final Arbitrary<Long> arbitrary =
-            Arbitraries.longs();
+        private final Arbitrary<Long> arbitrary;
+
+        public LongType(Arbitrary<Long> arbitrary)
+        {
+            this.arbitrary = arbitrary;
+        }
 
         @Override
-        public Stream<Long> values()
+        public Arbitrary<Long> arbitrary()
         {
-            return ParamType.values(arbitrary);
+            return arbitrary;
         }
 
         @Override
@@ -186,7 +197,22 @@ sealed interface ParamType<T>
             return prettyHex(value);
         }
     }
-    
+
+    static <T> Stream<T> values(Arbitrary<T> arbitrary)
+    {
+        return Stream.concat(
+            arbitrary.sampleStream().limit(1000)
+            , arbitrary.edgeCases().suppliers().stream()
+                .map(Supplier::get)
+                .map(Shrinkable::value)
+        );
+    }
+
+    static <T, U> Stream<Map.Entry<T, U>> values(Arbitrary<T> first, Arbitrary<U> second)
+    {
+        return Arbitraries.entries(first, second).sampleStream().limit(1000);
+    }
+
     private static String prettyHex(long l)
     {
         final var hex = Long.toHexString(l).toUpperCase();
@@ -197,7 +223,7 @@ sealed interface ParamType<T>
             .collect(Collectors.joining("_", "0x", "L"));
     }
 
-    static String prettyHex(int i)
+    private static String prettyHex(int i)
     {
         final var hex = Integer.toHexString(i).toUpperCase();
         final var padding = "0".repeat(8 - hex.length());
@@ -205,15 +231,5 @@ sealed interface ParamType<T>
         return Stream
             .of(paddedHex.split("(?<=\\G.{4})"))
             .collect(Collectors.joining("_", "0x", "L"));
-    }
-
-    private static <T> Stream<T> values(Arbitrary<T> arbitrary)
-    {
-        return Stream.concat(
-            arbitrary.sampleStream().limit(1000)
-            , arbitrary.edgeCases().suppliers().stream()
-                .map(Supplier::get)
-                .map(Shrinkable::value)
-        );
     }
 }
