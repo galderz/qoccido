@@ -49,7 +49,7 @@ run: $(program)
 $(program): $(gen-jar-path)
 > $(call run,$(javacmd))
 
-example.jar: $(classfiles)
+$(gen-jar-path): $(classfiles)
 > jar cvfe $@ example $^
 
 %.class: %.java $(qcc-jar-api)
