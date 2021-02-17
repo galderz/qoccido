@@ -10,74 +10,81 @@ ifeq ($(origin .RECIPEPREFIX), undefined)
 endif
 .RECIPEPREFIX = >
 
-QCC_HOME := $(HOME)/1/qcc-qcc
+QCC_HOME := /opt/qcc-qcc
 
-currentdir = $(notdir $(shell pwd))
-targetdir = /tmp/qoccido/$(currentdir)
-bitcode = output.ll
-bitcodepath = $(targetdir)/example/Example/$(bitcode)
-program = $(targetdir)/a.out
-javafiles := example/Example.java
+gen-main-name := example.Example
+gen-jar-path := example.jar
+
+currentdir := $(notdir $(shell pwd))
+targetdir := /tmp/qoccido/$(currentdir)
+bitcode := output.ll
+program := $(targetdir)/a.out
+javafiles := $(shell find . -type f -name '*.java')
 classfiles := $(patsubst %.java,%.class,$(javafiles))
 
-qccrepo := $(HOME)/.m2/repository/cc/quarkus
-compilecp := $(qccrepo)/qcc-runtime-api/1.0.0-SNAPSHOT/qcc-runtime-api-1.0.0-SNAPSHOT.jar
-mainjar := $(qccrepo)/qcc-main/1.0.0-SNAPSHOT/qcc-main-1.0.0-SNAPSHOT.jar
-dependencies = $(shell find $(QCC_HOME)/main/target/libs -type f -name '*.jar')
+javacmd := java
+javadebugcmd += $(javacmd)
+javadebugcmd += -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:4004
+
+qcc-jar-api := $(QCC_HOME)/runtime/api/target/qcc-runtime-api-1.0.0-SNAPSHOT.jar
+qcc-jar-main := $(QCC_HOME)/main/target/qcc-main-1.0.0-SNAPSHOT.jar
+qcc-jar-runtime-unwind := $(QCC_HOME)/runtime/unwind/target/qcc-runtime-unwind-1.0.0-SNAPSHOT.jar
+qcc-jar-runtime-main := $(QCC_HOME)/runtime/main/target/qcc-runtime-main-1.0.0-SNAPSHOT.jar
+qcc-sources := $(shell find $(QCC_HOME)/ -type f -name '*.java')
+qcc-cp-compile := $(qcc-jar-api)
+qcc-boot-jars += $(qcc-cp-compile)
+qcc-boot-jars += $(qcc-jar-runtime-unwind)
+qcc-boot-jars += $(qcc-jar-runtime-main)
 
 noop=
 space = $(noop) $(noop)
-runcp := $(mainjar):$(subst $(space),:,$(dependencies))
-
-debug := -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:4004
 
 run: $(program)
 > $(program)
 .PHONY: run
 
-$(program): example.jar
-> $(call run)
+run-classpath:
+> $(eval dependencies := $(shell find $(QCC_HOME)/main/target/libs -type f -name '*.jar'))
+> $(eval qcc-cp-runtime := $(qcc-jar-main):$(subst $(space),:,$(dependencies)))
+.PHONY: run-classpath
+
+$(program): example.jar run-classpath
+> $(eval qcc-cp-boot := $(subst $(space),:,$(qcc-boot-jars)))
+> $(call run,$(javacmd))
 
 example.jar: $(classfiles)
-> jar cvfe $@ example.Example $^
+> jar cvfe $@ example $^
 
-%.class: %.java
-> javac -d . -classpath $(compilecp) $<
+%.class: %.java $(qcc-jar-api)
+> javac -d . -classpath .:$(qcc-cp-compile) $<
 
 runjar: example.jar
 > java -jar $<
 .PHONY: run-jar
 
 clean:
-> rm -f example/*.class
+> rm -f *.class
 > rm -f *.jar
 > rm -f output.ll
 > rm -drf $(targetdir)
+> cd $(QCC_HOME)
+> mvn clean
 .PHONY: clean
 
-debug:
-> $(call run,$(debug))
+debug: run-classpath
+> $(call run,$(javadebugcmd))
 .PHONY: debug
 
-qcc:
+$(qcc-jar-api): $(qcc-sources)
 > cd $(QCC_HOME)
-> mvn -DskipTests=true clean install
+> mvn -DskipTests=true install
 > mvn dependency:copy-dependencies -DoutputDirectory=target/libs
-.PHONY: qcc
-
-runbc: $(bitcode)
-> lli $(bitcode)
-.PHONY: run-bc
-
-$(bitcode): $(program)
-> cp -f $(bitcodepath) .
 
 define run
-java \
-  $(1) \
-  -classpath $(runcp) \
+$(1) \
+  -classpath $(qcc-cp-runtime) \
   cc.quarkus.qcc.main.Main \
-  --boot-module-path example.jar:/opt/qccrt/qccrt-java.base-11.0.1-SNAPSHOT.jar \
+  --boot-module-path $(gen-jar-path):/opt/qccrt/qccrt-java.base-11.0.1-SNAPSHOT.jar:$(qcc-cp-boot) \
   --output-path $(targetdir) \
-  example.Example
+  $(gen-main-name)
 endef

@@ -10,14 +10,15 @@ ifeq ($(origin .RECIPEPREFIX), undefined)
 endif
 .RECIPEPREFIX = >
 
+gen-main-name := Qoccido
+gen-jar := target/qoccinero.jar
+
 MVN_JAVA_HOME := /opt/java-java
 QCC_HOME := /opt/qcc-qcc
 
 gen-sources := $(shell find src/ -type f -name '*.java')
-gen-jar := target/qoccinero.jar
 gen-target := target/generated-sources
 
-gen-main-name := Qoccido
 gen-java-file-names += $(gen-main-name)
 gen-java-file-names += Double_doubleToRawLongBits
 # gen-java-file-names += Double_doubleToLongBits
@@ -37,7 +38,7 @@ program := $(targetdir)/a.out
 
 javacmd += java
 # Big enough thread stack size to avoid https://github.com/quarkuscc/qcc/issues/262
-javacmd += -Xss8m
+javacmd += -Xss16m
 javadebugcmd += $(javacmd)
 javadebugcmd += -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:4004
 
@@ -46,10 +47,16 @@ mvncmd += mvn
 
 qcc-jar-api := $(QCC_HOME)/runtime/api/target/qcc-runtime-api-1.0.0-SNAPSHOT.jar
 qcc-jar-main := $(QCC_HOME)/main/target/qcc-main-1.0.0-SNAPSHOT.jar
-qcc-jar-unwind := $(QCC_HOME)/runtime/unwind/target/qcc-runtime-unwind-1.0.0-SNAPSHOT.jar
+qcc-jar-runtime-unwind := $(QCC_HOME)/runtime/unwind/target/qcc-runtime-unwind-1.0.0-SNAPSHOT.jar
+qcc-jar-runtime-main := $(QCC_HOME)/runtime/main/target/qcc-runtime-main-1.0.0-SNAPSHOT.jar
 qcc-sources := $(shell find $(QCC_HOME)/ -type f -name '*.java')
-compile-classpath := $(qcc-jar-api)
-boot-classpath := $(compile-classpath):$(qcc-jar-unwind)
+qcc-cp-compile := $(qcc-jar-api)
+qcc-boot-jars += $(qcc-cp-compile)
+qcc-boot-jars += $(qcc-jar-runtime-unwind)
+qcc-boot-jars += $(qcc-jar-runtime-main)
+qcc-cp-boot = $(subst $(space),:,$(qcc-boot-jars))
+qcc-runtime-jars = $(shell find $(QCC_HOME)/main/target/libs -type f -name '*.jar')
+qcc-cp-runtime = $(qcc-jar-main):$(subst $(space),:,$(qcc-runtime-jars))
 
 noop=
 space = $(noop) $(noop)
@@ -58,19 +65,14 @@ run: $(program)
 > $(program)
 .PHONY: run
 
-run-classpath:
-> $(eval dependencies := $(shell find $(QCC_HOME)/main/target/libs -type f -name '*.jar'))
-> $(eval runcp := $(qcc-jar-main):$(subst $(space),:,$(dependencies)))
-.PHONY: run-classpath
-
-$(program): $(gen-jar-path) run-classpath
+$(program): $(gen-jar-path)
 > $(call run,$(javacmd))
 
 $(gen-jar-path): $(gen-class-files)
 > cd $(gen-target) && jar cvfe $(gen-jar-file) $(gen-main-name) $(notdir $(gen-class-files))
 
 $(gen-class-files): $(gen-java-files) $(qcc-jar-api)
-> javac -d $(gen-target) -classpath $(gen-target):$(compile-classpath) $<
+> javac -d $(gen-target) -classpath $(gen-target):$(qcc-cp-compile) $<
 
 $(gen-java-files): $(gen-sources)
 > $(mvncmd) compile exec:java -Dexec.mainClass=qoccinero.Qoccinero
@@ -85,7 +87,7 @@ clean:
 > cd $(QCC_HOME) && $(mvncmd) clean
 .PHONY: clean
 
-debug: run-classpath
+debug:
 > $(call run,$(javadebugcmd))
 .PHONY: debug
 
@@ -96,9 +98,9 @@ $(qcc-jar-api): $(qcc-sources)
 
 define run
 $(1) \
-  -classpath $(runcp) \
+  -classpath $(qcc-cp-runtime) \
   cc.quarkus.qcc.main.Main \
-  --boot-module-path $(gen-jar-path):/opt/qccrt/qccrt-java.base-11.0.1-SNAPSHOT.jar:$(boot-classpath) \
+  --boot-module-path $(gen-jar-path):/opt/qccrt/qccrt-java.base-11.0.1-SNAPSHOT.jar:$(qcc-cp-boot) \
   --output-path $(targetdir) \
   $(gen-main-name)
 endef
