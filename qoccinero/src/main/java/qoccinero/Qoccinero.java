@@ -172,6 +172,8 @@ public class Qoccinero implements AutoCloseable
             qoccinero.unary(Recipes.Double_longBitsToDouble);
             qoccinero.unary(Recipes.Float_floatToRawIntBits);
             qoccinero.unary(Recipes.Float_intBitsToFloat);
+            qoccinero.binary(Recipes.Integer_divideUnsigned);
+            qoccinero.binary(Recipes.Integer_remainderUnsigned);
             qoccinero.binary(Recipes.Long_divideUnsigned);
             qoccinero.binary(Recipes.Long_remainderUnsigned);
         }

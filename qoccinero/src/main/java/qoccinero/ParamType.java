@@ -26,7 +26,12 @@ sealed interface ParamType<T>
 
     static ParamType<Integer> integerType()
     {
-        return new IntegerType();
+        return new IntegerType(Arbitraries.integers());
+    }
+
+    static ParamType<Integer> integerType(Predicate<Integer> filter)
+    {
+        return new IntegerType(Arbitraries.integers().filter(filter));
     }
 
     static ParamType<Float> floatType()
@@ -147,8 +152,12 @@ sealed interface ParamType<T>
     final class IntegerType implements ParamType<Integer>
     {
         // TODO double check edge cases
-        private final Arbitrary<Integer> arbitrary =
-            Arbitraries.integers();
+        private final Arbitrary<Integer> arbitrary;
+
+        public IntegerType(Arbitrary<Integer> arbitrary)
+        {
+            this.arbitrary = arbitrary;
+        }
 
         @Override
         public Arbitrary<Integer> arbitrary()

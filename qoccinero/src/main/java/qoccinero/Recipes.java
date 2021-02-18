@@ -41,6 +41,30 @@ final class Recipes
         , ParamType.integerType()
     );
 
+    static final Recipe.Binary<Integer, Integer> Integer_divideUnsigned = new Recipe.Binary<>(
+        "java_lang_Integer_divideUnsigned"
+        , integerDivideUnsigned().andThen(ParamType.integerType().toLiteral())
+        , (div, by) -> String.format(
+            "Integer.divideUnsigned(%s, %s)"
+            , ParamType.integerType().toLiteral().apply(div)
+            , ParamType.integerType().toLiteral().apply(by)
+        )
+        , ParamType.integerType()
+        , ParamType.integerType(v -> v != 0)
+    );
+
+    static final Recipe.Binary<Integer, Integer> Integer_remainderUnsigned = new Recipe.Binary<>(
+        "java_lang_Integer_remainderUnsigned"
+        , integerRemainderUnsigned().andThen(ParamType.integerType().toLiteral())
+        , (div, by) -> String.format(
+            "Integer.remainderUnsigned(%s, %s)"
+            , ParamType.integerType().toLiteral().apply(div)
+            , ParamType.integerType().toLiteral().apply(by)
+        )
+        , ParamType.integerType()
+        , ParamType.integerType(v -> v != 0)
+    );
+
     static final Recipe.Binary<Long, Long> Long_divideUnsigned = new Recipe.Binary<>(
         "java_lang_Long_divideUnsigned"
         , longDivideUnsigned().andThen(ParamType.longType().toLiteral())
@@ -64,6 +88,16 @@ final class Recipes
         , ParamType.longType()
         , ParamType.longType(v -> v != 0)
     );
+
+    private static BiFunction<Integer, Integer, Integer> integerDivideUnsigned()
+    {
+        return Integer::divideUnsigned;
+    }
+
+    private static BiFunction<Integer, Integer, Integer> integerRemainderUnsigned()
+    {
+        return Integer::remainderUnsigned;
+    }
 
     private static BiFunction<Long, Long, Long> longDivideUnsigned()
     {
