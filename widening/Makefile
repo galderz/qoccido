@@ -23,6 +23,8 @@ javafiles := $(shell find . -type f -name '*.java')
 classfiles := $(patsubst %.java,%.class,$(javafiles))
 
 javacmd += java
+# Big enough thread stack size to avoid https://github.com/quarkuscc/qcc/issues/262
+javacmd += -Xss16m
 javadebugcmd += $(javacmd)
 javadebugcmd += -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:4004
 

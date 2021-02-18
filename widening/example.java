@@ -10,7 +10,7 @@ public class example
         UnaryPromotion.main();
         Negate.main();
         BinaryPromotion.main();
-//        Errors.errors();
+        Errors.errors();
         return 0;
     }
 
