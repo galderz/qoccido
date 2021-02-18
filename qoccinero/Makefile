@@ -20,12 +20,6 @@ gen-sources := $(shell find src/ -type f -name '*.java')
 gen-target := target/generated-sources
 
 gen-java-file-names += $(gen-main-name)
-gen-java-file-names += Test_Double_doubleToRawLongBits
-# gen-java-file-names += Double_doubleToLongBits
-gen-java-file-names += Test_Double_longBitsToDouble
-gen-java-file-names += Test_Float_floatToRawIntBits
-gen-java-file-names += Test_Float_intBitsToFloat
-gen-java-file-names += Test_Long_divideUnsigned
 gen-java-files := $(patsubst %,$(gen-target)/%.java,$(gen-java-file-names))
 gen-class-files := $(patsubst %.java,%.class,$(gen-java-files))
 
@@ -75,11 +69,8 @@ $(gen-jar-path): $(gen-class-files)
 $(gen-class-files): $(gen-java-files) $(qcc-jar-api)
 > javac -d $(gen-target) -classpath $(gen-target):$(qcc-cp-compile) $<
 
-target/generated-sources/Qoccido.java: $(gen-sources)
+$(gen-java-files): $(gen-sources)
 > $(mvncmd) compile exec:java -Dexec.mainClass=qoccinero.Qoccinero
-
-target/generated-sources/Test%.java: target/generated-sources/Qoccido.java
-> $(noop)
 
 runjar: $(gen-jar-path)
 > java -jar $<

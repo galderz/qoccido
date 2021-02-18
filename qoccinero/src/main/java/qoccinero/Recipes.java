@@ -7,42 +7,42 @@ import java.util.function.BiFunction;
 final class Recipes
 {
     static final Recipe.Unary<Double> Double_doubleToLongBits = new Recipe.Unary<>(
-        "Double_doubleToLongBits"
+        "java_lang_double_doubleToLongBits"
         , ParamType.longType().toLiteral().compose(Double::doubleToLongBits)
         , v -> String.format("Double.doubleToLongBits(%s)", ParamType.doubleType().toLiteral().apply(v))
         , ParamType.doubleType()
     );
 
     static final Recipe.Unary<Double> Double_doubleToRawLongBits = new Recipe.Unary<>(
-        "Double_doubleToRawLongBits"
+        "java_lang_double_doubleToRawLongBits"
         , ParamType.longType().toLiteral().compose(Double::doubleToRawLongBits)
         , v -> String.format("Double.doubleToRawLongBits(%s)", ParamType.doubleType().toLiteral().apply(v))
         , ParamType.doubleType()
     );
 
     static final Recipe.Unary<Long> Double_longBitsToDouble = new Recipe.Unary<>(
-        "Double_longBitsToDouble"
+        "java_lang_double_longBitsToDouble"
         , ParamType.longType().toLiteral()
         , v -> String.format("Double.doubleToRawLongBits(Double.longBitsToDouble(%s))", ParamType.longType().toLiteral().apply(v))
         , ParamType.longType()
     );
 
     static final Recipe.Unary<Float> Float_floatToRawIntBits = new Recipe.Unary<>(
-        "Float_floatToRawIntBits"
+        "java_lang_float_floatToRawIntBits"
         , ParamType.integerType().toLiteral().compose(Float::floatToRawIntBits)
         , v -> String.format("Float.floatToRawIntBits(%s)", ParamType.floatType().toLiteral().apply(v))
         , ParamType.floatType()
     );
 
     static final Recipe.Unary<Integer> Float_intBitsToFloat = new Recipe.Unary<>(
-        "Float_intBitsToFloat"
+        "java_lang_float_intBitsToFloat"
         , ParamType.integerType().toLiteral()
         , v -> String.format("Float.floatToRawIntBits(Float.intBitsToFloat(%s))", ParamType.integerType().toLiteral().apply(v))
         , ParamType.integerType()
     );
 
     static final Recipe.Binary<Long, Long> Long_divideUnsigned = new Recipe.Binary<>(
-        "Long_divideUnsigned"
+        "java_lang_long_divideUnsigned"
         , longDivideUnsigned().andThen(ParamType.longType().toLiteral())
         , (div, by) -> String.format(
             "Long.divideUnsigned(%s, %s)"

@@ -47,42 +47,15 @@ public class Qoccinero implements AutoCloseable
 
     void cook(String recipeName, Consumer<MethodSpec.Builder> mainConsumer)
     {
-        var typeName = String.format("Test_%s", recipeName);
-
-        TypeSpec.Builder type = TypeSpec.classBuilder(typeName)
-            .addModifiers(Modifier.PUBLIC, Modifier.FINAL);
-
-        MethodSpec.Builder mainMethod = MethodSpec.methodBuilder("main")
+        MethodSpec.Builder recipeMethod = MethodSpec.methodBuilder(recipeName)
             .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
             .returns(void.class);
 
-        mainConsumer.accept(mainMethod);
+        mainConsumer.accept(recipeMethod);
 
-        final var putchar = MethodSpec.methodBuilder("putchar")
-            .addAnnotation(ClassName.get("cc.quarkus.qcc.runtime.CNative", "extern"))
-            .addModifiers(Modifier.STATIC, Modifier.NATIVE)
-            .addParameter(int.class, "arg")
-            .returns(int.class)
-            .build();
+        mainTypeBuilder.addMethod(recipeMethod.build());
 
-        type
-            .addMethod(mainMethod.build())
-            .addMethod(putchar);
-
-        final var javaFile = JavaFile
-            .builder("", type.build())
-            .build();
-
-        try
-        {
-            javaFile.writeTo(Qoccinero.TARGET);
-        }
-        catch (IOException e)
-        {
-            throw new UncheckedIOException(e);
-        }
-
-        nativeMain.addStatement(CodeBlock.of("$L.main()", typeName));
+        nativeMain.addStatement(CodeBlock.of("$L()", recipeName));
     }
 
     private static <T> Consumer<MethodSpec.Builder> unaryMain(Recipe.Unary<T> recipe)
@@ -164,8 +137,16 @@ public class Qoccinero implements AutoCloseable
     {
         nativeMain.addStatement("return 0");
 
+        final var putchar = MethodSpec.methodBuilder("putchar")
+            .addAnnotation(ClassName.get("cc.quarkus.qcc.runtime.CNative", "extern"))
+            .addModifiers(Modifier.STATIC, Modifier.NATIVE)
+            .addParameter(int.class, "arg")
+            .returns(int.class)
+            .build();
+
         final var mainType = this.mainTypeBuilder
             .addMethod(nativeMain.build())
+            .addMethod(putchar)
             .build();
 
         JavaFile javaFile = JavaFile.builder("", mainType)
