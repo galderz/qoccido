@@ -51,6 +51,14 @@ public class Qoccinero implements AutoCloseable
             .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
             .returns(void.class);
 
+        recipeName.chars()
+            .mapToObj(c -> CodeBlock.of("putchar((char) $L); \n", c))
+            .collect(Collectors.collectingAndThen(
+                Collectors.toList()
+                , Qoccinero::appendLineEnd
+            ))
+            .forEach(recipeMethod::addCode);
+
         mainConsumer.accept(recipeMethod);
 
         mainTypeBuilder.addMethod(recipeMethod.build());
