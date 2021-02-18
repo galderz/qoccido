@@ -47,7 +47,9 @@ public class Qoccinero implements AutoCloseable
 
     void cook(String recipeName, Consumer<MethodSpec.Builder> mainConsumer)
     {
-        TypeSpec.Builder type = TypeSpec.classBuilder(recipeName)
+        var typeName = String.format("Test_%s", recipeName);
+
+        TypeSpec.Builder type = TypeSpec.classBuilder(typeName)
             .addModifiers(Modifier.PUBLIC, Modifier.FINAL);
 
         MethodSpec.Builder mainMethod = MethodSpec.methodBuilder("main")
@@ -80,7 +82,7 @@ public class Qoccinero implements AutoCloseable
             throw new UncheckedIOException(e);
         }
 
-        nativeMain.addStatement(CodeBlock.of("$L.main()", recipeName));
+        nativeMain.addStatement(CodeBlock.of("$L.main()", typeName));
     }
 
     private static <T> Consumer<MethodSpec.Builder> unaryMain(Recipe.Unary<T> recipe)
@@ -181,7 +183,7 @@ public class Qoccinero implements AutoCloseable
             qoccinero.unary(Recipes.Double_longBitsToDouble);
             qoccinero.unary(Recipes.Float_floatToRawIntBits);
             qoccinero.unary(Recipes.Float_intBitsToFloat);
-            // qoccinero.binary(Recipes.Long_divideUnsigned);
+            qoccinero.binary(Recipes.Long_divideUnsigned);
         }
     }
 }
