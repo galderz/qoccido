@@ -53,8 +53,25 @@ final class Recipes
         , ParamType.longType(v -> v != 0)
     );
 
+    static final Recipe.Binary<Long, Long> Long_remainderUnsigned = new Recipe.Binary<>(
+        "java_lang_long_remainderUnsigned"
+        , longRemainderUnsigned().andThen(ParamType.longType().toLiteral())
+        , (div, by) -> String.format(
+        "Long.remainderUnsigned(%s, %s)"
+        , ParamType.longType().toLiteral().apply(div)
+        , ParamType.longType().toLiteral().apply(by)
+    )
+        , ParamType.longType()
+        , ParamType.longType(v -> v != 0)
+    );
+
     private static BiFunction<Long, Long, Long> longDivideUnsigned()
     {
         return Long::divideUnsigned;
+    }
+
+    private static BiFunction<Long, Long, Long> longRemainderUnsigned()
+    {
+        return Long::remainderUnsigned;
     }
 }
