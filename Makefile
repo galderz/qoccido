@@ -34,7 +34,7 @@ pull:
 
 define pull
 cd ${1}
-git checkout master
+git checkout main
 git pull
 endef
 
