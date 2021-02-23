@@ -104,7 +104,7 @@ public class Qoccinero implements AutoCloseable
 
     private static Collection<CodeBlock> appendLineEnd(Collection<CodeBlock> codeBlocks)
     {
-        codeBlocks.add(CodeBlock.of("putchar('\\n');"));
+        codeBlocks.add(CodeBlock.of("putchar('\\n'); \n"));
         return codeBlocks;
     }
 
@@ -172,10 +172,15 @@ public class Qoccinero implements AutoCloseable
             qoccinero.unary(Recipes.Double_longBitsToDouble);
             qoccinero.unary(Recipes.Float_floatToRawIntBits);
             qoccinero.unary(Recipes.Float_intBitsToFloat);
+            qoccinero.binary(Recipes.Character_compare);
+            qoccinero.binary(Recipes.Integer_compare);
+            qoccinero.binary(Recipes.Integer_compareUnsigned);
             qoccinero.binary(Recipes.Integer_divideUnsigned);
             qoccinero.binary(Recipes.Integer_remainderUnsigned);
             qoccinero.binary(Recipes.Long_divideUnsigned);
             qoccinero.binary(Recipes.Long_remainderUnsigned);
+            qoccinero.binary(Recipes.Short_compare);
+            qoccinero.binary(Recipes.Short_compareUnsigned);
         }
     }
 }

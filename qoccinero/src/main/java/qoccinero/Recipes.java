@@ -6,6 +6,18 @@ import java.util.function.BiFunction;
 //      validate that the Stream<T> contains all the edge cases
 final class Recipes
 {
+    static final Recipe.Binary<Character, Character> Character_compare = new Recipe.Binary<>(
+        "java_lang_Character_compare"
+        , characterCompare().andThen(ParamType.integerType().toLiteral())
+        , (v1, v2) -> String.format(
+            "Character.compare((char) %s, (char) %s)"
+        , ParamType.characterType().toLiteral().apply(v1)
+            , ParamType.characterType().toLiteral().apply(v2)
+        )
+        , ParamType.characterType()
+        , ParamType.characterType()
+    );
+
     static final Recipe.Unary<Double> Double_doubleToLongBits = new Recipe.Unary<>(
         "java_lang_Double_doubleToLongBits"
         , ParamType.longType().toLiteral().compose(Double::doubleToLongBits)
@@ -38,6 +50,30 @@ final class Recipes
         "java_lang_Float_intBitsToFloat"
         , ParamType.integerType().toLiteral()
         , v -> String.format("Float.floatToRawIntBits(Float.intBitsToFloat(%s))", ParamType.integerType().toLiteral().apply(v))
+        , ParamType.integerType()
+    );
+
+    static final Recipe.Binary<Integer, Integer> Integer_compare = new Recipe.Binary<>(
+        "java_lang_Integer_compare"
+        , integerCompare().andThen(ParamType.integerType().toLiteral())
+        , (v1, v2) -> String.format(
+            "Integer.compare(%s, %s)"
+            , ParamType.integerType().toLiteral().apply(v1)
+            , ParamType.integerType().toLiteral().apply(v2)
+        )
+        , ParamType.integerType()
+        , ParamType.integerType()
+    );
+
+    static final Recipe.Binary<Integer, Integer> Integer_compareUnsigned = new Recipe.Binary<>(
+        "java_lang_Integer_compareUnsigned"
+        , integerCompareUnsigned().andThen(ParamType.integerType().toLiteral())
+        , (v1, v2) -> String.format(
+            "Integer.compareUnsigned(%s, %s)"
+            , ParamType.integerType().toLiteral().apply(v1)
+            , ParamType.integerType().toLiteral().apply(v2)
+        )
+        , ParamType.integerType()
         , ParamType.integerType()
     );
 
@@ -89,6 +125,45 @@ final class Recipes
         , ParamType.longType(v -> v != 0)
     );
 
+    static final Recipe.Binary<Short, Short> Short_compare = new Recipe.Binary<>(
+        "java_lang_Short_compare"
+        , shortCompare().andThen(ParamType.integerType().toLiteral())
+        , (v1, v2) -> String.format(
+            "Short.compare((short) %s, (short) %s)"
+            , ParamType.shortType().toLiteral().apply(v1)
+            , ParamType.shortType().toLiteral().apply(v2)
+        )
+        , ParamType.shortType()
+        , ParamType.shortType()
+    );
+
+    static final Recipe.Binary<Short, Short> Short_compareUnsigned = new Recipe.Binary<>(
+        "java_lang_Short_compareUnsigned"
+        , shortCompareUnsigned().andThen(ParamType.integerType().toLiteral())
+        , (v1, v2) -> String.format(
+            "Short.compareUnsigned((short) %s, (short) %s)"
+            , ParamType.shortType().toLiteral().apply(v1)
+            , ParamType.shortType().toLiteral().apply(v2)
+        )
+        , ParamType.shortType()
+        , ParamType.shortType()
+    );
+
+    private static BiFunction<Character, Character, Integer> characterCompare()
+    {
+        return Character::compare;
+    }
+
+    private static BiFunction<Integer, Integer, Integer> integerCompare()
+    {
+        return Integer::compare;
+    }
+
+    private static BiFunction<Integer, Integer, Integer> integerCompareUnsigned()
+    {
+        return Integer::compareUnsigned;
+    }
+
     private static BiFunction<Integer, Integer, Integer> integerDivideUnsigned()
     {
         return Integer::divideUnsigned;
@@ -107,5 +182,15 @@ final class Recipes
     private static BiFunction<Long, Long, Long> longRemainderUnsigned()
     {
         return Long::remainderUnsigned;
+    }
+
+    private static BiFunction<Short, Short, Integer> shortCompare()
+    {
+        return Short::compare;
+    }
+
+    private static BiFunction<Short, Short, Integer> shortCompareUnsigned()
+    {
+        return Short::compareUnsigned;
     }
 }

@@ -19,6 +19,11 @@ sealed interface ParamType<T>
 
     String toHex(T value);
 
+    static ParamType<Character> characterType()
+    {
+        return new CharacterType(Arbitraries.chars());
+    }
+
     static ParamType<Double> doubleType()
     {
         return new DoubleType();
@@ -47,6 +52,26 @@ sealed interface ParamType<T>
     static ParamType<Long> longType(Predicate<Long> filter)
     {
         return new LongType(Arbitraries.longs().filter(filter));
+    }
+
+    static ParamType<Short> shortType()
+    {
+        return new ShortType(Arbitraries.shorts());
+    }
+
+    final record CharacterType(Arbitrary<Character> arbitrary) implements ParamType<Character>
+    {
+        @Override
+        public Function<Character, String> toLiteral()
+        {
+            return ParamType::prettyHex;
+        }
+
+        @Override
+        public String toHex(Character value)
+        {
+            return prettyHex(value);
+        }
     }
 
     final class DoubleType implements ParamType<Double>
@@ -207,6 +232,21 @@ sealed interface ParamType<T>
         }
     }
 
+    final record ShortType(Arbitrary<Short> arbitrary) implements ParamType<Short>
+    {
+        @Override
+        public Function<Short, String> toLiteral()
+        {
+            return String::valueOf;
+        }
+
+        @Override
+        public String toHex(Short value)
+        {
+            return prettyHex(value);
+        }
+    }
+
     static <T> Stream<T> values(Arbitrary<T> arbitrary)
     {
         return Stream.concat(
@@ -239,6 +279,6 @@ sealed interface ParamType<T>
         final var paddedHex = padding + hex;
         return Stream
             .of(paddedHex.split("(?<=\\G.{4})"))
-            .collect(Collectors.joining("_", "0x", "L"));
+            .collect(Collectors.joining("_", "0x", ""));
     }
 }
