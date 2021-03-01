@@ -3,6 +3,8 @@ package qoccinero;
 import com.squareup.javapoet.MethodSpec;
 import io.vavr.Function2;
 
+import javax.lang.model.element.Modifier;
+
 record BinaryOperator(
     String operator
     , ParamType<?> param1
@@ -20,16 +22,37 @@ record BinaryOperator(
         );
     }
 
-    MethodSpec toMethodSpec()
+    MethodSpec operatorMethodSpec()
     {
-        final var methodName = String.format(
+        return MethodSpec.methodBuilder(operatorMethodName())
+            .addModifiers(Modifier.STATIC)
+            .addParameter(param1.type(), "v1")
+            .addParameter(param2.type(), "v2")
+            .addStatement("return v1 $L v2", operator)
+            // TODO use return type...
+            .returns(boolean.class)
+            .build();
+    }
+
+    MethodSpec forAllMethodSpec()
+    {
+        return MethodSpecs.toMethodSpec2(
+            param1
+            , param2
+            , expected2()
+            , actual2(operatorMethodName())
+            , String.format("forAll_%s", operatorMethodName())
+        );
+    }
+
+    private String operatorMethodName()
+    {
+        return String.format(
             "%s_%s_%s"
             , operatorLiteral()
             , param1.type().getName().replace('.', '_')
             , param2.type().getName().replace('.', '_')
         );
-
-        return MethodSpecs.toMethodSpec2(param1, param2, expected2(), actual2(), methodName);
     }
 
     private <T1, T2> Function2<T1, T2, String> expected2()
@@ -38,13 +61,13 @@ record BinaryOperator(
         return invoke.andThen(ret -> Unchecked.<ParamType<Object>>cast(returns).toLiteral().apply(ret));
     }
 
-    private <T1, T2> Function2<T1, T2, String> actual2()
+    private <T1, T2> Function2<T1, T2, String> actual2(String operatorMethodName)
     {
         return (v1, v2) -> String.format(
-            "%s /* %s */ %s %s /* %s */"
+            "%s(%s /* %s */, %s /* %s */)"
+            , operatorMethodName
             , Unchecked.<ParamType<T1>>cast(param1).toLiteral().apply(v1)
             , Unchecked.<ParamType<T1>>cast(param1).toHex(v1)
-            , operator
             , Unchecked.<ParamType<T2>>cast(param2).toLiteral().apply(v2)
             , Unchecked.<ParamType<T2>>cast(param2).toHex(v2)
         );

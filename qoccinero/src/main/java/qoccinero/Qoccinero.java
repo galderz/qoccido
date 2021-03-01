@@ -7,8 +7,6 @@ import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
 
 import javax.lang.model.element.Modifier;
-import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Map;
@@ -199,8 +197,8 @@ public class Qoccinero implements AutoCloseable
 
             qoccinero.write(
                 TypeRecipe.of("Arithmetic")
-//                    .addStaticMethod(StaticMethodRecipe.of("compare", "Integer"))
-//                    .addStaticMethod(StaticMethodRecipe.of("compare", "Double"))
+                    .addStaticMethod(StaticMethodRecipe.of("compare", "Integer"))
+                    .addStaticMethod(StaticMethodRecipe.of("compare", "Double"))
                     .addBinaryOperator(BinaryOperatorRecipe.of("<", double.class))
             );
         }

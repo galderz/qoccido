@@ -46,11 +46,15 @@ public record Type(
 
         staticMethods()
             .map(StaticMethod::toMethodSpec)
-            .forEach(addMethod(mainMethod, typeBuilder));
+            .forEach(addToMainMethod(mainMethod, typeBuilder));
 
         binaryOperators()
-            .map(BinaryOperator::toMethodSpec)
-            .forEach(addMethod(mainMethod, typeBuilder));
+            .map(BinaryOperator::forAllMethodSpec)
+            .forEach(addToMainMethod(mainMethod, typeBuilder));
+
+        binaryOperators()
+            .map(BinaryOperator::operatorMethodSpec)
+            .forEach(typeBuilder::addMethod);
 
         typeBuilder.addMethod(mainMethod.build());
 
@@ -71,7 +75,7 @@ public record Type(
         return typeSpec;
     }
 
-    private Consumer<MethodSpec> addMethod(MethodSpec.Builder mainMethod, TypeSpec.Builder typeBuilder)
+    private Consumer<MethodSpec> addToMainMethod(MethodSpec.Builder mainMethod, TypeSpec.Builder typeBuilder)
     {
         return methodSpec ->
         {
