@@ -3,14 +3,14 @@ package qoccinero;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-sealed interface Recipe
+sealed interface RecipeOld
 {
     final record Unary<T>(
         String name
         , Function<T, String> expected
         , Function<T, String> function
         , ParamType<T> paramType
-    ) implements Recipe {}
+    ) implements RecipeOld {}
 
     final record Binary<T, U>(
         String name
@@ -18,5 +18,5 @@ sealed interface Recipe
         , BiFunction<T, U, String> function
         , ParamType<T> firstType
         , ParamType<U> secondType
-    ) implements Recipe {}
+    ) implements RecipeOld {}
 }

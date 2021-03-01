@@ -6,7 +6,7 @@ import java.util.function.BiFunction;
 //      validate that the Stream<T> contains all the edge cases
 final class Recipes
 {
-    static final Recipe.Binary<Character, Character> Character_compare = new Recipe.Binary<>(
+    static final RecipeOld.Binary<Character, Character> Character_compare = new RecipeOld.Binary<>(
         "java_lang_Character_compare"
         , characterCompare().andThen(ParamType.integerType().toLiteral())
         , (v1, v2) -> String.format(
@@ -18,42 +18,42 @@ final class Recipes
         , ParamType.characterType()
     );
 
-    static final Recipe.Unary<Double> Double_doubleToLongBits = new Recipe.Unary<>(
+    static final RecipeOld.Unary<Double> Double_doubleToLongBits = new RecipeOld.Unary<>(
         "java_lang_Double_doubleToLongBits"
         , ParamType.longType().toLiteral().compose(Double::doubleToLongBits)
         , v -> String.format("Double.doubleToLongBits(%s)", ParamType.doubleType().toLiteral().apply(v))
         , ParamType.doubleType()
     );
 
-    static final Recipe.Unary<Double> Double_doubleToRawLongBits = new Recipe.Unary<>(
+    static final RecipeOld.Unary<Double> Double_doubleToRawLongBits = new RecipeOld.Unary<>(
         "java_lang_Double_doubleToRawLongBits"
         , ParamType.longType().toLiteral().compose(Double::doubleToRawLongBits)
         , v -> String.format("Double.doubleToRawLongBits(%s)", ParamType.doubleType().toLiteral().apply(v))
         , ParamType.doubleType()
     );
 
-    static final Recipe.Unary<Long> Double_longBitsToDouble = new Recipe.Unary<>(
+    static final RecipeOld.Unary<Long> Double_longBitsToDouble = new RecipeOld.Unary<>(
         "java_lang_Double_longBitsToDouble"
         , ParamType.longType().toLiteral()
         , v -> String.format("Double.doubleToRawLongBits(Double.longBitsToDouble(%s))", ParamType.longType().toLiteral().apply(v))
         , ParamType.longType()
     );
 
-    static final Recipe.Unary<Float> Float_floatToRawIntBits = new Recipe.Unary<>(
+    static final RecipeOld.Unary<Float> Float_floatToRawIntBits = new RecipeOld.Unary<>(
         "java_lang_Float_floatToRawIntBits"
         , ParamType.integerType().toLiteral().compose(Float::floatToRawIntBits)
         , v -> String.format("Float.floatToRawIntBits(%s)", ParamType.floatType().toLiteral().apply(v))
         , ParamType.floatType()
     );
 
-    static final Recipe.Unary<Integer> Float_intBitsToFloat = new Recipe.Unary<>(
+    static final RecipeOld.Unary<Integer> Float_intBitsToFloat = new RecipeOld.Unary<>(
         "java_lang_Float_intBitsToFloat"
         , ParamType.integerType().toLiteral()
         , v -> String.format("Float.floatToRawIntBits(Float.intBitsToFloat(%s))", ParamType.integerType().toLiteral().apply(v))
         , ParamType.integerType()
     );
 
-    static final Recipe.Binary<Integer, Integer> Integer_compare = new Recipe.Binary<>(
+    static final RecipeOld.Binary<Integer, Integer> Integer_compare = new RecipeOld.Binary<>(
         "java_lang_Integer_compare"
         , integerCompare().andThen(ParamType.integerType().toLiteral())
         , (v1, v2) -> String.format(
@@ -65,7 +65,7 @@ final class Recipes
         , ParamType.integerType()
     );
 
-    static final Recipe.Binary<Integer, Integer> Integer_compareUnsigned = new Recipe.Binary<>(
+    static final RecipeOld.Binary<Integer, Integer> Integer_compareUnsigned = new RecipeOld.Binary<>(
         "java_lang_Integer_compareUnsigned"
         , integerCompareUnsigned().andThen(ParamType.integerType().toLiteral())
         , (v1, v2) -> String.format(
@@ -77,7 +77,7 @@ final class Recipes
         , ParamType.integerType()
     );
 
-    static final Recipe.Binary<Integer, Integer> Integer_divideUnsigned = new Recipe.Binary<>(
+    static final RecipeOld.Binary<Integer, Integer> Integer_divideUnsigned = new RecipeOld.Binary<>(
         "java_lang_Integer_divideUnsigned"
         , integerDivideUnsigned().andThen(ParamType.integerType().toLiteral())
         , (div, by) -> String.format(
@@ -86,10 +86,10 @@ final class Recipes
             , ParamType.integerType().toLiteral().apply(by)
         )
         , ParamType.integerType()
-        , ParamType.integerType(v -> v != 0)
+        , ParamType.integerType(v -> v != 0, int.class)
     );
 
-    static final Recipe.Binary<Integer, Integer> Integer_remainderUnsigned = new Recipe.Binary<>(
+    static final RecipeOld.Binary<Integer, Integer> Integer_remainderUnsigned = new RecipeOld.Binary<>(
         "java_lang_Integer_remainderUnsigned"
         , integerRemainderUnsigned().andThen(ParamType.integerType().toLiteral())
         , (div, by) -> String.format(
@@ -98,10 +98,10 @@ final class Recipes
             , ParamType.integerType().toLiteral().apply(by)
         )
         , ParamType.integerType()
-        , ParamType.integerType(v -> v != 0)
+        , ParamType.integerType(v -> v != 0, int.class)
     );
 
-    static final Recipe.Binary<Long, Long> Long_divideUnsigned = new Recipe.Binary<>(
+    static final RecipeOld.Binary<Long, Long> Long_divideUnsigned = new RecipeOld.Binary<>(
         "java_lang_Long_divideUnsigned"
         , longDivideUnsigned().andThen(ParamType.longType().toLiteral())
         , (div, by) -> String.format(
@@ -110,10 +110,10 @@ final class Recipes
             , ParamType.longType().toLiteral().apply(by)
         )
         , ParamType.longType()
-        , ParamType.longType(v -> v != 0)
+        , ParamType.longType(v -> v != 0, long.class)
     );
 
-    static final Recipe.Binary<Long, Long> Long_remainderUnsigned = new Recipe.Binary<>(
+    static final RecipeOld.Binary<Long, Long> Long_remainderUnsigned = new RecipeOld.Binary<>(
         "java_lang_Long_remainderUnsigned"
         , longRemainderUnsigned().andThen(ParamType.longType().toLiteral())
         , (div, by) -> String.format(
@@ -122,10 +122,10 @@ final class Recipes
             , ParamType.longType().toLiteral().apply(by)
         )
         , ParamType.longType()
-        , ParamType.longType(v -> v != 0)
+        , ParamType.longType(v -> v != 0, long.class)
     );
 
-    static final Recipe.Binary<Short, Short> Short_compare = new Recipe.Binary<>(
+    static final RecipeOld.Binary<Short, Short> Short_compare = new RecipeOld.Binary<>(
         "java_lang_Short_compare"
         , shortCompare().andThen(ParamType.integerType().toLiteral())
         , (v1, v2) -> String.format(
@@ -137,7 +137,7 @@ final class Recipes
         , ParamType.shortType()
     );
 
-    static final Recipe.Binary<Short, Short> Short_compareUnsigned = new Recipe.Binary<>(
+    static final RecipeOld.Binary<Short, Short> Short_compareUnsigned = new RecipeOld.Binary<>(
         "java_lang_Short_compareUnsigned"
         , shortCompareUnsigned().andThen(ParamType.integerType().toLiteral())
         , (v1, v2) -> String.format(
@@ -186,11 +186,13 @@ final class Recipes
 
     private static BiFunction<Short, Short, Integer> shortCompare()
     {
-        return Short::compare;
+        // Compare short using Integer.compare for alignment
+        return Integer::compare;
     }
 
     private static BiFunction<Short, Short, Integer> shortCompareUnsigned()
     {
-        return Short::compareUnsigned;
+        // Compare short using Integer.compare for alignment
+        return Integer::compareUnsigned;
     }
 }

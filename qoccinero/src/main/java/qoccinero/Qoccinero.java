@@ -35,12 +35,12 @@ public class Qoccinero implements AutoCloseable
             .returns(int.class);
     }
 
-    <T> void unary(Recipe.Unary<T> recipe)
+    <T> void unary(RecipeOld.Unary<T> recipe)
     {
         cook(recipe.name(), unaryMain(recipe));
     }
 
-    <T, U> void binary(Recipe.Binary<T, U> recipe)
+    <T, U> void binary(RecipeOld.Binary<T, U> recipe)
     {
         cook(recipe.name(), binaryMain(recipe));
     }
@@ -66,7 +66,7 @@ public class Qoccinero implements AutoCloseable
         nativeMain.addStatement(CodeBlock.of("$L()", recipeName));
     }
 
-    private static <T> Consumer<MethodSpec.Builder> unaryMain(Recipe.Unary<T> recipe)
+    private static <T> Consumer<MethodSpec.Builder> unaryMain(RecipeOld.Unary<T> recipe)
     {
         return method ->
         {
@@ -84,7 +84,7 @@ public class Qoccinero implements AutoCloseable
         };
     }
 
-    private <U, T> Consumer<MethodSpec.Builder> binaryMain(Recipe.Binary<T, U> recipe)
+    private <U, T> Consumer<MethodSpec.Builder> binaryMain(RecipeOld.Binary<T, U> recipe)
     {
         return method ->
         {
@@ -108,7 +108,7 @@ public class Qoccinero implements AutoCloseable
         return codeBlocks;
     }
 
-    private static <T> Function<T, CodeBlock> toCode(Recipe.Unary<T> recipe)
+    private static <T> Function<T, CodeBlock> toCode(RecipeOld.Unary<T> recipe)
     {
         return value ->
             CodeBlock.of(
@@ -119,7 +119,7 @@ public class Qoccinero implements AutoCloseable
             );
     }
 
-    private static <T, U> Function<Map.Entry<T, U>, CodeBlock> toCode(Recipe.Binary<T, U> recipe)
+    private static <T, U> Function<Map.Entry<T, U>, CodeBlock> toCode(RecipeOld.Binary<T, U> recipe)
     {
         return entry ->
             CodeBlock.of(
@@ -145,6 +145,7 @@ public class Qoccinero implements AutoCloseable
     {
         nativeMain.addStatement("return 0");
 
+        // TODO move to each type
         final var putchar = MethodSpec.methodBuilder("putchar")
             .addAnnotation(ClassName.get("cc.quarkus.qcc.runtime.CNative", "extern"))
             .addModifiers(Modifier.STATIC, Modifier.NATIVE)
@@ -163,24 +164,45 @@ public class Qoccinero implements AutoCloseable
         javaFile.writeTo(TARGET);
     }
 
+    private void write(TypeRecipe typeRecipe)
+    {
+        final var type = Type.of(typeRecipe);
+        final var typeSpec = type.toTypeSpec();
+        nativeMain.addStatement(CodeBlock.of("$L.main()", typeSpec.name));
+    }
+
     public static void main(String[] args) throws Exception
     {
         try(Qoccinero qoccinero = new Qoccinero())
         {
             // qoccinero.unary(Recetas.Double_doubleToLongBits);
-            qoccinero.unary(Recipes.Double_doubleToRawLongBits);
-            qoccinero.unary(Recipes.Double_longBitsToDouble);
-            qoccinero.unary(Recipes.Float_floatToRawIntBits);
-            qoccinero.unary(Recipes.Float_intBitsToFloat);
-            qoccinero.binary(Recipes.Character_compare);
-            qoccinero.binary(Recipes.Integer_compare);
-            qoccinero.binary(Recipes.Integer_compareUnsigned);
-            qoccinero.binary(Recipes.Integer_divideUnsigned);
-            qoccinero.binary(Recipes.Integer_remainderUnsigned);
-            qoccinero.binary(Recipes.Long_divideUnsigned);
-            qoccinero.binary(Recipes.Long_remainderUnsigned);
-            qoccinero.binary(Recipes.Short_compare);
-            qoccinero.binary(Recipes.Short_compareUnsigned);
+//            qoccinero.unary(Recipes.Double_doubleToRawLongBits);
+//            qoccinero.unary(Recipes.Double_longBitsToDouble);
+//            qoccinero.unary(Recipes.Float_floatToRawIntBits);
+//            qoccinero.unary(Recipes.Float_intBitsToFloat);
+//            qoccinero.binary(Recipes.Character_compare);
+//            qoccinero.binary(Recipes.Integer_compare);
+//            qoccinero.binary(Recipes.Integer_compareUnsigned);
+//            qoccinero.binary(Recipes.Integer_divideUnsigned);
+//            qoccinero.binary(Recipes.Integer_remainderUnsigned);
+//            qoccinero.binary(Recipes.Long_divideUnsigned);
+//            qoccinero.binary(Recipes.Long_remainderUnsigned);
+//            qoccinero.binary(Recipes.Short_compare);
+//            qoccinero.binary(Recipes.Short_compareUnsigned);
+
+//            qoccinero.write(
+//                TypeRecipe.of("Arithmetic")
+//                    .addStaticMethod(
+//                        StaticMethodRecipe.of("compare", "Double")
+//                    )
+//            );
+
+            qoccinero.write(
+                TypeRecipe.of("Arithmetic")
+//                    .addStaticMethod(StaticMethodRecipe.of("compare", "Integer"))
+//                    .addStaticMethod(StaticMethodRecipe.of("compare", "Double"))
+                    .addBinaryOperator(BinaryOperatorRecipe.of("<", double.class))
+            );
         }
     }
 }

@@ -20,6 +20,7 @@ gen-sources := $(shell find src/ -type f -name '*.java')
 gen-target := target/generated-sources
 
 gen-java-file-names += $(gen-main-name)
+gen-java-file-names += Arithmetic
 gen-java-files := $(patsubst %,$(gen-target)/%.java,$(gen-java-file-names))
 gen-class-files := $(patsubst %.java,%.class,$(gen-java-files))
 
@@ -94,7 +95,8 @@ $(qcc-jar-api): $(qcc-sources)
 > $(mvncmd) dependency:copy-dependencies -DoutputDirectory=target/libs
 
 define run
-$(1) \
+time \
+  $(1) \
   -classpath $(qcc-cp-runtime) \
   cc.quarkus.qcc.main.Main \
   --boot-module-path $(gen-jar-path):/opt/qccrt/qccrt-java.base-11.0.1-SNAPSHOT.jar:$(qcc-cp-boot) \
