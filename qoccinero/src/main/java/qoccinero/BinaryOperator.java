@@ -78,6 +78,7 @@ record BinaryOperator(
         return switch (operator)
         {
             case "<" -> "lessThan";
+            case ">" -> "moreThan";
             default -> throw new IllegalStateException("Unexpected value: " + operator);
         };
     }
@@ -88,6 +89,7 @@ record BinaryOperator(
         return switch (operator)
         {
             case "<" -> (double) param1 < (double) param2;
+            case ">" -> (double) param1 > (double) param2;
             default -> throw new IllegalStateException("Unexpected value: " + operator);
         };
     }

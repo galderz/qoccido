@@ -200,6 +200,7 @@ public class Qoccinero implements AutoCloseable
                     .addStaticMethod(StaticMethodRecipe.of("compare", "Integer"))
                     .addStaticMethod(StaticMethodRecipe.of("compare", "Double"))
                     .addBinaryOperator(BinaryOperatorRecipe.of("<", double.class))
+                    .addBinaryOperator(BinaryOperatorRecipe.of(">", double.class))
             );
         }
     }
