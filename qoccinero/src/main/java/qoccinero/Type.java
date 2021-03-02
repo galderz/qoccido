@@ -6,6 +6,7 @@ import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
 import io.vavr.collection.List;
+import jdk.jshell.JShell;
 
 import javax.lang.model.element.Modifier;
 import java.io.IOException;

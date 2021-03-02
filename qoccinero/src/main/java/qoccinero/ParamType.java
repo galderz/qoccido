@@ -32,8 +32,9 @@ sealed interface ParamType<T>
         return Unchecked.cast(
             switch (type.getName())
             {
-                case "int" -> ParamType.integerType(type);
                 case "double" -> ParamType.doubleType(type);
+                case "float" -> ParamType.floatType(type);
+                case "int" -> ParamType.integerType(type);
                 case "java.lang.Character" -> ParamType.characterType();
                 case "java.lang.Double" -> ParamType.doubleType(type);
                 case "java.lang.Float" -> ParamType.floatType(type);

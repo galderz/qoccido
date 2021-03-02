@@ -5,6 +5,7 @@ import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
+import jdk.jshell.JShell;
 
 import javax.lang.model.element.Modifier;
 import java.nio.file.Path;
@@ -201,6 +202,8 @@ public class Qoccinero implements AutoCloseable
                     .addStaticMethod(StaticMethodRecipe.of("compare", "Double"))
                     .addBinaryOperator(BinaryOperatorRecipe.of("<", double.class))
                     .addBinaryOperator(BinaryOperatorRecipe.of(">", double.class))
+                    .addBinaryOperator(BinaryOperatorRecipe.of("<", float.class))
+                    .addBinaryOperator(BinaryOperatorRecipe.of(">", float.class))
             );
         }
     }

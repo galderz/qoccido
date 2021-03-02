@@ -83,14 +83,62 @@ record BinaryOperator(
         };
     }
 
-    private boolean invoke(Object param1, Object param2)
+    private boolean invoke(Object v1, Object v2)
     {
-        // TODO try dynamic casting
         return switch (operator)
         {
-            case "<" -> (double) param1 < (double) param2;
-            case ">" -> (double) param1 > (double) param2;
+            case "<" -> lessThan(v1, v2);
+            case ">" -> moreThan(v1, v2);
             default -> throw new IllegalStateException("Unexpected value: " + operator);
         };
+    }
+
+    private boolean lessThan(Object v1, Object v2)
+    {
+        return invokeCompare(
+            v1
+            , v2
+            , (d1, d2) -> d1 < d2
+            , (f1, f2) -> f1 < f2
+        );
+    }
+
+    private boolean moreThan(Object v1, Object v2)
+    {
+        return invokeCompare(
+            v1
+            , v2
+            , (d1, d2) -> d1 > d2
+            , (f1, f2) -> f1 > f2
+        );
+    }
+
+    private boolean invokeCompare(
+        Object v1
+        , Object v2
+        , Function2<Double, Double, Boolean> doubleFn
+        , Function2<Float, Float, Boolean> floatFn
+    )
+    {
+        if (v1 instanceof Double d1)
+        {
+            if (v2 instanceof Double d2)
+            {
+                return doubleFn.apply(d1, d2);
+            }
+        }
+        else if (v1 instanceof Float f1)
+        {
+            if (v2 instanceof Float f2)
+            {
+                return floatFn.apply(f1, f2);
+            }
+        }
+
+        throw new RuntimeException(String.format(
+            "lessThan not handled for combination of v1 class %s and v2 class %s"
+            , v1.getClass()
+            , v2.getClass()
+        ));
     }
 }
