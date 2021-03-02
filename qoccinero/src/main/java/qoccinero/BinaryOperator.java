@@ -100,6 +100,7 @@ record BinaryOperator(
             , v2
             , (d1, d2) -> d1 < d2
             , (f1, f2) -> f1 < f2
+            , (l1, l2) -> l1 < l2
         );
     }
 
@@ -110,6 +111,7 @@ record BinaryOperator(
             , v2
             , (d1, d2) -> d1 > d2
             , (f1, f2) -> f1 > f2
+            , (l1, l2) -> l1 > l2
         );
     }
 
@@ -118,6 +120,7 @@ record BinaryOperator(
         , Object v2
         , Function2<Double, Double, Boolean> doubleFn
         , Function2<Float, Float, Boolean> floatFn
+        , Function2<Long, Long, Boolean> longFn
     )
     {
         if (v1 instanceof Double d1)
@@ -132,6 +135,13 @@ record BinaryOperator(
             if (v2 instanceof Float f2)
             {
                 return floatFn.apply(f1, f2);
+            }
+        }
+        else if (v1 instanceof Long l1)
+        {
+            if (v2 instanceof Long l2)
+            {
+                return longFn.apply(l1, l2);
             }
         }
 

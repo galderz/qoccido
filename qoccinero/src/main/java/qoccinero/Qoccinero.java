@@ -204,6 +204,8 @@ public class Qoccinero implements AutoCloseable
                     .addBinaryOperator(BinaryOperatorRecipe.of(">", double.class))
                     .addBinaryOperator(BinaryOperatorRecipe.of("<", float.class))
                     .addBinaryOperator(BinaryOperatorRecipe.of(">", float.class))
+                    .addBinaryOperator(BinaryOperatorRecipe.of("<", long.class))
+                    .addBinaryOperator(BinaryOperatorRecipe.of(">", long.class))
             );
         }
     }

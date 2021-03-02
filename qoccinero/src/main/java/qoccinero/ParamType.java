@@ -35,6 +35,7 @@ sealed interface ParamType<T>
                 case "double" -> ParamType.doubleType(type);
                 case "float" -> ParamType.floatType(type);
                 case "int" -> ParamType.integerType(type);
+                case "long" -> ParamType.longType(type);
                 case "java.lang.Character" -> ParamType.characterType();
                 case "java.lang.Double" -> ParamType.doubleType(type);
                 case "java.lang.Float" -> ParamType.floatType(type);
