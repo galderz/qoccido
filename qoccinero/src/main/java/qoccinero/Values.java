@@ -1,28 +1,67 @@
 package qoccinero;
 
+import io.vavr.Tuple2;
+import io.vavr.collection.List;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
+import net.jqwik.api.Combinators;
+import net.jqwik.api.Shrinkable;
+import net.jqwik.api.Tuple;
 
+import java.util.Collection;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 public class Values
 {
-    static Arbitrary<Double> doubles()
+//    static <T1, T2> List<Tuple2<T1, T2>> values(ParamType<T1> first, ParamType<T2> second)
+//    {
+//        return va
+//
+////        return List.ofAll(values(
+////            Combinators.combine(first.arbitrary(), second.arbitrary())
+////                .as(Tuple2::new)
+////        ));
+//    }
+
+
+
+    // TODO make package private
+    public static List<Double> doubles()
+    {
+        return values(
+            Arbitraries.doubles()
+            , List.of(
+                Double.NaN                                             // 0x7FF8_0000_0000_0000L
+                , Double.NEGATIVE_INFINITY                             // 0xFFF0_0000_0000_0000L
+                , Double.MIN_VALUE                                     // 0x0000_0000_0000_0001L
+                , -Double.MIN_VALUE                                    // 0x8000_0000_0000_0001L
+                , Double.MIN_NORMAL                                    // 0x0010_0000_0000_0000L
+                , -Double.MIN_NORMAL                                   // 0x8010_0000_0000_0000L
+                , Double.POSITIVE_INFINITY                             // 0x7FF0_0000_0000_0000L
+                // , Double.doubleToLongBits(0x7FF8_0000_0000_0100L))  // 0x7FF8_0000_0000_0000L
+            )
+        );
+    }
+
+    @Deprecated
+    public static Arbitrary<Double> doublesOld()
     {
         // Already included:
         //  MAX_VALUE  0x7FEF_FFFF_FFFF_FFFFL
         // -MAX_VALUE  0xFFEF_FFFF_FFFF_FFFFL
         return Arbitraries.doubles()
             .edgeCases(edgeCasesConfig ->
-                edgeCasesConfig
-                    .add(Double.NaN)                                      // 0x7FF8_0000_0000_0000L
-                    .add(Double.NEGATIVE_INFINITY)                        // 0xFFF0_0000_0000_0000L
-                    .add(Double.MIN_VALUE)                                // 0x0000_0000_0000_0001L
-                    .add(-Double.MIN_VALUE)                               // 0x8000_0000_0000_0001L
-                    .add(Double.MIN_NORMAL)                               // 0x0010_0000_0000_0000L
-                    .add(-Double.MIN_NORMAL)                              // 0x8010_0000_0000_0000L
-                    .add(Double.POSITIVE_INFINITY)                        // 0x7FF0_0000_0000_0000L
-                    //.add(Double.doubleToLongBits(0x7FF8_0000_0000_0100L))  // 0x7FF8_0000_0000_0000L
+                    edgeCasesConfig
+                        .add(Double.NaN)                                      // 0x7FF8_0000_0000_0000L
+                        .add(Double.NEGATIVE_INFINITY)                        // 0xFFF0_0000_0000_0000L
+                        .add(Double.MIN_VALUE)                                // 0x0000_0000_0000_0001L
+                        .add(-Double.MIN_VALUE)                               // 0x8000_0000_0000_0001L
+                        .add(Double.MIN_NORMAL)                               // 0x0010_0000_0000_0000L
+                        .add(-Double.MIN_NORMAL)                              // 0x8010_0000_0000_0000L
+                        .add(Double.POSITIVE_INFINITY)                        // 0x7FF0_0000_0000_0000L
+                //.add(Double.doubleToLongBits(0x7FF8_0000_0000_0100L))  // 0x7FF8_0000_0000_0000L
             );
     }
 
@@ -68,4 +107,51 @@ public class Values
         // TODO double check edge cases
         return Arbitraries.longs().filter(filter);
     }
+
+    @Deprecated
+    private static <T> List<T> valuesOld(Arbitrary<T> arbitrary)
+    {
+        return List.ofAll(
+            Stream
+                .concat(
+                    arbitrary.sampleStream().limit(1000)
+                    , arbitrary.edgeCases().suppliers().stream()
+                        .map(Supplier::get)
+                        .map(Shrinkable::value))
+                .distinct()
+        );
+    }
+
+    private static <T> List<T> values(Arbitrary<T> arbitrary, List<T> edgeCases)
+    {
+        return List.ofAll(
+            arbitrary(arbitrary, edgeCases)
+                .sampleStream().limit(1000)
+        );
+    }
+
+    private static <T> Arbitrary<T> arbitrary(Arbitrary<T> arbitrary, List<T> edgeCases)
+    {
+        return Arbitraries.frequencyOf(
+            Tuple.of(20, arbitrary),
+            Tuple.of(1, Arbitraries.of(edgeCases.asJava()))
+        );
+    }
+
+//    private static <T> List<T> values(Arbitrary<T> arbitrary, List<T> edgeCases)
+//    {
+//        return List.ofAll(arbitrary.sampleStream().limit(1000))
+//            .appendAll(edgeCases)
+//            .distinct();
+//
+////        return List.ofAll(
+////            Stream
+////                .concat(
+////                    arbitrary.sampleStream().limit(1000)
+////                    , arbitrary.edgeCases().suppliers().stream()
+////                        .map(Supplier::get)
+////                        .map(Shrinkable::value))
+////                .distinct()
+////        );
+//    }
 }

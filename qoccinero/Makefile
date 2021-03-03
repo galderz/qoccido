@@ -13,7 +13,7 @@ endif
 gen-main-name := Qoccido
 gen-jar := target/qoccinero.jar
 
-MVN_JAVA_HOME := /opt/java-java
+MVN_JAVA_HOME := /opt/java-15
 QCC_HOME := /opt/qcc-qcc
 
 gen-sources := $(shell find src/ -type f -name '*.java')
@@ -73,7 +73,7 @@ $(gen-class-files): $(gen-java-files) $(qcc-jar-api)
 > javac -d $(gen-target) -classpath $(gen-target):$(qcc-cp-compile) $<
 
 $(gen-java-files): $(gen-sources)
-> $(mvncmd) compile exec:java -Dexec.mainClass=qoccinero.Qoccinero
+> $(mvncmd) compile test exec:java -Dexec.mainClass=qoccinero.Qoccinero
 
 runjar: $(gen-jar-path)
 > java -jar $<

@@ -59,12 +59,12 @@ sealed interface ParamType<T>
 
     static ParamType<Double> doubleType()
     {
-        return new DoubleType(Values.doubles(), double.class);
+        return new DoubleType(Values.doublesOld(), double.class);
     }
 
     static ParamType<Double> doubleType(Class<?> type)
     {
-        return new DoubleType(Values.doubles(), type);
+        return new DoubleType(Values.doublesOld(), type);
     }
 
     static ParamType<Integer> integerType()
@@ -268,10 +268,10 @@ sealed interface ParamType<T>
         ).distinct();
     }
 
-    static <T, U> Stream<Map.Entry<T, U>> values(Arbitrary<T> first, Arbitrary<U> second)
-    {
-        return Arbitraries.entries(first, second).sampleStream().limit(1000);
-    }
+//    static <T, U> Stream<Map.Entry<T, U>> values(Arbitrary<T> first, Arbitrary<U> second)
+//    {
+//        return Arbitraries.entries(first, second).sampleStream().limit(1000);
+//    }
 
     static <T1, T2> List<Tuple2<T1, T2>> values(ParamType<T1> first, ParamType<T2> second)
     {

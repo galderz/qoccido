@@ -39,10 +39,10 @@ public class Qoccinero implements AutoCloseable
         cook(recipe.name(), unaryMain(recipe));
     }
 
-    <T, U> void binary(RecipeOld.Binary<T, U> recipe)
-    {
-        cook(recipe.name(), binaryMain(recipe));
-    }
+//    <T, U> void binary(RecipeOld.Binary<T, U> recipe)
+//    {
+//        cook(recipe.name(), binaryMain(recipe));
+//    }
 
     void cook(String recipeName, Consumer<MethodSpec.Builder> mainConsumer)
     {
@@ -83,23 +83,23 @@ public class Qoccinero implements AutoCloseable
         };
     }
 
-    private <U, T> Consumer<MethodSpec.Builder> binaryMain(RecipeOld.Binary<T, U> recipe)
-    {
-        return method ->
-        {
-            Streams.batched(ParamType.values(recipe.firstType().arbitrary(), recipe.secondType().arbitrary()), 80).stream()
-                .map(batch ->
-                    batch.stream()
-                        .map(toCode(recipe))
-                        .collect(Collectors.collectingAndThen(
-                            Collectors.toList()
-                            , Qoccinero::appendLineEnd
-                        ))
-                )
-                .flatMap(Collection::stream)
-                .forEach(method::addCode);
-        };
-    }
+//    private <U, T> Consumer<MethodSpec.Builder> binaryMain(RecipeOld.Binary<T, U> recipe)
+//    {
+//        return method ->
+//        {
+//            Streams.batched(ParamType.values(recipe.firstType().arbitrary(), recipe.secondType().arbitrary()), 80).stream()
+//                .map(batch ->
+//                    batch.stream()
+//                        .map(toCode(recipe))
+//                        .collect(Collectors.collectingAndThen(
+//                            Collectors.toList()
+//                            , Qoccinero::appendLineEnd
+//                        ))
+//                )
+//                .flatMap(Collection::stream)
+//                .forEach(method::addCode);
+//        };
+//    }
 
     private static Collection<CodeBlock> appendLineEnd(Collection<CodeBlock> codeBlocks)
     {
