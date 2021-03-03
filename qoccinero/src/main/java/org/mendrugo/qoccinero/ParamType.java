@@ -58,12 +58,12 @@ sealed interface ParamType<T>
 
     static ParamType<Double> doubleType()
     {
-        return new DoubleType(Values.doublesOld(), double.class);
+        return new DoubleType(Values.doubles(), double.class);
     }
 
     static ParamType<Double> doubleType(Class<?> type)
     {
-        return new DoubleType(Values.doublesOld(), type);
+        return new DoubleType(Values.doubles(), type);
     }
 
     static ParamType<Integer> integerType()
@@ -257,6 +257,7 @@ sealed interface ParamType<T>
         }
     }
 
+    @Deprecated
     static <T> Stream<T> values(Arbitrary<T> arbitrary)
     {
         return Stream.concat(
@@ -265,19 +266,6 @@ sealed interface ParamType<T>
                 .map(Supplier::get)
                 .map(Shrinkable::value)
         ).distinct();
-    }
-
-//    static <T, U> Stream<Map.Entry<T, U>> values(Arbitrary<T> first, Arbitrary<U> second)
-//    {
-//        return Arbitraries.entries(first, second).sampleStream().limit(1000);
-//    }
-
-    static <T1, T2> List<Tuple2<T1, T2>> values(ParamType<T1> first, ParamType<T2> second)
-    {
-        return List.ofAll(values(
-            Combinators.combine(first.arbitrary(), second.arbitrary())
-            .as(Tuple2::new)
-        ));
     }
 
     private static String prettyHex(long l)

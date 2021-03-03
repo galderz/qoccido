@@ -2,7 +2,6 @@ package org.mendrugo.qoccinero;
 
 import org.hamcrest.number.IsNaN;
 import org.junit.jupiter.api.Test;
-import org.mendrugo.qoccinero.Values;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
@@ -14,7 +13,7 @@ public class ValuesTest
     void doubles()
     {
         assertThat(
-            Values.doubles()
+            Values.values(Values.doubles())
             , hasItems(
                 Double.NEGATIVE_INFINITY
                 , Double.MIN_VALUE
@@ -28,7 +27,7 @@ public class ValuesTest
         );
 
         assertThat(
-            Values.doubles()
+            Values.values(Values.doubles())
             , hasItem(IsNaN.notANumber())
         );
     }

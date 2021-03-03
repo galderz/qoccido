@@ -19,7 +19,7 @@ final class MethodSpecs
         final var method = MethodSpec.methodBuilder(methodName)
             .addModifiers(Modifier.STATIC);
 
-        final var values = ParamType.values(
+        final var values = Values.values(
             Unchecked.<ParamType<T1>>cast(param1)
             , Unchecked.<ParamType<T2>>cast(param2)
         );
