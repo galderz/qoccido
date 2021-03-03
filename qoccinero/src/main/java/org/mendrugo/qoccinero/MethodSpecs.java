@@ -4,6 +4,7 @@ import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.MethodSpec;
 import io.vavr.Function1;
 import io.vavr.Function2;
+import io.vavr.collection.List;
 
 import javax.lang.model.element.Modifier;
 
@@ -16,8 +17,7 @@ final class MethodSpecs
         , String methodName
     )
     {
-        final var method = MethodSpec.methodBuilder(methodName)
-            .addModifiers(Modifier.STATIC);
+        final var method = methodBuilder(methodName);
 
         final var values = Values.values(
             Unchecked.<ParamType<T>>cast(param).arbitrary()
@@ -29,6 +29,19 @@ final class MethodSpecs
             .forEach(method::addCode);
 
         return method.build();
+    }
+
+    private static MethodSpec.Builder methodBuilder(String methodName)
+    {
+        final var method = MethodSpec.methodBuilder(methodName)
+            .addModifiers(Modifier.STATIC);
+
+        List.ofAll(methodName.chars().boxed())
+            .map(c -> CodeBlock.of("putchar((char) $L); \n", c))
+            .append(CodeBlock.of("putchar('\\n'); \n"))
+            .forEach(method::addCode);
+
+        return method;
     }
 
     private static <T> CodeBlock toCode(
@@ -52,8 +65,7 @@ final class MethodSpecs
         , String methodName
     )
     {
-        final var method = MethodSpec.methodBuilder(methodName)
-            .addModifiers(Modifier.STATIC);
+        final var method = methodBuilder(methodName);
 
         final var values = Values.values(
             Unchecked.<ParamType<T1>>cast(param1).arbitrary()
