@@ -1,4 +1,4 @@
-package qoccinero;
+package org.mendrugo.qoccinero;
 
 import io.vavr.collection.List;
 

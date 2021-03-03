@@ -1,4 +1,4 @@
-package qoccinero;
+package org.mendrugo.qoccinero;
 
 public record BinaryOperatorRecipe(String operator, Class<?> type1, Class<?> type2)
 {

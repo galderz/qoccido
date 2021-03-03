@@ -1,4 +1,4 @@
-package qoccinero;
+package org.mendrugo.qoccinero;
 
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.MethodSpec;

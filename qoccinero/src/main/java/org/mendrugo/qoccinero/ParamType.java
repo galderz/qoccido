@@ -1,4 +1,4 @@
-package qoccinero;
+package org.mendrugo.qoccinero;
 
 import io.vavr.Tuple2;
 import io.vavr.collection.List;
@@ -7,7 +7,6 @@ import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Combinators;
 import net.jqwik.api.Shrinkable;
 
-import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;

@@ -1,4 +1,4 @@
-package qoccinero;
+package org.mendrugo.qoccinero;
 
 public class Unchecked
 {

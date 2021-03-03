@@ -94,7 +94,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <mainClass>qoccinero.Qoccinero</mainClass>
+                    <mainClass>org.mendrugo.qoccinero.Qoccinero</mainClass>
                 </configuration>
             </plugin>
         </plugins>

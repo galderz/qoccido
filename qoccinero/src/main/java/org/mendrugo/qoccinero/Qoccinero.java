@@ -1,11 +1,10 @@
-package qoccinero;
+package org.mendrugo.qoccinero;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
-import jdk.jshell.JShell;
 
 import javax.lang.model.element.Modifier;
 import java.nio.file.Path;

@@ -2,7 +2,7 @@ package org.mendrugo.qoccinero;
 
 import org.hamcrest.number.IsNaN;
 import org.junit.jupiter.api.Test;
-import qoccinero.Values;
+import org.mendrugo.qoccinero.Values;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;

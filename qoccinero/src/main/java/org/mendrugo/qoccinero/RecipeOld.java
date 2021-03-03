@@ -1,4 +1,4 @@
-package qoccinero;
+package org.mendrugo.qoccinero;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;

@@ -1,4 +1,4 @@
-package qoccinero;
+package org.mendrugo.qoccinero;
 
 public record StaticMethodRecipe(String methodName, String className, StaticMethodRecipe before)
 {
