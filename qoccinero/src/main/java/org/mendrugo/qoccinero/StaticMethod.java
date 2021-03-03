@@ -3,6 +3,7 @@ package org.mendrugo.qoccinero;
 import com.squareup.javapoet.MethodSpec;
 import io.vavr.CheckedFunction1;
 import io.vavr.CheckedFunction2;
+import io.vavr.Function1;
 import io.vavr.Function2;
 import io.vavr.collection.List;
 import io.vavr.control.Option;
@@ -27,9 +28,28 @@ record StaticMethod(
 
         return switch (params.length())
         {
+            case 1 -> MethodSpecs.toMethodSpec1(params.get(0), expected1(), actual1(), methodName);
             case 2 -> MethodSpecs.toMethodSpec2(params.get(0), params.get(1), expected2(), actual2(), methodName);
             default -> throw new IllegalStateException("Unexpected value: " + params.length());
         };
+    }
+
+    private <T> Function1<T, String> expected1()
+    {
+        // TODO why doesn't CheckedFunction2 combined with unchecked work?
+        final Function1<T, Object> invoke = v -> invoke(method, clazz, v);
+        return invoke.andThen(ret -> Unchecked.<ParamType<Object>>cast(returns).toLiteral().apply(ret));
+    }
+
+    private <T> Function1<T, String> actual1()
+    {
+        return (v) -> String.format(
+            "%s.%s(%s /* %s */)"
+            , clazz.getName()
+            , method.getName()
+            , Unchecked.<ParamType<T>>cast(params.get(0)).toLiteral().apply(v)
+            , Unchecked.<ParamType<T>>cast(params.get(0)).toHex(v)
+        );
     }
 
     private <T1, T2> Function2<T1, T2, String> expected2()

@@ -174,7 +174,7 @@ public class Qoccinero implements AutoCloseable
         try(Qoccinero qoccinero = new Qoccinero())
         {
             // qoccinero.unary(Recetas.Double_doubleToLongBits);
-//            qoccinero.unary(Recipes.Double_doubleToRawLongBits);
+
 //            qoccinero.unary(Recipes.Double_longBitsToDouble);
 //            qoccinero.unary(Recipes.Float_floatToRawIntBits);
 //            qoccinero.unary(Recipes.Float_intBitsToFloat);
@@ -188,15 +188,9 @@ public class Qoccinero implements AutoCloseable
 //            qoccinero.binary(Recipes.Short_compare);
 //            qoccinero.binary(Recipes.Short_compareUnsigned);
 
-//            qoccinero.write(
-//                TypeRecipe.of("Arithmetic")
-//                    .addStaticMethod(
-//                        StaticMethodRecipe.of("compare", "Double")
-//                    )
-//            );
-
             qoccinero.write(
                 TypeRecipe.of("Arithmetic")
+                    .addStaticMethod(StaticMethodRecipe.of("doubleToRawLongBits", Double.class))
                     .addStaticMethod(StaticMethodRecipe.of("compare", Integer.class))
                     .addStaticMethod(StaticMethodRecipe.of("compare", Double.class))
                     .addBinaryOperator(BinaryOperatorRecipe.of("<", double.class))

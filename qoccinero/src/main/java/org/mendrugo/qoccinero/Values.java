@@ -14,10 +14,10 @@ import java.util.stream.Stream;
 
 public class Values
 {
-    static <T1, T2> List<Tuple2<T1, T2>> values(ParamType<T1> first, ParamType<T2> second)
+    static <T1, T2> List<Tuple2<T1, T2>> values(Arbitrary<T1> first, Arbitrary<T2> second)
     {
         return Values
-            .values(Combinators.combine(first.arbitrary(), second.arbitrary()).as(Tuple2::new))
+            .values(Combinators.combine(first, second).as(Tuple2::new))
             .distinct();
     }
 
