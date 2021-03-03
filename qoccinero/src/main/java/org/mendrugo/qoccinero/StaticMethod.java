@@ -34,6 +34,7 @@ record StaticMethod(
 
     private <T1, T2> Function2<T1, T2, String> expected2()
     {
+        // TODO why doesn't CheckedFunction2 combined with unchecked work?
         final Function2<T1, T2, Object> invoke = (v1, v2) -> invoke(method, clazz, v1, v2);
         return invoke.andThen(ret -> Unchecked.<ParamType<Object>>cast(returns).toLiteral().apply(ret));
     }
@@ -77,8 +78,8 @@ record StaticMethod(
 
     static StaticMethod of(StaticMethodRecipe recipe)
     {
-        final var clazz = lookupClass(recipe.className());
-        final var methodParamsLookup = Arrays.stream(clazz.getMethods())
+        final var type = recipe.type();
+        final var methodParamsLookup = Arrays.stream(type.getMethods())
             .filter(m -> m.getName().equals(recipe.methodName()))
             .map(Method::getParameterTypes)
             .findFirst();
@@ -87,59 +88,18 @@ record StaticMethod(
             throw new RuntimeException("Not found");
 
         final var methodParams = methodParamsLookup.get();
-        // final var method = classMethod(methodParams, recipe.methodName(), clazz);
+
         final var method = CheckedFunction2
-            .lift(CheckedFunction2.<String, Class<?>[], Method>of(clazz::getMethod))
+            .lift(CheckedFunction2.<String, Class<?>[], Method>of(type::getMethod))
             .apply(recipe.methodName(), methodParams)
             .getOrElseThrow(() -> new RuntimeException(""));
 
         return new StaticMethod(
             method
-            , clazz
+            , type
             , List.ofAll(Arrays.stream(methodParams)).map(ParamType::of)
             , ParamType.of(method.getReturnType())
         );
-    }
-
-    private static Class<?> lookupClass(String className)
-    {
-        try
-        {
-            return Class.forName(className);
-        }
-        catch (ClassNotFoundException e)
-        {
-            final Class<?> javaClass = tryLookupJavaClass(className);
-            if (javaClass == null)
-            {
-                throw new RuntimeException(e);
-            }
-
-            return javaClass;
-        }
-    }
-
-    private static Class<?> tryLookupJavaClass(String className)
-    {
-        // TODO there's only one imported package
-        return List.of("java.lang")
-            .map(prefix -> String.format("%s.%s", prefix, className))
-            .map(CheckedFunction1.lift(Class::forName))
-            .find(Option::isDefined)
-            .map(Option::get)
-            .getOrNull();
-    }
-
-    private static Method classMethod(Class<?>[] paramTypes, String methodName, Class<?> clazz)
-    {
-        try
-        {
-            return clazz.getMethod(methodName, paramTypes);
-        }
-        catch (NoSuchMethodException e)
-        {
-            throw new RuntimeException(e);
-        }
     }
 
     private static <T> T invoke(Method m, Object obj, Object... args)

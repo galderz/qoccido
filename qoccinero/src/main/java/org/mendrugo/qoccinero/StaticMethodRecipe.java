@@ -1,14 +1,14 @@
 package org.mendrugo.qoccinero;
 
-public record StaticMethodRecipe(String methodName, String className, StaticMethodRecipe before)
+public record StaticMethodRecipe(String methodName, Class<?> type, StaticMethodRecipe before)
 {
     StaticMethodRecipe compose(StaticMethodRecipe before)
     {
-        return new StaticMethodRecipe(methodName, className, before);
+        return new StaticMethodRecipe(methodName, type, before);
     }
 
-    static StaticMethodRecipe of(String methodName, String className)
+    static StaticMethodRecipe of(String methodName, Class<?> type)
     {
-        return new StaticMethodRecipe(methodName, className, null);
+        return new StaticMethodRecipe(methodName, type, null);
     }
 }

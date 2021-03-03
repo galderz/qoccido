@@ -197,8 +197,8 @@ public class Qoccinero implements AutoCloseable
 
             qoccinero.write(
                 TypeRecipe.of("Arithmetic")
-                    .addStaticMethod(StaticMethodRecipe.of("compare", "Integer"))
-                    .addStaticMethod(StaticMethodRecipe.of("compare", "Double"))
+                    .addStaticMethod(StaticMethodRecipe.of("compare", Integer.class))
+                    .addStaticMethod(StaticMethodRecipe.of("compare", Double.class))
                     .addBinaryOperator(BinaryOperatorRecipe.of("<", double.class))
                     .addBinaryOperator(BinaryOperatorRecipe.of(">", double.class))
                     .addBinaryOperator(BinaryOperatorRecipe.of("<", float.class))
