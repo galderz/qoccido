@@ -16,8 +16,8 @@ record BinaryOperator(
     {
         return new BinaryOperator(
             recipe.operator()
-            , ParamType.of(recipe.type1())
-            , ParamType.of(recipe.type2())
+            , ParamType.of(((Recipe.Type) recipe.left()).type())
+            , ParamType.of(((Recipe.Type) recipe.right()).type())
             , ParamType.booleanType()
         );
     }
