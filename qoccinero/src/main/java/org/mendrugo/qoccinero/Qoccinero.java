@@ -5,6 +5,7 @@ import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
+import io.vavr.Function1;
 
 import javax.lang.model.element.Modifier;
 import java.nio.file.Path;
@@ -175,7 +176,6 @@ public class Qoccinero implements AutoCloseable
         {
             // qoccinero.unary(Recetas.Double_doubleToLongBits);
 
-//            qoccinero.unary(Recipes.Double_longBitsToDouble);
 //            qoccinero.unary(Recipes.Float_floatToRawIntBits);
 //            qoccinero.unary(Recipes.Float_intBitsToFloat);
 //            qoccinero.binary(Recipes.Character_compare);
@@ -191,6 +191,10 @@ public class Qoccinero implements AutoCloseable
             qoccinero.write(
                 TypeRecipe.of("Arithmetic")
                     .addStaticMethod(StaticMethodRecipe.of("doubleToRawLongBits", Double.class))
+                    .addStaticMethod(
+                        StaticMethodRecipe.of("doubleToRawLongBits", Double.class)
+                            .compose(StaticMethodRecipe.of("longBitsToDouble", Double.class))
+                    )
                     .addStaticMethod(StaticMethodRecipe.of("compare", Integer.class))
                     .addStaticMethod(StaticMethodRecipe.of("compare", Double.class))
                     .addBinaryOperator(BinaryOperatorRecipe.of("<", double.class))

@@ -16,9 +16,9 @@ public class Values
 {
     static <T1, T2> List<Tuple2<T1, T2>> values(Arbitrary<T1> first, Arbitrary<T2> second)
     {
-        return Values
-            .values(Combinators.combine(first, second).as(Tuple2::new))
-            .distinct();
+        return Values.values(
+            Combinators.combine(first, second).as(Tuple2::new)
+        );
     }
 
     static <T> List<T> values(Arbitrary<T> arbitrary)

@@ -38,8 +38,13 @@ javacmd += -Xss16m
 javadebugcmd += $(javacmd)
 javadebugcmd += -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:4004
 
-mvncmd += JAVA_HOME=$(MVN_JAVA_HOME)
-mvncmd += mvn
+mvn-java-home = JAVA_HOME=$(MVN_JAVA_HOME)
+
+mvn-cmd += $(mvn-java-home)
+mvn-cmd += mvn
+
+mvn-debug-cmd += $(mvn-java-home)
+mvn-debug-cmd += mvnDebug
 
 qcc-jar-api := $(QCC_HOME)/runtime/api/target/qcc-runtime-api-1.0.0-SNAPSHOT.jar
 qcc-jar-main := $(QCC_HOME)/main/target/qcc-main-1.0.0-SNAPSHOT.jar
@@ -73,26 +78,31 @@ $(gen-class-files): $(gen-java-files) $(qcc-jar-api)
 > javac -d $(gen-target) -classpath $(gen-target):$(qcc-cp-compile) $<
 
 $(gen-java-files): $(gen-sources)
-> $(mvncmd) compile test exec:java -Dexec.mainClass=qoccinero.Qoccinero
+> $(mvn-cmd) compile test
+> $(mvn-cmd) exec:java -Dexec.mainClass=qoccinero.Qoccinero
 
 runjar: $(gen-jar-path)
 > java -jar $<
 .PHONY: run-jar
 
 clean:
-> $(mvncmd) clean
+> $(mvn-cmd) clean
 > rm -drf $(targetdir)
-> cd $(QCC_HOME) && $(mvncmd) clean
+> cd $(QCC_HOME) && $(mvn-cmd) clean
 .PHONY: clean
 
-debug:
+debug-qcc:
 > $(call run,$(javadebugcmd))
-.PHONY: debug
+.PHONY: debug-qcc
+
+debug-qoccinero:
+> $(mvn-debug-cmd) exec:java -Dexec.mainClass=qoccinero.Qoccinero
+.PHONY: debug-qoccinero
 
 $(qcc-jar-api): $(qcc-sources)
 > cd $(QCC_HOME)
-> $(mvncmd) -DskipTests=true install
-> $(mvncmd) dependency:copy-dependencies -DoutputDirectory=target/libs
+> $(mvn-cmd) -DskipTests=true install
+> $(mvn-cmd) dependency:copy-dependencies -DoutputDirectory=target/libs
 
 define run
 time \
