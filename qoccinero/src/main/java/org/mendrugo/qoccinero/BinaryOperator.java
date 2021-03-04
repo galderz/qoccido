@@ -12,7 +12,7 @@ record BinaryOperator(
     , ParamType<?> returns
 )
 {
-    static BinaryOperator of(BinaryOperatorRecipe recipe)
+    static BinaryOperator of(Recipe.BinaryOperator recipe)
     {
         return new BinaryOperator(
             recipe.operator()

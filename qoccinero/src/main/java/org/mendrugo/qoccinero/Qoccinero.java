@@ -190,19 +190,19 @@ public class Qoccinero implements AutoCloseable
 
             qoccinero.write(
                 TypeRecipe.of("Arithmetic")
-                    .addStaticMethod(StaticMethodRecipe.of("doubleToRawLongBits", Double.class))
+                    .addStaticMethod(Recipe.StaticMethod.of("doubleToRawLongBits", Double.class))
                     .addStaticMethod(
-                        StaticMethodRecipe.of("doubleToRawLongBits", Double.class)
-                            .compose(StaticMethodRecipe.of("longBitsToDouble", Double.class))
+                        Recipe.StaticMethod.of("doubleToRawLongBits", Double.class)
+                            .compose(Recipe.StaticMethod.of("longBitsToDouble", Double.class))
                     )
-                    .addStaticMethod(StaticMethodRecipe.of("compare", Integer.class))
-                    .addStaticMethod(StaticMethodRecipe.of("compare", Double.class))
-                    .addBinaryOperator(BinaryOperatorRecipe.of("<", double.class))
-                    .addBinaryOperator(BinaryOperatorRecipe.of(">", double.class))
-                    .addBinaryOperator(BinaryOperatorRecipe.of("<", float.class))
-                    .addBinaryOperator(BinaryOperatorRecipe.of(">", float.class))
-                    .addBinaryOperator(BinaryOperatorRecipe.of("<", long.class))
-                    .addBinaryOperator(BinaryOperatorRecipe.of(">", long.class))
+                    .addStaticMethod(Recipe.StaticMethod.of("compare", Integer.class))
+                    .addStaticMethod(Recipe.StaticMethod.of("compare", Double.class))
+                    .addBinaryOperator(Recipe.BinaryOperator.of("<", double.class))
+                    .addBinaryOperator(Recipe.BinaryOperator.of(">", double.class))
+                    .addBinaryOperator(Recipe.BinaryOperator.of("<", float.class))
+                    .addBinaryOperator(Recipe.BinaryOperator.of(">", float.class))
+                    .addBinaryOperator(Recipe.BinaryOperator.of("<", long.class))
+                    .addBinaryOperator(Recipe.BinaryOperator.of(">", long.class))
             );
         }
     }

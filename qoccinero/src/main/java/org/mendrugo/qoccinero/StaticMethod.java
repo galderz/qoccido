@@ -129,7 +129,7 @@ record StaticMethod(
         );
     }
 
-    static StaticMethod of(StaticMethodRecipe recipe)
+    static StaticMethod of(Recipe.StaticMethod recipe)
     {
         final var type = recipe.type();
         final var methodParamsLookup = Arrays.stream(type.getMethods())

@@ -4,8 +4,8 @@ import io.vavr.collection.List;
 
 public record TypeRecipe(
     String name
-    , List<StaticMethodRecipe> staticMethods
-    , List<BinaryOperatorRecipe> binaryOperators
+    , List<Recipe.StaticMethod> staticMethods
+    , List<Recipe.BinaryOperator> binaryOperators
 )
 {
     static TypeRecipe of(String name)
@@ -13,12 +13,12 @@ public record TypeRecipe(
         return new TypeRecipe(name, List.empty(), List.empty());
     }
 
-    TypeRecipe addStaticMethod(StaticMethodRecipe staticMethod)
+    TypeRecipe addStaticMethod(Recipe.StaticMethod staticMethod)
     {
         return new TypeRecipe(name, staticMethods.append(staticMethod), binaryOperators);
     }
 
-    TypeRecipe addBinaryOperator(BinaryOperatorRecipe binaryOperator)
+    TypeRecipe addBinaryOperator(Recipe.BinaryOperator binaryOperator)
     {
         return new TypeRecipe(name, staticMethods, binaryOperators.append(binaryOperator));
     }
