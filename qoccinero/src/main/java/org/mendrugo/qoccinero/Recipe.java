@@ -30,4 +30,12 @@ sealed interface Recipe
             return new Type(type);
         }
     }
+
+    final record Literal(Object obj) implements Recipe
+    {
+        static Recipe.Literal of(Object obj)
+        {
+            return new Literal(obj);
+        }
+    }
 }
