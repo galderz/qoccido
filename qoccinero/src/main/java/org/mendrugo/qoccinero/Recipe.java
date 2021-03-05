@@ -4,28 +4,28 @@ sealed interface Recipe
 {
     final record BinaryOperator(String operator, Recipe left, Recipe right) implements Recipe
     {
-        static org.mendrugo.qoccinero.Recipe.BinaryOperator of(String operator, Class<?> type)
+        static BinaryOperator of(String operator, Class<?> type)
         {
-            return new org.mendrugo.qoccinero.Recipe.BinaryOperator(operator, Type.of(type), Type.of(type));
+            return new BinaryOperator(operator, Type.of(type), Type.of(type));
         }
     }
 
-    final record StaticMethod(String methodName, Class<?> type, Recipe.StaticMethod before) implements Recipe
+    final record StaticMethod(String methodName, Class<?> type, StaticMethod before) implements Recipe
     {
-        Recipe.StaticMethod compose(Recipe.StaticMethod before)
+        StaticMethod compose(StaticMethod before)
         {
-            return new Recipe.StaticMethod(methodName, type, before);
+            return new StaticMethod(methodName, type, before);
         }
 
-        static Recipe.StaticMethod of(String methodName, Class<?> type)
+        static StaticMethod of(String methodName, Class<?> type)
         {
-            return new Recipe.StaticMethod(methodName, type, null);
+            return new StaticMethod(methodName, type, null);
         }
     }
 
     final record Type(Class<?> type) implements Recipe
     {
-        static Recipe.Type of(Class<?> type)
+        static Type of(Class<?> type)
         {
             return new Type(type);
         }
@@ -33,7 +33,7 @@ sealed interface Recipe
 
     final record Literal(Object obj) implements Recipe
     {
-        static Recipe.Literal of(Object obj)
+        static Literal of(Object obj)
         {
             return new Literal(obj);
         }
