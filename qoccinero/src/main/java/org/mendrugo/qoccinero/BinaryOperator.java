@@ -6,18 +6,18 @@ import io.vavr.Function2;
 import javax.lang.model.element.Modifier;
 
 record BinaryOperator(
-    ParamType<?> left
+    Expression<?> left
     , String operator
-    , ParamType<?> right
+    , Expression<?> right
     , ParamType<?> returns
 )
 {
     static BinaryOperator of(Recipe.BinaryOperator recipe)
     {
         return new BinaryOperator(
-            ParamType.of(((Recipe.Type) recipe.left()).type())
+            Literal.of(ParamType.of(((Recipe.Type) recipe.left()).type()))
             , recipe.operator()
-            , ParamType.of(((Recipe.Type) recipe.right()).type())
+            , Literal.of(ParamType.of(((Recipe.Type) recipe.right()).type()))
             , ParamType.booleanType()
         );
     }
@@ -26,8 +26,8 @@ record BinaryOperator(
     {
         return MethodSpec.methodBuilder(operatorMethodName())
             .addModifiers(Modifier.STATIC)
-            .addParameter(left.type(), "v1")
-            .addParameter(right.type(), "v2")
+            .addParameter(left.returns().type(), "v1")
+            .addParameter(left.returns().type(), "v2")
             .addStatement("return v1 $L v2", operator)
             // TODO use return type...
             .returns(boolean.class)
@@ -50,8 +50,8 @@ record BinaryOperator(
         return String.format(
             "%s_%s_%s"
             , operatorLiteral()
-            , left.type().getName().replace('.', '_')
-            , right.type().getName().replace('.', '_')
+            , left.id()
+            , right.id()
         );
     }
 
@@ -61,15 +61,13 @@ record BinaryOperator(
         return invoke.andThen(ret -> Unchecked.<ParamType<Object>>cast(returns).toLiteral().apply(ret));
     }
 
-    private <T1, T2> Function2<T1, T2, String> actual2(String operatorMethodName)
+    private Function2<String, String, String> actual2(String operatorMethodName)
     {
         return (v1, v2) -> String.format(
-            "%s(%s /* %s */, %s /* %s */)"
+            "%s(%s, %s)"
             , operatorMethodName
-            , Unchecked.<ParamType<T1>>cast(left).toLiteral().apply(v1)
-            , Unchecked.<ParamType<T1>>cast(left).toHex(v1)
-            , Unchecked.<ParamType<T2>>cast(right).toLiteral().apply(v2)
-            , Unchecked.<ParamType<T2>>cast(right).toHex(v2)
+            , v1
+            , v2
         );
     }
 
