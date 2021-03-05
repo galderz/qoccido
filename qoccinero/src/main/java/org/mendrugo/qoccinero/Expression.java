@@ -8,6 +8,5 @@ sealed interface Expression<T> permits Literal
 
     ParamType<T> returns();
 
-    // TODO convert Tuple2 into something more meaninful (e.g. Asserts)
-    Tuple2<T, String> asserts();
+    Expects<T> expects();
 }

@@ -107,13 +107,13 @@ final class MethodSpecs
         // TODO centralize the number of iterations
         for (int i = 0; i < 1000; i++)
         {
-            final var asserts1 = expr1.asserts();
-            final var asserts2 = expr2.asserts();
+            final var expects1 = expr1.expects();
+            final var expects2 = expr2.expects();
             method.addCode(
                 CodeBlock.of(
                     "putchar($L == $L ? '.' : 'F');\n"
-                    , expected.apply(asserts1._1, asserts2._1)
-                    , actual.apply(asserts1._2, asserts2._2)
+                    , expected.apply(expects1.value(), expects2.value())
+                    , actual.apply(expects1.createdBy(), expects2.createdBy())
                 )
             );
         }

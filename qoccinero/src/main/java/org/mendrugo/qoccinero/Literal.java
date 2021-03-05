@@ -18,14 +18,14 @@ record Literal<T>(ParamType<T> returns, Iterator<T> values) implements Expressio
     }
 
     @Override
-    public Tuple2<T, String> asserts()
+    public Expects<T> expects()
     {
         final var value = values.next();
-        final var actual = String.format(
+        final var createdBy = String.format(
             "%s /* %s */"
             , returns.toLiteral().apply(value)
             , returns.toHex(value)
         );
-        return Tuple.of(value, actual);
+        return new Expects<>(value, createdBy);
     }
 }
