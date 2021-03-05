@@ -2,11 +2,11 @@ package org.mendrugo.qoccinero;
 
 sealed interface Recipe
 {
-    final record BinaryOperator(String operator, Recipe left, Recipe right) implements Recipe
+    final record BinaryOperator(Recipe left, String operator, Recipe right) implements Recipe
     {
         static BinaryOperator of(String operator, Class<?> type)
         {
-            return new BinaryOperator(operator, Type.of(type), Type.of(type));
+            return new BinaryOperator(Type.of(type), operator, Type.of(type));
         }
     }
 
