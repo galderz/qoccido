@@ -4,33 +4,36 @@ import com.squareup.javapoet.MethodSpec;
 import io.vavr.CheckedFunction2;
 import io.vavr.Function1;
 import io.vavr.Function2;
+import io.vavr.collection.Iterator;
 import io.vavr.collection.List;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Objects;
 
-record StaticMethod(
+record StaticMethod<R>(
     Method method
     , Class<?> clazz
-    , List<ParamType<?>> params
-    , ParamType<?> returns
-    , StaticMethod before
-)
+    , List<Expression<?>> inputs
+    , List<Iterator<?>> inputValues
+    , ParamType<R> returns
+    , StaticMethod<?> before
+) implements Expression<R>
 {
     MethodSpec toMethodSpec()
     {
-        final var methodName = methodName();
+        final var methodName = id();
 
-        return switch (params.length())
+        return switch (inputs.length())
         {
-            case 1 -> MethodSpecs.toMethodSpec1(param0(), expected1(), actual1(), methodName);
-            case 2 -> MethodSpecs.toMethodSpec2(param0(), params.get(1), expected2(), actual2(), methodName);
-            default -> throw new IllegalStateException("Unexpected value: " + params.length());
+            case 1 -> MethodSpecs.toMethodSpec1(param0(), expected1(), returns, actual1(), methodName);
+            case 2 -> MethodSpecs.toMethodSpec2(param0(), inputs.get(1), expected2(), actual2(), methodName);
+            default -> throw new IllegalStateException("Unexpected value: " + inputs.length());
         };
     }
 
-    private String methodName()
+    @Override
+    public String id()
     {
         if (Objects.isNull(before))
         {
@@ -49,27 +52,31 @@ record StaticMethod(
         return classMethod().replace('.', '_');
     }
 
-    private ParamType<?> param0()
+    private Expression<?> param0()
     {
         return Objects.isNull(before)
-            ? params.get(0)
+            ? inputs.get(0)
             : before.param0();
     }
 
-    private <T, R> Function1<T, R> invoke1()
+    private <T> Function1<T, R> invoke1()
     {
         // TODO why doesn't CheckedFunction2 combined with unchecked work?
         return v -> invoke(method, clazz, v);
     }
 
-    private <T> Function1<T, String> expected1()
+    private <T> Function1<T, R> expected1()
     {
-        Function1<T, Object> invoke = Objects.isNull(before)
+//        Function1<T, R> invoke = Objects.isNull(before)
+//            ? invoke1()
+//            : invoke1().compose(before.invoke1());
+
+        return Objects.isNull(before)
             ? invoke1()
             : invoke1().compose(before.invoke1());
 
-        return invoke
-            .andThen(ret -> Unchecked.<ParamType<Object>>cast(returns).toLiteral().apply(ret));
+//        return invoke
+//            .andThen(ret -> returns.toLiteral().apply(ret));
     }
 
     private String classMethod()
@@ -86,17 +93,15 @@ record StaticMethod(
         if (Objects.isNull(before))
         {
             return String.format(
-                "%s /* %s */"
-                , Unchecked.<ParamType<T>>cast(param0()).toLiteral().apply(v)
-                , Unchecked.<ParamType<T>>cast(param0()).toHex(v)
+                "%s"
+                , v
             );
         }
 
         return String.format(
-            "%s(%s /* %s */)"
+            "%s(%s)"
             , before.classMethod()
-            , Unchecked.<ParamType<T>>cast(param0()).toLiteral().apply(v)
-            , Unchecked.<ParamType<T>>cast(param0()).toHex(v)
+            , v
         );
     }
 
@@ -109,23 +114,27 @@ record StaticMethod(
         );
     }
 
-    private <T1, T2> Function2<T1, T2, String> expected2()
+    private <T1, T2> Function2<T1, T2, R> expected2()
     {
         // TODO why doesn't CheckedFunction2 combined with unchecked work?
-        final Function2<T1, T2, Object> invoke = (v1, v2) -> invoke(method, clazz, v1, v2);
-        return invoke.andThen(ret -> Unchecked.<ParamType<Object>>cast(returns).toLiteral().apply(ret));
+        return (v1, v2) -> invoke(method, clazz, v1, v2);
+
+//        final Function2<T1, T2, Object> invoke = (v1, v2) -> invoke(method, clazz, v1, v2);
+//        return invoke.andThen(ret -> Unchecked.<ParamType<Object>>cast(returns).toLiteral().apply(ret));
     }
 
     private <T1, T2> Function2<T1, T2, String> actual2()
     {
         return (v1, v2) -> String.format(
-            "%s.%s(%s /* %s */, %s /* %s */)"
+            "%s.%s(%s, %s)"
             , clazz.getName()
             , method.getName()
-            , Unchecked.<ParamType<T1>>cast(params.get(0)).toLiteral().apply(v1)
-            , Unchecked.<ParamType<T1>>cast(params.get(0)).toHex(v1)
-            , Unchecked.<ParamType<T2>>cast(params.get(1)).toLiteral().apply(v2)
-            , Unchecked.<ParamType<T2>>cast(params.get(1)).toHex(v2)
+            , v1
+            , v2
+//            , Unchecked.<ParamType<T1>>cast(inputs.get(0)).toLiteral().apply(v1)
+//            , Unchecked.<ParamType<T1>>cast(inputs.get(0)).toHex(v1)
+//            , Unchecked.<ParamType<T2>>cast(inputs.get(1)).toLiteral().apply(v2)
+//            , Unchecked.<ParamType<T2>>cast(inputs.get(1)).toHex(v2)
         );
     }
 
@@ -147,10 +156,15 @@ record StaticMethod(
             .apply(recipe.methodName(), methodParams)
             .getOrElseThrow(() -> new RuntimeException(""));
 
+        final List<ParamType<?>> params = List
+            .ofAll(Arrays.stream(methodParams))
+            .map(ParamType::of);
+
         return new StaticMethod(
             method
             , type
-            , List.ofAll(Arrays.stream(methodParams)).map(ParamType::of)
+            , params.map(Literal::of) // TODO eventually they might be actual expressions
+            , params.map(p -> Values.values(p.arbitrary()).iterator())
             , ParamType.of(method.getReturnType())
             , Objects.isNull(recipe.before()) ? null : StaticMethod.of(recipe.before())
         );
@@ -166,5 +180,35 @@ record StaticMethod(
         {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public Expects<R> expects()
+    {
+        return switch (inputs.length())
+        {
+            case 1 -> expects1();
+            case 2 -> expects2();
+            default -> throw new IllegalStateException("Unexpected value: " + inputs.length());
+        };
+    }
+
+    private Expects<R> expects1()
+    {
+        final Object value = inputValues.get(0).next();
+        return new Expects<>(
+            expected1().apply(value)
+            , actual1().apply(value)
+        );
+    }
+
+    private Expects<R> expects2()
+    {
+        final Object v1 = inputValues.get(0).next();
+        final Object v2 = inputValues.get(1).next();
+        return new Expects<>(
+            expected2().apply(v1, v2)
+            , actual2().apply(v1, v2)
+        );
     }
 }

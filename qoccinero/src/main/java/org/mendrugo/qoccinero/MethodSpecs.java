@@ -94,17 +94,55 @@ final class MethodSpecs
         );
     }
 
-    static <T1, T2> MethodSpec toMethodSpec2(
+    static <T, R> MethodSpec toMethodSpec1(
+        Expression<T> expr
+        , Function1<T, R> expected
+        , ParamType<R> returns
+        , Function1<String, String> actual
+        , String methodName
+    )
+    {
+        final var method = methodBuilder(methodName);
+
+//        final var inputValues = Values.inputValues(
+//            Unchecked.<ParamType<T>>cast(param).arbitrary()
+//        );
+
+        // TODO centralize the number of iterations (or fetch from the inputValues being iterated over?)
+        for (int i = 0; i < 1000; i++)
+        {
+            final var expects = expr.expects();
+            method.addCode(
+                CodeBlock.of(
+                    "putchar($L == $L ? '.' : 'F');\n"
+                    , returns.toLiteral().apply(expected.apply(expects.value()))
+                    // , actual.apply(expects.createdBy())
+                    , actual.apply(expects.createdBy())
+                )
+            );
+        }
+
+        method.addCode(CodeBlock.of("putchar('\\n'); \n"));
+
+//        inputValues
+//            .map(v -> toCode(v, expected, actual))
+//            .append(CodeBlock.of("putchar('\\n'); \n"))
+//            .forEach(method::addCode);
+
+        return method.build();
+    }
+
+    static <T1, T2, R> MethodSpec toMethodSpec2(
         Expression<T1> expr1
         , Expression<T2> expr2
-        , Function2<T1, T2, String> expected
+        , Function2<T1, T2, R> expected
         , Function2<String, String, String> actual
         , String methodName
     )
     {
         final var method = methodBuilder(methodName);
 
-        // TODO centralize the number of iterations
+        // TODO centralize the number of iterations (or fetch from the inputValues being iterated over?)
         for (int i = 0; i < 1000; i++)
         {
             final var expects1 = expr1.expects();

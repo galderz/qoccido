@@ -100,7 +100,7 @@ public class Values
         );
     }
 
-//    private static <T> List<T> values(Arbitrary<T> arbitrary, List<T> edgeCases)
+//    private static <T> List<T> inputValues(Arbitrary<T> arbitrary, List<T> edgeCases)
 //    {
 //        return List.ofAll(
 //            arbitrary(arbitrary, edgeCases)
@@ -116,7 +116,7 @@ public class Values
         );
     }
 
-//    private static <T> List<T> values(Arbitrary<T> arbitrary, List<T> edgeCases)
+//    private static <T> List<T> inputValues(Arbitrary<T> arbitrary, List<T> edgeCases)
 //    {
 //        return List.ofAll(arbitrary.sampleStream().limit(1000))
 //            .appendAll(edgeCases)

@@ -5,7 +5,6 @@ import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
-import io.vavr.Function1;
 
 import javax.lang.model.element.Modifier;
 import java.nio.file.Path;
@@ -87,7 +86,7 @@ public class Qoccinero implements AutoCloseable
 //    {
 //        return method ->
 //        {
-//            Streams.batched(ParamType.values(recipe.firstType().arbitrary(), recipe.secondType().arbitrary()), 80).stream()
+//            Streams.batched(ParamType.inputValues(recipe.firstType().arbitrary(), recipe.secondType().arbitrary()), 80).stream()
 //                .map(batch ->
 //                    batch.stream()
 //                        .map(toCode(recipe))
