@@ -163,7 +163,7 @@ record StaticMethod<R>(
         return new StaticMethod<>(
             method
             , type
-            , params.map(Literal::ofAll) // TODO eventually they might be actual expressions
+            , params.map(Literal::of) // TODO eventually they might be actual expressions
             , params.map(p -> Values.values(p.arbitrary()).iterator())
             , ParamType.of(method.getReturnType())
             , Objects.isNull(recipe.before()) ? null : StaticMethod.of(recipe.before())

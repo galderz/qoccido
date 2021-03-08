@@ -5,19 +5,11 @@ import io.vavr.collection.Iterator;
 
 record Literal<T>(ParamType<T> returns, Function0<T> supplier) implements Expression<T>
 {
-    static <T> Literal<T> ofAll(ParamType<T> returns)
+    static <T> Literal<T> of(ParamType<T> returns)
     {
         return new Literal<>(
             returns
             , new IteratorSupplier<>(Values.values(returns.arbitrary()).iterator())
-        );
-    }
-
-    static <T> Literal<T> of(T obj)
-    {
-        return new Literal<>(
-            ParamType.of(obj.getClass())
-            , () -> obj
         );
     }
 

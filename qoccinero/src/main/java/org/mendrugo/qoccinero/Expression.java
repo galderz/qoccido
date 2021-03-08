@@ -1,6 +1,6 @@
 package org.mendrugo.qoccinero;
 
-sealed interface Expression<T> permits Literal, StaticMethod
+sealed interface Expression<T> permits Literal, StaticMethod, Constant
 {
     String id();
 
@@ -12,12 +12,12 @@ sealed interface Expression<T> permits Literal, StaticMethod
     {
         if (recipe instanceof Recipe.Type t)
         {
-            return Literal.ofAll(ParamType.of(t.type()));
+            return Literal.of(ParamType.of(t.type()));
         }
 
         if (recipe instanceof Recipe.Constant c)
         {
-            return Literal.of(Unchecked.cast(c.constant()));
+            return Constant.of(Unchecked.cast(c.constant()));
         }
 
         if (recipe instanceof Recipe.StaticMethod s)
