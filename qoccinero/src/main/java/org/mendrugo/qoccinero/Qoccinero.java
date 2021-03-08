@@ -229,6 +229,13 @@ public class Qoccinero implements AutoCloseable
                             , Recipe.StaticMethod.of("compare", Integer.class)
                         )
                     )
+                    .addBinaryOperator(
+                        Recipe.BinaryOperator.of(
+                            Recipe.Constant.of(1)
+                            , ">"
+                            , Recipe.StaticMethod.of("compare", Integer.class)
+                        )
+                    )
             );
         }
     }
