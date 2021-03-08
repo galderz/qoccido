@@ -138,7 +138,7 @@ record StaticMethod<R>(
         );
     }
 
-    static StaticMethod of(Recipe.StaticMethod recipe)
+    static <R> StaticMethod<R> of(Recipe.StaticMethod recipe)
     {
         final var type = recipe.type();
         final var methodParamsLookup = Arrays.stream(type.getMethods())
@@ -160,12 +160,12 @@ record StaticMethod<R>(
             .ofAll(Arrays.stream(methodParams))
             .map(ParamType::of);
 
-        return new StaticMethod(
+        return new StaticMethod<R>(
             method
             , type
-            , params.map(Literal::of) // TODO eventually they might be actual expressions
+            , params.map(Literal::ofAll) // TODO eventually they might be actual expressions
             , params.map(p -> Values.values(p.arbitrary()).iterator())
-            , ParamType.of(method.getReturnType())
+            , ParamType.of(Unchecked.cast(method.getReturnType()))
             , Objects.isNull(recipe.before()) ? null : StaticMethod.of(recipe.before())
         );
     }

@@ -4,6 +4,11 @@ sealed interface Recipe
 {
     final record BinaryOperator(Recipe left, String operator, Recipe right) implements Recipe
     {
+        static BinaryOperator of(Recipe left, String operator, Recipe right)
+        {
+            return new BinaryOperator(left, operator, right);
+        }
+
         static BinaryOperator of(String operator, Class<?> type)
         {
             return new BinaryOperator(Type.of(type), operator, Type.of(type));
@@ -31,11 +36,11 @@ sealed interface Recipe
         }
     }
 
-    final record Literal(Object obj) implements Recipe
+    final record Constant(Object constant) implements Recipe
     {
-        static Literal of(Object obj)
+        static Constant of(Object constant)
         {
-            return new Literal(obj);
+            return new Constant(constant);
         }
     }
 }

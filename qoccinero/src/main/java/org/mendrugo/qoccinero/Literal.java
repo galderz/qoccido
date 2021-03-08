@@ -1,14 +1,24 @@
 package org.mendrugo.qoccinero;
 
-import io.vavr.Tuple;
-import io.vavr.Tuple2;
+import io.vavr.Function0;
 import io.vavr.collection.Iterator;
 
-record Literal<T>(ParamType<T> returns, Iterator<T> values) implements Expression<T>
+record Literal<T>(ParamType<T> returns, Function0<T> supplier) implements Expression<T>
 {
-    static <T> Literal<T> of(ParamType<T> returns)
+    static <T> Literal<T> ofAll(ParamType<T> returns)
     {
-        return new Literal<T>(returns, Values.values(returns.arbitrary()).iterator());
+        return new Literal<>(
+            returns
+            , new IteratorSupplier<>(Values.values(returns.arbitrary()).iterator())
+        );
+    }
+
+    static <T> Literal<T> of(T obj)
+    {
+        return new Literal<>(
+            Unchecked.cast(ParamType.of(obj.getClass()))
+            , () -> obj
+        );
     }
 
     @Override
@@ -20,12 +30,21 @@ record Literal<T>(ParamType<T> returns, Iterator<T> values) implements Expressio
     @Override
     public Expects<T> expects()
     {
-        final var value = values.next();
+        final var value = supplier.apply();
         final var createdBy = String.format(
             "%s /* %s */"
             , returns.toLiteral().apply(value)
             , returns.toHex(value)
         );
         return new Expects<>(value, createdBy);
+    }
+
+    private static final record IteratorSupplier<T>(Iterator<T> iterator) implements Function0<T>
+    {
+        @Override
+        public T apply()
+        {
+            return iterator.next();
+        }
     }
 }

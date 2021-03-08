@@ -1,7 +1,5 @@
 package org.mendrugo.qoccinero;
 
-import io.vavr.Tuple2;
-
 sealed interface Expression<T> permits Literal, StaticMethod
 {
     String id();
@@ -14,9 +12,19 @@ sealed interface Expression<T> permits Literal, StaticMethod
     {
         if (recipe instanceof Recipe.Type t)
         {
-            return Literal.of(Unchecked.cast(ParamType.of(t.type())));
+            return Literal.ofAll(Unchecked.cast(ParamType.of(t.type())));
         }
 
-        return null;
+        if (recipe instanceof Recipe.Constant c)
+        {
+            return Literal.of(Unchecked.cast(c.constant()));
+        }
+
+        if (recipe instanceof Recipe.StaticMethod s)
+        {
+            return StaticMethod.of(s);
+        }
+
+        throw new RuntimeException("Unsupported recipe: " + recipe);
     }
 }

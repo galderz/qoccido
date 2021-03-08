@@ -17,7 +17,7 @@ MVN_JAVA_HOME := /opt/java-15
 QCC_HOME := /opt/qcc-qcc
 
 gen-sources := $(shell find src/ -type f -name '*.java')
-gen-target := target/generated-sources
+gen-target := target/qoccinero-sources
 
 gen-java-file-names += $(gen-main-name)
 gen-java-file-names += Arithmetic
@@ -91,7 +91,7 @@ clean:
 > cd $(QCC_HOME) && $(mvn-cmd) clean
 .PHONY: clean
 
-debug-qcc:
+debug-qcc: clean $(program)
 > $(call run,$(javadebugcmd))
 .PHONY: debug-qcc
 

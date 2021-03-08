@@ -27,7 +27,7 @@ record BinaryOperator(
         return MethodSpec.methodBuilder(operatorMethodName())
             .addModifiers(Modifier.STATIC)
             .addParameter(left.returns().type(), "v1")
-            .addParameter(left.returns().type(), "v2")
+            .addParameter(right.returns().type(), "v2")
             .addStatement("return v1 $L v2", operator)
             // TODO use return type...
             .returns(boolean.class)
@@ -75,8 +75,9 @@ record BinaryOperator(
     {
         return switch (operator)
         {
-            case "<" -> "lessThan";
-            case ">" -> "moreThan";
+            case "<" -> "less";
+            case ">" -> "greater";
+            case ">=" -> "greaterEquals";
             default -> throw new IllegalStateException("Unexpected value: " + operator);
         };
     }
@@ -85,39 +86,55 @@ record BinaryOperator(
     {
         return switch (operator)
         {
-            case "<" -> lessThan(v1, v2);
-            case ">" -> moreThan(v1, v2);
+            case "<" -> less(v1, v2);
+            case ">" -> greater(v1, v2);
+            case ">=" -> greaterEquals(v1, v2);
             default -> throw new IllegalStateException("Unexpected value: " + operator);
         };
     }
 
-    private boolean lessThan(Object v1, Object v2)
+    private boolean less(Object v1, Object v2)
     {
-        return invokeCompare(
+        return invokeBinary(
             v1
             , v2
             , (d1, d2) -> d1 < d2
             , (f1, f2) -> f1 < f2
+            , (i1, i2) -> i1 < i2
             , (l1, l2) -> l1 < l2
         );
     }
 
-    private boolean moreThan(Object v1, Object v2)
+    private boolean greater(Object v1, Object v2)
     {
-        return invokeCompare(
+        return invokeBinary(
             v1
             , v2
             , (d1, d2) -> d1 > d2
             , (f1, f2) -> f1 > f2
+            , (i1, i2) -> i1 > i2
             , (l1, l2) -> l1 > l2
         );
     }
 
-    private boolean invokeCompare(
+    private boolean greaterEquals(Object v1, Object v2)
+    {
+        return invokeBinary(
+            v1
+            , v2
+            , (d1, d2) -> d1 >= d2
+            , (f1, f2) -> f1 >= f2
+            , (i1, i2) -> i1 >= i2
+            , (l1, l2) -> l1 >= l2
+        );
+    }
+
+    private boolean invokeBinary(
         Object v1
         , Object v2
         , Function2<Double, Double, Boolean> doubleFn
         , Function2<Float, Float, Boolean> floatFn
+        , Function2<Integer, Integer, Boolean> intFn
         , Function2<Long, Long, Boolean> longFn
     )
     {
@@ -135,6 +152,13 @@ record BinaryOperator(
                 return floatFn.apply(f1, f2);
             }
         }
+        else if (v1 instanceof Integer i1)
+        {
+            if (v2 instanceof Integer i2)
+            {
+                return intFn.apply(i1, i2);
+            }
+        }
         else if (v1 instanceof Long l1)
         {
             if (v2 instanceof Long l2)
@@ -144,7 +168,7 @@ record BinaryOperator(
         }
 
         throw new RuntimeException(String.format(
-            "lessThan not handled for combination of v1 class %s and v2 class %s"
+            "invoke binary not handled for combination of v1 class %s and v2 class %s"
             , v1.getClass()
             , v2.getClass()
         ));

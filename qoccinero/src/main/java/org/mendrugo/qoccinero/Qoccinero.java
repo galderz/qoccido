@@ -7,6 +7,7 @@ import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
 
 import javax.lang.model.element.Modifier;
+import java.io.UncheckedIOException;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Map;
@@ -16,10 +17,24 @@ import java.util.stream.Collectors;
 
 public class Qoccinero implements AutoCloseable
 {
-    static final Path TARGET = Path.of("target", "generated-sources");
+    static final Path TARGET = Path.of("target", "qoccinero-sources");
 
     private final TypeSpec.Builder mainTypeBuilder;
     private final MethodSpec.Builder nativeMain;
+
+    static
+    {
+        boolean dirsCreated = TARGET.toFile().mkdirs();
+        if (!dirsCreated)
+        {
+            throw new RuntimeException(
+                String.format(
+                    "Unable to create directories for %s"
+                    , TARGET
+                )
+            );
+        }
+    }
 
     public Qoccinero()
     {
@@ -194,14 +209,21 @@ public class Qoccinero implements AutoCloseable
                         Recipe.StaticMethod.of("doubleToRawLongBits", Double.class)
                             .compose(Recipe.StaticMethod.of("longBitsToDouble", Double.class))
                     )
-                    .addStaticMethod(Recipe.StaticMethod.of("compare", Integer.class))
-                    .addStaticMethod(Recipe.StaticMethod.of("compare", Double.class))
                     .addBinaryOperator(Recipe.BinaryOperator.of("<", double.class))
                     .addBinaryOperator(Recipe.BinaryOperator.of(">", double.class))
                     .addBinaryOperator(Recipe.BinaryOperator.of("<", float.class))
                     .addBinaryOperator(Recipe.BinaryOperator.of(">", float.class))
                     .addBinaryOperator(Recipe.BinaryOperator.of("<", long.class))
                     .addBinaryOperator(Recipe.BinaryOperator.of(">", long.class))
+                    // Do not compare exact values returned by *.compare() functions.
+                    // Instead just verify that the returns are > 0 (>= 1), == 0, or < 0 (<= -1)
+                    .addBinaryOperator(
+                        Recipe.BinaryOperator.of(
+                            Recipe.StaticMethod.of("compare", Integer.class)
+                            , ">="
+                            , Recipe.Constant.of(1)
+                        )
+                    )
             );
         }
     }
