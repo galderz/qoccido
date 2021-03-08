@@ -34,7 +34,7 @@ program := $(targetdir)/a.out
 
 javacmd += java
 # Big enough thread stack size to avoid https://github.com/quarkuscc/qcc/issues/262
-javacmd += -Xss16m
+javacmd += -Xss32m
 javadebugcmd += $(javacmd)
 javadebugcmd += -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:4004
 

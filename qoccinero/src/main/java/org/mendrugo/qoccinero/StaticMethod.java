@@ -160,7 +160,7 @@ record StaticMethod<R>(
             .ofAll(Arrays.stream(methodParams))
             .map(ParamType::of);
 
-        return new StaticMethod<R>(
+        return new StaticMethod<>(
             method
             , type
             , params.map(Literal::ofAll) // TODO eventually they might be actual expressions

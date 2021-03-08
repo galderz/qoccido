@@ -1,6 +1,7 @@
 package org.mendrugo.qoccinero;
 
 import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.TypeSpec;
 import io.vavr.Function2;
 
 import javax.lang.model.element.Modifier;
@@ -22,27 +23,59 @@ record BinaryOperator(
         );
     }
 
-    MethodSpec operatorMethodSpec()
+    MethodSpec toMethodSpec()
     {
-        return MethodSpec.methodBuilder(operatorMethodName())
-            .addModifiers(Modifier.STATIC)
-            .addParameter(left.returns().type(), "v1")
-            .addParameter(right.returns().type(), "v2")
-            .addStatement("return v1 $L v2", operator)
-            // TODO use return type...
-            .returns(boolean.class)
-            .build();
+        if (isLiteralBinaryOperator())
+        {
+            return toNonInlinedMethodSpec();
+        }
+
+        return toInlinedMethodSpec();
     }
 
-    MethodSpec forAllMethodSpec()
+    private boolean isLiteralBinaryOperator()
+    {
+        return left instanceof Literal<?> && right instanceof Literal<?>;
+    }
+
+    private MethodSpec toInlinedMethodSpec()
+    {
+        return MethodSpecs.toMethodSpec2(
+            left
+            , right
+            , expected2()
+            , (v1, v2) -> String.format("%s %s %s", v1, operator, v2)
+            , String.format("test_%s", operatorMethodName())
+        );
+    }
+
+    MethodSpec toNonInlinedMethodSpec()
     {
         return MethodSpecs.toMethodSpec2(
             left
             , right
             , expected2()
             , actual2(operatorMethodName())
-            , String.format("forAll_%s", operatorMethodName())
+            , String.format("test_%s", operatorMethodName())
         );
+    }
+
+    // TODO create the source directly with all necessary helpers (e.g. predefine them irrespectively)
+    void appendMethodSpec(TypeSpec.Builder type)
+    {
+        if (isLiteralBinaryOperator())
+        {
+            type.addMethod(
+                MethodSpec.methodBuilder(operatorMethodName())
+                    .addModifiers(Modifier.STATIC)
+                    .addParameter(left.returns().type(), "v1")
+                    .addParameter(right.returns().type(), "v2")
+                    .addStatement("return v1 $L v2", operator)
+                    // TODO use return type...
+                    .returns(boolean.class)
+                    .build()
+            );
+        }
     }
 
     private String operatorMethodName()

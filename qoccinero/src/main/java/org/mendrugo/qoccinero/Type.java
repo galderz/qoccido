@@ -49,12 +49,11 @@ public record Type(
             .forEach(addToMainMethod(mainMethod, typeBuilder));
 
         binaryOperators()
-            .map(BinaryOperator::forAllMethodSpec)
+            .map(BinaryOperator::toMethodSpec)
             .forEach(addToMainMethod(mainMethod, typeBuilder));
 
         binaryOperators()
-            .map(BinaryOperator::operatorMethodSpec)
-            .forEach(typeBuilder::addMethod);
+            .forEach(binaryOperator -> binaryOperator.appendMethodSpec(typeBuilder));
 
         typeBuilder.addMethod(mainMethod.build());
 

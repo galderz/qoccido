@@ -7,7 +7,6 @@ import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
 
 import javax.lang.model.element.Modifier;
-import java.io.UncheckedIOException;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Map;
@@ -24,16 +23,7 @@ public class Qoccinero implements AutoCloseable
 
     static
     {
-        boolean dirsCreated = TARGET.toFile().mkdirs();
-        if (!dirsCreated)
-        {
-            throw new RuntimeException(
-                String.format(
-                    "Unable to create directories for %s"
-                    , TARGET
-                )
-            );
-        }
+        TARGET.toFile().mkdirs();
     }
 
     public Qoccinero()
