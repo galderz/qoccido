@@ -16,7 +16,7 @@ record Literal<T>(ParamType<T> returns, Function0<T> supplier) implements Expres
     static <T> Literal<T> of(T obj)
     {
         return new Literal<>(
-            Unchecked.cast(ParamType.of(obj.getClass()))
+            ParamType.of(obj.getClass())
             , () -> obj
         );
     }

@@ -12,7 +12,7 @@ sealed interface Expression<T> permits Literal, StaticMethod
     {
         if (recipe instanceof Recipe.Type t)
         {
-            return Literal.ofAll(Unchecked.cast(ParamType.of(t.type())));
+            return Literal.ofAll(ParamType.of(t.type()));
         }
 
         if (recipe instanceof Recipe.Constant c)

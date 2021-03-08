@@ -25,7 +25,7 @@ sealed interface ParamType<T>
 
     Class<?> type();
 
-    static <T> ParamType<T> of(Class<T> type)
+    static <T> ParamType<T> of(Class<?> type)
     {
         // TODO add byte param type
         return Unchecked.cast(
