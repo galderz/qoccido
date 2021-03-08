@@ -109,6 +109,7 @@ record BinaryOperator(
         return switch (operator)
         {
             case "<" -> "less";
+            case "<=" -> "lessEquals";
             case ">" -> "greater";
             case ">=" -> "greaterEquals";
             default -> throw new IllegalStateException("Unexpected value: " + operator);
@@ -120,6 +121,7 @@ record BinaryOperator(
         return switch (operator)
         {
             case "<" -> less(v1, v2);
+            case "<=" -> lessEquals(v1, v2);
             case ">" -> greater(v1, v2);
             case ">=" -> greaterEquals(v1, v2);
             default -> throw new IllegalStateException("Unexpected value: " + operator);
@@ -135,6 +137,18 @@ record BinaryOperator(
             , (f1, f2) -> f1 < f2
             , (i1, i2) -> i1 < i2
             , (l1, l2) -> l1 < l2
+        );
+    }
+
+    private boolean lessEquals(Object v1, Object v2)
+    {
+        return invokeBinary(
+            v1
+            , v2
+            , (d1, d2) -> d1 <= d2
+            , (f1, f2) -> f1 <= f2
+            , (i1, i2) -> i1 <= i2
+            , (l1, l2) -> l1 <= l2
         );
     }
 
