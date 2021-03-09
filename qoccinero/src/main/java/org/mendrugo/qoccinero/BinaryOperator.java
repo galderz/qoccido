@@ -112,6 +112,8 @@ record BinaryOperator(
             case "<=" -> "lessEquals";
             case ">" -> "greater";
             case ">=" -> "greaterEquals";
+            case "==" -> "equals";
+            case "!=" -> "notEquals";
             default -> throw new IllegalStateException("Unexpected value: " + operator);
         };
     }
@@ -124,6 +126,8 @@ record BinaryOperator(
             case "<=" -> lessEquals(v1, v2);
             case ">" -> greater(v1, v2);
             case ">=" -> greaterEquals(v1, v2);
+            case "==" -> equals(v1, v2);
+            case "!=" -> !equals(v1, v2);
             default -> throw new IllegalStateException("Unexpected value: " + operator);
         };
     }
@@ -173,6 +177,18 @@ record BinaryOperator(
             , (f1, f2) -> f1 >= f2
             , (i1, i2) -> i1 >= i2
             , (l1, l2) -> l1 >= l2
+        );
+    }
+
+    private boolean equals(Object v1, Object v2)
+    {
+        return invokeBinary(
+            v1
+            , v2
+            , Double::equals
+            , Float::equals
+            , Integer::equals
+            , Long::equals
         );
     }
 

@@ -10,27 +10,6 @@ import javax.lang.model.element.Modifier;
 
 final class MethodSpecs
 {
-    static <T> MethodSpec toMethodSpec1(
-        ParamType<T> param
-        , Function1<T, String> expected
-        , Function1<T, String> actual
-        , String methodName
-    )
-    {
-        final var method = methodBuilder(methodName);
-
-        final var values = Values.values(
-            Unchecked.<ParamType<T>>cast(param).arbitrary()
-        );
-
-        values
-            .map(v -> toCode(v, expected, actual))
-            .append(CodeBlock.of("putchar('\\n'); \n"))
-            .forEach(method::addCode);
-
-        return method.build();
-    }
-
     private static MethodSpec.Builder methodBuilder(String methodName)
     {
         final var method = MethodSpec.methodBuilder(methodName)
@@ -44,56 +23,6 @@ final class MethodSpecs
         return method;
     }
 
-    private static <T> CodeBlock toCode(
-        T v
-        , Function1<T, String> expected
-        , Function1<T, String> actual
-    )
-    {
-        return CodeBlock.of(
-            "putchar($L == $L ? '.' : 'F');\n"
-            , expected.apply(v)
-            , actual.apply(v)
-        );
-    }
-
-    static <T1, T2> MethodSpec toMethodSpec2(
-        ParamType<T1> param1
-        , ParamType<T2> param2
-        , Function2<T1, T2, String> expected
-        , Function2<T1, T2, String> actual
-        , String methodName
-    )
-    {
-        final var method = methodBuilder(methodName);
-
-        final var values = Values.values(
-            Unchecked.<ParamType<T1>>cast(param1).arbitrary()
-            , Unchecked.<ParamType<T2>>cast(param2).arbitrary()
-        );
-
-        values
-            .map(tuple2 -> toCode(tuple2._1, tuple2._2, expected, actual))
-            .append(CodeBlock.of("putchar('\\n'); \n"))
-            .forEach(method::addCode);
-
-        return method.build();
-    }
-
-    private static <T1, T2> CodeBlock toCode(
-        T1 v1
-        , T2 v2
-        , Function2<T1, T2, String> expected
-        , Function2<T1, T2, String> actual
-    )
-    {
-        return CodeBlock.of(
-            "putchar($L == $L ? '.' : 'F');\n"
-            , expected.apply(v1, v2)
-            , actual.apply(v1, v2)
-        );
-    }
-
     static <T, R> MethodSpec toMethodSpec1(
         Expression<T> expr
         , Function1<T, R> expected
@@ -104,10 +33,6 @@ final class MethodSpecs
     {
         final var method = methodBuilder(methodName);
 
-//        final var inputValues = Values.inputValues(
-//            Unchecked.<ParamType<T>>cast(param).arbitrary()
-//        );
-
         // TODO centralize the number of iterations (or fetch from the inputValues being iterated over?)
         for (int i = 0; i < 1000; i++)
         {
@@ -116,18 +41,12 @@ final class MethodSpecs
                 CodeBlock.of(
                     "putchar($L == $L ? '.' : 'F');\n"
                     , returns.toLiteral().apply(expected.apply(expects.value()))
-                    // , actual.apply(expects.createdBy())
                     , actual.apply(expects.createdBy())
                 )
             );
         }
 
         method.addCode(CodeBlock.of("putchar('\\n'); \n"));
-
-//        inputValues
-//            .map(v -> toCode(v, expected, actual))
-//            .append(CodeBlock.of("putchar('\\n'); \n"))
-//            .forEach(method::addCode);
 
         return method.build();
     }
@@ -149,7 +68,7 @@ final class MethodSpecs
             final var expects2 = expr2.expects();
             method.addCode(
                 CodeBlock.of(
-                    "putchar($L == $L ? '.' : 'F');\n"
+                    "putchar($L == ($L) ? '.' : 'F');\n"
                     , expected.apply(expects1.value(), expects2.value())
                     , actual.apply(expects1.createdBy(), expects2.createdBy())
                 )

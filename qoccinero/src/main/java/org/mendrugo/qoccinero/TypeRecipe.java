@@ -42,6 +42,24 @@ public record TypeRecipe(
                 , Recipe.BinaryOperator.of(Recipe.Constant.of(1), "<=", staticMethod) // inverse ^
                 , Recipe.BinaryOperator.of(staticMethod, "<", Recipe.Constant.of(1))
                 , Recipe.BinaryOperator.of(Recipe.Constant.of(1), ">", staticMethod) // inverse ^
+
+                , Recipe.BinaryOperator.of(staticMethod, "<=", Recipe.Constant.of(-1))
+                , Recipe.BinaryOperator.of(Recipe.Constant.of(-1), ">=", staticMethod) // inverse ^
+                , Recipe.BinaryOperator.of(staticMethod, ">", Recipe.Constant.of(-1))
+                , Recipe.BinaryOperator.of(Recipe.Constant.of(-1), "<", staticMethod) // inverse ^
+
+                , Recipe.BinaryOperator.of(staticMethod, ">", Recipe.Constant.of(0))
+                , Recipe.BinaryOperator.of(staticMethod, ">=", Recipe.Constant.of(0))
+                , Recipe.BinaryOperator.of(staticMethod, "<", Recipe.Constant.of(0))
+                , Recipe.BinaryOperator.of(staticMethod, "<=", Recipe.Constant.of(0))
+                , Recipe.BinaryOperator.of(staticMethod, "==", Recipe.Constant.of(0))
+                , Recipe.BinaryOperator.of(staticMethod, "!=", Recipe.Constant.of(0))
+                , Recipe.BinaryOperator.of(Recipe.Constant.of(0), ">", staticMethod)
+                , Recipe.BinaryOperator.of(Recipe.Constant.of(0), ">=", staticMethod)
+                , Recipe.BinaryOperator.of(Recipe.Constant.of(0), "<", staticMethod)
+                , Recipe.BinaryOperator.of(Recipe.Constant.of(0), "<=", staticMethod)
+                , Recipe.BinaryOperator.of(Recipe.Constant.of(0), "==", staticMethod)
+                , Recipe.BinaryOperator.of(Recipe.Constant.of(0), "!=", staticMethod)
             );
         }
 

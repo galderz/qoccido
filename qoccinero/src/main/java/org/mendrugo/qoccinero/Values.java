@@ -111,7 +111,7 @@ public class Values
     private static <T> Arbitrary<T> arbitrary(Arbitrary<T> arbitrary, List<T> edgeCases)
     {
         return Arbitraries.frequencyOf(
-            Tuple.of(20, arbitrary),
+            Tuple.of(15, arbitrary),
             Tuple.of(1, Arbitraries.of(edgeCases.asJava()))
         );
     }

@@ -10,7 +10,7 @@ record Constant<T>(ParamType<T> returns, T constant) implements Expression<T>
     @Override
     public String id()
     {
-        return constant.toString();
+        return constant.toString().replace("-", "minus");
     }
 
     @Override
