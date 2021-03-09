@@ -205,37 +205,7 @@ public class Qoccinero implements AutoCloseable
                     .addBinaryOperator(Recipe.BinaryOperator.of(">", float.class))
                     .addBinaryOperator(Recipe.BinaryOperator.of("<", long.class))
                     .addBinaryOperator(Recipe.BinaryOperator.of(">", long.class))
-
-                    // Do not compare exact values returned by *.compare() functions.
-                    // Instead just verify that the returns are > 0 (>= 1), == 0, or < 0 (<= -1)
-                    .addBinaryOperator(
-                        Recipe.BinaryOperator.of(
-                            Recipe.StaticMethod.of("compare", Integer.class)
-                            , ">="
-                            , Recipe.Constant.of(1)
-                        )
-                    )
-                    .addBinaryOperator(
-                        Recipe.BinaryOperator.of(
-                            Recipe.StaticMethod.of("compare", Integer.class)
-                            , "<"
-                            , Recipe.Constant.of(1)
-                        )
-                    )
-                    .addBinaryOperator(
-                        Recipe.BinaryOperator.of(
-                            Recipe.Constant.of(1)
-                            , "<="
-                            , Recipe.StaticMethod.of("compare", Integer.class)
-                        )
-                    )
-                    .addBinaryOperator(
-                        Recipe.BinaryOperator.of(
-                            Recipe.Constant.of(1)
-                            , ">"
-                            , Recipe.StaticMethod.of("compare", Integer.class)
-                        )
-                    )
+                    .addStaticMethod(Recipe.StaticMethod.of("compare", Integer.class))
             );
         }
     }

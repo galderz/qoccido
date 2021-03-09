@@ -15,11 +15,36 @@ public record TypeRecipe(
 
     TypeRecipe addStaticMethod(Recipe.StaticMethod staticMethod)
     {
-        return new TypeRecipe(name, staticMethods.append(staticMethod), binaryOperators);
+        final var computedBinaryOperators = computesAsBinaryOperator(staticMethod);
+        if (computedBinaryOperators.isEmpty())
+        {
+            return new TypeRecipe(name, staticMethods.append(staticMethod), binaryOperators);
+        }
+        else
+        {
+            return new TypeRecipe(name, staticMethods, binaryOperators.appendAll(computedBinaryOperators));
+        }
     }
 
     TypeRecipe addBinaryOperator(Recipe.BinaryOperator binaryOperator)
     {
         return new TypeRecipe(name, staticMethods, binaryOperators.append(binaryOperator));
+    }
+
+    private static List<Recipe.BinaryOperator> computesAsBinaryOperator(Recipe.StaticMethod staticMethod)
+    {
+        if ("compare".equals(staticMethod.methodName()))
+        {
+            // Do not compare exact values returned by *.compare() functions.
+            // Instead just verify that the returns are > 0 (>= 1), == 0, or < 0 (<= -1)
+            return List.of(
+                Recipe.BinaryOperator.of(staticMethod, ">=", Recipe.Constant.of(1))
+                , Recipe.BinaryOperator.of(Recipe.Constant.of(1), "<=", staticMethod) // inverse ^
+                , Recipe.BinaryOperator.of(staticMethod, "<", Recipe.Constant.of(1))
+                , Recipe.BinaryOperator.of(Recipe.Constant.of(1), ">", staticMethod) // inverse ^
+            );
+        }
+
+        return List.of();
     }
 }
