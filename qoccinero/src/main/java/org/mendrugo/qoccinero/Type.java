@@ -32,6 +32,9 @@ public record Type(
         TypeSpec.Builder typeBuilder = TypeSpec.classBuilder(name)
             .addModifiers(Modifier.PUBLIC, Modifier.FINAL);
 
+        Helpers.methods()
+            .forEach(typeBuilder::addMethod);
+
         final var putchar = MethodSpec.methodBuilder("putchar")
             .addAnnotation(ClassName.get("cc.quarkus.qcc.runtime.CNative", "extern"))
             .addModifiers(Modifier.STATIC, Modifier.NATIVE)
@@ -51,9 +54,6 @@ public record Type(
         binaryOperators()
             .map(BinaryOperator::toMethodSpec)
             .forEach(addToMainMethod(mainMethod, typeBuilder));
-
-        binaryOperators()
-            .forEach(binaryOperator -> binaryOperator.appendMethodSpec(typeBuilder));
 
         typeBuilder.addMethod(mainMethod.build());
 

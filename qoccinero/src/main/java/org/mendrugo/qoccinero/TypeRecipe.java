@@ -2,6 +2,7 @@ package org.mendrugo.qoccinero;
 
 import io.vavr.collection.List;
 
+// TODO why not Type.Recipe?
 public record TypeRecipe(
     String name
     , List<Recipe.StaticMethod> staticMethods

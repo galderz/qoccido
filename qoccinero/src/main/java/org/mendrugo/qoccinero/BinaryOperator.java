@@ -1,10 +1,7 @@
 package org.mendrugo.qoccinero;
 
 import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.TypeSpec;
 import io.vavr.Function2;
-
-import javax.lang.model.element.Modifier;
 
 record BinaryOperator(
     Expression<?> left
@@ -45,7 +42,7 @@ record BinaryOperator(
             , right
             , expected2()
             , (v1, v2) -> String.format("%s %s %s", v1, operator, v2)
-            , String.format("test_%s", operatorMethodName())
+            , operatorMethodName()
         );
     }
 
@@ -55,27 +52,9 @@ record BinaryOperator(
             left
             , right
             , expected2()
-            , actual2(operatorMethodName())
-            , String.format("test_%s", operatorMethodName())
+            , (v1, v2) -> String.format("%s(%s, %s)", operatorLiteral(), v1, v2)
+            , operatorMethodName()
         );
-    }
-
-    // TODO create the source directly with all necessary helpers (e.g. predefine them irrespectively)
-    void appendMethodSpec(TypeSpec.Builder type)
-    {
-        if (isLiteralBinaryOperator())
-        {
-            type.addMethod(
-                MethodSpec.methodBuilder(operatorMethodName())
-                    .addModifiers(Modifier.STATIC)
-                    .addParameter(left.returns().type(), "v1")
-                    .addParameter(right.returns().type(), "v2")
-                    .addStatement("return v1 $L v2", operator)
-                    // TODO use return type...
-                    .returns(boolean.class)
-                    .build()
-            );
-        }
     }
 
     private String operatorMethodName()
@@ -94,23 +73,13 @@ record BinaryOperator(
         return invoke.andThen(ret -> Unchecked.<ParamType<Object>>cast(returns).toLiteral().apply(ret));
     }
 
-    private Function2<String, String, String> actual2(String operatorMethodName)
-    {
-        return (v1, v2) -> String.format(
-            "%s(%s, %s)"
-            , operatorMethodName
-            , v1
-            , v2
-        );
-    }
-
     private String operatorLiteral()
     {
         return switch (operator)
         {
-            case "<" -> "less";
+            case "<" -> "isLess";
             case "<=" -> "lessEquals";
-            case ">" -> "greater";
+            case ">" -> "isGreater";
             case ">=" -> "greaterEquals";
             case "==" -> "equals";
             case "!=" -> "notEquals";
