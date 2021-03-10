@@ -61,6 +61,8 @@ public record TypeRecipe(
                 , Recipe.BinaryOperator.of(Recipe.Constant.of(0), "<=", staticMethod)
                 , Recipe.BinaryOperator.of(Recipe.Constant.of(0), "==", staticMethod)
                 , Recipe.BinaryOperator.of(Recipe.Constant.of(0), "!=", staticMethod)
+
+                // , Recipe.BinaryOperator.of(Recipe.Constant.of(0), ">", Recipe.UnaryOperator.of("-", staticMethod))
             );
         }
 

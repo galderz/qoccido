@@ -194,18 +194,21 @@ public class Qoccinero implements AutoCloseable
 
             qoccinero.write(
                 TypeRecipe.of("Arithmetic")
-                    .addStaticMethod(Recipe.StaticMethod.of("doubleToRawLongBits", Double.class))
-                    .addStaticMethod(
-                        Recipe.StaticMethod.of("doubleToRawLongBits", Double.class)
-                            .compose(Recipe.StaticMethod.of("longBitsToDouble", Double.class))
-                    )
-                    .addBinaryOperator(Recipe.BinaryOperator.of("<", double.class))
-                    .addBinaryOperator(Recipe.BinaryOperator.of(">", double.class))
-                    .addBinaryOperator(Recipe.BinaryOperator.of("<", float.class))
-                    .addBinaryOperator(Recipe.BinaryOperator.of(">", float.class))
-                    .addBinaryOperator(Recipe.BinaryOperator.of("<", long.class))
-                    .addBinaryOperator(Recipe.BinaryOperator.of(">", long.class))
-                    .addStaticMethod(Recipe.StaticMethod.of("compare", Integer.class))
+//                    .addStaticMethod(Recipe.StaticMethod.of("doubleToRawLongBits", Double.class))
+//                    .addStaticMethod(
+//                        Recipe.StaticMethod.of("doubleToRawLongBits", Double.class)
+//                            .compose(Recipe.StaticMethod.of("longBitsToDouble", Double.class))
+//                    )
+//                    .addBinaryOperator(Recipe.BinaryOperator.of("<", double.class))
+//                    .addBinaryOperator(Recipe.BinaryOperator.of(">", double.class))
+//                    .addBinaryOperator(Recipe.BinaryOperator.of("<", float.class))
+//                    .addBinaryOperator(Recipe.BinaryOperator.of(">", float.class))
+//                    .addBinaryOperator(Recipe.BinaryOperator.of("<", long.class))
+//                    .addBinaryOperator(Recipe.BinaryOperator.of(">", long.class))
+//                    .addStaticMethod(Recipe.StaticMethod.of("compare", Integer.class))
+
+                    .addBinaryOperator(Recipe.BinaryOperator.of(Recipe.Constant.of(0), ">", Recipe.UnaryOperator.of("-", Recipe.StaticMethod.of("compare", Integer.class))))
+                    //.addBinaryOperator(Recipe.BinaryOperator.of(Recipe.Constant.of(0), ">", Recipe.StaticMethod.of("compare", Integer.class)))
             );
         }
     }

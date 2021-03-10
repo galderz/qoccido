@@ -34,7 +34,8 @@ program := $(targetdir)/a.out
 
 javacmd += java
 # Big enough thread stack size to avoid https://github.com/quarkuscc/qcc/issues/262
-javacmd += -Xss32m
+javacmd += -Xss64m
+javacmd += -XX:+HeapDumpOnOutOfMemoryError
 javadebugcmd += $(javacmd)
 javadebugcmd += -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:4004
 
@@ -91,7 +92,7 @@ clean:
 > cd $(QCC_HOME) && $(mvn-cmd) clean
 .PHONY: clean
 
-debug-qcc: clean $(program)
+debug-qcc: clean $(gen-jar-path)
 > $(call run,$(javadebugcmd))
 .PHONY: debug-qcc
 

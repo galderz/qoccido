@@ -15,6 +15,14 @@ sealed interface Recipe
         }
     }
 
+    final record UnaryOperator(String operator, Recipe recipe) implements Recipe
+    {
+        static UnaryOperator of(String operator, Recipe recipe)
+        {
+            return new UnaryOperator(operator, recipe);
+        }
+    }
+
     final record StaticMethod(String methodName, Class<?> type, StaticMethod before) implements Recipe
     {
         StaticMethod compose(StaticMethod before)

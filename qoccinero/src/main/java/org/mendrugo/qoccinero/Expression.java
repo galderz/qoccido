@@ -1,6 +1,6 @@
 package org.mendrugo.qoccinero;
 
-sealed interface Expression<T> permits Literal, StaticMethod, Constant
+sealed interface Expression<T> permits Literal, StaticMethod, Constant, UnaryOperator
 {
     String id();
 
@@ -23,6 +23,11 @@ sealed interface Expression<T> permits Literal, StaticMethod, Constant
         if (recipe instanceof Recipe.StaticMethod s)
         {
             return StaticMethod.of(s);
+        }
+
+        if (recipe instanceof Recipe.UnaryOperator u)
+        {
+            return UnaryOperator.of(u);
         }
 
         throw new RuntimeException("Unsupported recipe: " + recipe);
