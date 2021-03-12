@@ -2,76 +2,98 @@ package org.mendrugo.qoccinero.impl;
 
 import io.vavr.Function1;
 import io.vavr.Function2;
-import org.mendrugo.qoccinero.Unchecked;
-
-import java.lang.reflect.Method;
 
 public class Invoke
 {
-    static Function1<Object, Object> invoke1(StaticCall call)
+    static Function1<Object, Object> invoke1(Expression expr)
     {
-        final var head = call.params().head();
-
-        if (head instanceof Hole)
+        if (expr instanceof StaticCall staticCall)
         {
-            return invoke1(call.method(), call.type());
+            final var head = staticCall.params().head();
+            final var method = staticCall.method();
+            final Class<?> type = staticCall.type();
+
+            if (head instanceof Hole)
+            {
+                return Reflection.invoke1(method, type);
+            }
+
+            if (head instanceof StaticCall staticBefore)
+            {
+                return Reflection.invoke1(method, type).compose(invoke1(staticBefore));
+            }
         }
 
-        if (head instanceof StaticCall staticCallBefore)
+        if (expr instanceof BinaryCall binaryCall)
         {
-            return invoke1(call.method(), call.type()).compose(invoke1(staticCallBefore));
+            return v ->
+                invoke2(binaryCall.operator()).apply(
+                    invoke1(binaryCall.left()).apply(v)
+                    , invoke1(binaryCall.right()).apply(v)
+                );
         }
 
-        throw new RuntimeException("NYE");
+        if (expr instanceof Constant constant)
+        {
+            return ignore -> constant.value();
+        }
+
+        throw new RuntimeException("NYI");
     }
 
-    private static <T1, R> Function1<T1, R> invoke1(Method method, Class<?> type)
+    static Function2<Object, Object, Object> invoke2(BinaryCall call)
     {
-        return v -> Reflection.invoke(v, method, type);
+        if (call.left() instanceof Hole && call.right() instanceof Hole)
+        {
+            return invoke2(call.operator());
+        }
+
+        if (call.left() instanceof StaticCall staticLeftBefore)
+        {
+            if (call.right() instanceof StaticCall staticRightBefore)
+            {
+                return (a, b) ->
+                    invoke2(call.operator()).apply(
+                        invoke1(staticLeftBefore).apply(a)
+                        , invoke1(staticRightBefore).apply(b)
+                    );
+            }
+        }
+
+        throw new RuntimeException("NYI");
     }
 
-//    static <T1, T2, R> Function2<T1, T2, R> invoke2(BinaryCall call)
-//    {
-//        return switch (call.operator())
-//        {
-//            case "<" -> Invoke::less;
-//            default -> throw new IllegalStateException("Unexpected value: " + call.operator());
-//        };
-//    }
-//
-//    static <V1, V2, T1, T2, R> Function2<V1, V2, R> compose2(
-//        Function0<T1> before1
-//        , Function2<T1, T2, R> binary
-//        , Function2<V1, V2, T2> before2
-//    )
-//    {
-//        return before2.andThen(binary.apply(before1.get()));
-//    }
-
-
-//    static <V1, V2, R> Function2<V1, V2, R> compose2(
-//        Function2<Object, Object, Object> call
-//        , Function1<Object, Object> before1
-//        , Function1<Object, Object> before2
-//    )
-//    {
-//        return (a, b) ->
-//        {
-//
-//        }
-//    }
-
-    private static <T, R> R less(T v1, T v2)
+    private static Function2<Object, Object, Object> invoke2(String operator)
     {
-        return Unchecked.cast(
-            invokeBinary(
-                v1
-                , v2
-                , (d1, d2) -> d1 < d2
-                , (f1, f2) -> f1 < f2
-                , (i1, i2) -> i1 < i2
-                , (l1, l2) -> l1 < l2
-            )
+        return switch (operator)
+        {
+            case "<" -> Invoke::isLess;
+            case "==" -> Invoke::isEquals;
+            default -> throw new IllegalStateException("Unexpected value: " + operator);
+        };
+    }
+
+    private static Boolean isEquals(Object v1, Object v2)
+    {
+        return invokeBinary(
+            v1
+            , v2
+            , Double::equals
+            , Float::equals
+            , Integer::equals
+            , Long::equals
+        );
+    }
+
+    private static Boolean isLess(Object v1, Object v2)
+    {
+        return invokeBinary(
+            v1
+            , v2
+            , (d1, d2) -> d1 < d2
+            , (f1, f2) -> f1 < f2
+            , (i1, i2) -> i1 < i2
+            , (l1, l2) -> l1 < l2
         );
     }
 

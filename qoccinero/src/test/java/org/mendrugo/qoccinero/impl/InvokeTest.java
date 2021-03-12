@@ -26,7 +26,7 @@ public class InvokeTest
      * e.g. Double.doubleToRawLongBits(_)
      */
     @Test
-    void invokeStaticCall()
+    void staticCall()
     {
         final Class<?> type = Double.class;
         final var call = new StaticCall(DOUBLE_TO_RAW_LONG_BITS, type, List.of(new Hole()));
@@ -41,7 +41,7 @@ public class InvokeTest
      * e.g. Double.doubleToRawLongBits(Double.longBitsToDouble(_))
      */
     @Test
-    void invokeStaticCallChainOfTwo()
+    void staticCallChainOfTwo()
     {
         final Class<?> type = Double.class;
 
@@ -59,7 +59,7 @@ public class InvokeTest
      * e.g. Double.doubleToRawLongBits(Double.longBitsToDouble(Double.doubleToRawLongBits(Double.longBitsToDouble(_))))
      */
     @Test
-    void invokeStaticCallChainOfFour()
+    void staticCallChainOfFour()
     {
         final Class<?> type = Double.class;
 
@@ -77,26 +77,69 @@ public class InvokeTest
         );
     }
 
-//    @Test
-//    void binary()
-//    {
-//        assertThat(
-//            Invoke.invoke2(new BinaryCall("<")).apply(1, 2)
-//            , is(true)
-//        );
-//    }
+    /**
+     * e.g. 1 < 2
+     */
+    @Test
+    void binaryCall()
+    {
+        assertThat(
+            Invoke.invoke2(new BinaryCall(new Hole(), "<", new Hole())).apply(1, 2)
+            , is(true)
+        );
+    }
 
+    /**
+     * e.g. Double.doubleToRawLongBits(_) == Double.doubleToRawLongBits(_)
+     */
+    @Test
+    void binaryCallChain()
+    {
+        final var call = new BinaryCall(
+            new StaticCall(DOUBLE_TO_RAW_LONG_BITS, Double.class, List.of(new Hole()))
+            , "=="
+            , new StaticCall(DOUBLE_TO_RAW_LONG_BITS, Double.class, List.of(new Hole()))
+        );
 
-//    @Test
-//    void compose2()
-//    {
-//        assertThat(
-//            Invoke.compose2(
-//                Invoke.invoke2(new BinaryCall("<"))
-//                , (a, b) -> Integer.compare((int) a, (int) b)
-//                , x -> 1
-//            ).apply(1, 2)
-//            , is(true)
-//        );
-//    }
+        assertThat(
+            Invoke.invoke2(call).apply(Double.MAX_VALUE, Double.MAX_VALUE)
+            , is(true)
+        );
+    }
+
+    /**
+     * e.g. C == Double.doubleToRawLongBits(_)
+     */
+    @Test
+    void binaryCallConstantStatic()
+    {
+        final var call = new BinaryCall(
+            new Constant(9218868437227405311L)
+            , "=="
+            , new StaticCall(DOUBLE_TO_RAW_LONG_BITS, Double.class, List.of(new Hole()))
+        );
+
+        assertThat(
+            Invoke.invoke1(call).apply(Double.MAX_VALUE)
+            , is(true)
+        );
+    }
+
+    /**
+     * e.g. Double.doubleToRawLongBits(_) == C
+     */
+    @Test
+    void binaryCallStaticConstant()
+    {
+        final var call = new BinaryCall(
+            new StaticCall(DOUBLE_TO_RAW_LONG_BITS, Double.class, List.of(new Hole()))
+            , "=="
+            , new Constant(9218868437227405311L)
+        );
+
+        assertThat(
+            Invoke.invoke1(call).apply(Double.MAX_VALUE)
+            , is(true)
+        );
+    }
 }
