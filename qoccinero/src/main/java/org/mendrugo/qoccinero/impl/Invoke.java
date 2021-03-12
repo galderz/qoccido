@@ -41,22 +41,33 @@ public class Invoke
         throw new RuntimeException("NYI");
     }
 
-    static Function2<Object, Object, Object> invoke2(BinaryCall call)
+    static Function2<Object, Object, Object> invoke2(Expression expr)
     {
-        if (call.left() instanceof Hole && call.right() instanceof Hole)
+        if (expr instanceof BinaryCall binaryCall)
         {
-            return invoke2(call.operator());
+            if (binaryCall.left() instanceof Hole && binaryCall.right() instanceof Hole)
+            {
+                return invoke2(binaryCall.operator());
+            }
+
+            if (binaryCall.left() instanceof StaticCall staticLeftBefore)
+            {
+                if (binaryCall.right() instanceof StaticCall staticRightBefore)
+                {
+                    return (a, b) ->
+                        invoke2(binaryCall.operator()).apply(
+                            invoke1(staticLeftBefore).apply(a)
+                            , invoke1(staticRightBefore).apply(b)
+                        );
+                }
+            }
         }
 
-        if (call.left() instanceof StaticCall staticLeftBefore)
+        if (expr instanceof StaticCall staticCall)
         {
-            if (call.right() instanceof StaticCall staticRightBefore)
+            if (staticCall.params().head() instanceof Hole && staticCall.params().tail().head() instanceof Hole)
             {
-                return (a, b) ->
-                    invoke2(call.operator()).apply(
-                        invoke1(staticLeftBefore).apply(a)
-                        , invoke1(staticRightBefore).apply(b)
-                    );
+                return Reflection.invoke2(staticCall.method(), staticCall.type());
             }
         }
 

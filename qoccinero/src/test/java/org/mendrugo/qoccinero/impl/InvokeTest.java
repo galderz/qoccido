@@ -8,10 +8,16 @@ import org.junit.jupiter.api.Test;
 import java.lang.reflect.Method;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
 public class InvokeTest
 {
+    private static final Method COMPARE =
+        CheckedFunction2.<String, Class<?>[], Method>of(Integer.class::getMethod)
+            .unchecked()
+            .apply("compare", new Class[]{int.class, int.class});
+
     private static final Method DOUBLE_TO_RAW_LONG_BITS =
         CheckedFunction2.<String, Class<?>[], Method>of(Double.class::getMethod)
             .unchecked()
@@ -140,6 +146,20 @@ public class InvokeTest
         assertThat(
             Invoke.invoke1(call).apply(Double.MAX_VALUE)
             , is(true)
+        );
+    }
+
+    /**
+     * e.g. Integer.compare(_, _)
+     */
+    @Test
+    void biStaticCall()
+    {
+        final var call = new StaticCall(COMPARE, Integer.class, List.of(new Hole(), new Hole()));
+
+        assertThat(
+            Invoke.invoke2(call).apply(123, 123)
+            , is(equalTo(0))
         );
     }
 }
