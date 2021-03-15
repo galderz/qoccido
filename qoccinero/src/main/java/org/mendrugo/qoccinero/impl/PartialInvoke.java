@@ -2,9 +2,8 @@ package org.mendrugo.qoccinero.impl;
 
 import io.vavr.Function1;
 import io.vavr.Function2;
-import io.vavr.collection.List;
 
-public class Invoke
+public class PartialInvoke
 {
     static Function1<Object, Object> invoke1(Expression expr)
     {
@@ -94,9 +93,9 @@ public class Invoke
     {
         return switch (operator)
         {
-            case "==" -> Invoke::isEquals;
-            case "<" -> Invoke::isLess;
-            case ">" -> Invoke::isMore;
+            case "==" -> PartialInvoke::isEquals;
+            case "<" -> PartialInvoke::isLess;
+            case ">" -> PartialInvoke::isMore;
             case "<=" -> (a, b) -> isLess(a, b) || isEquals(a, b);
             default -> throw new IllegalStateException("Unexpected value: " + operator);
         };

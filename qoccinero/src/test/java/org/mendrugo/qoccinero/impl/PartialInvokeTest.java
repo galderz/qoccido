@@ -1,7 +1,6 @@
 package org.mendrugo.qoccinero.impl;
 
 import io.vavr.CheckedFunction2;
-import io.vavr.Function2;
 import io.vavr.collection.List;
 import org.junit.jupiter.api.Test;
 
@@ -11,7 +10,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
-public class InvokeTest
+public class PartialInvokeTest
 {
     private static final Method COMPARE =
         CheckedFunction2.<String, Class<?>[], Method>of(Integer.class::getMethod)
@@ -38,7 +37,7 @@ public class InvokeTest
         final var call = new StaticCall(DOUBLE_TO_RAW_LONG_BITS, type, List.of(new Hole()));
 
         assertThat(
-            Invoke.invoke1(call).apply(Double.MAX_VALUE)
+            PartialInvoke.invoke1(call).apply(Double.MAX_VALUE)
             , is(9218868437227405311L)
         );
     }
@@ -56,7 +55,7 @@ public class InvokeTest
         ));
 
         assertThat(
-            Invoke.invoke1(call).apply(Long.MAX_VALUE)
+            PartialInvoke.invoke1(call).apply(Long.MAX_VALUE)
             , is(Long.MAX_VALUE)
         );
     }
@@ -78,7 +77,7 @@ public class InvokeTest
         ));
 
         assertThat(
-            Invoke.invoke1(call).apply(Long.MAX_VALUE)
+            PartialInvoke.invoke1(call).apply(Long.MAX_VALUE)
             , is(Long.MAX_VALUE)
         );
     }
@@ -90,7 +89,7 @@ public class InvokeTest
     void binaryCall()
     {
         assertThat(
-            Invoke.invoke2(new BinaryCall(new Hole(), "<", new Hole())).apply(1, 2)
+            PartialInvoke.invoke2(new BinaryCall(new Hole(), "<", new Hole())).apply(1, 2)
             , is(true)
         );
     }
@@ -108,7 +107,7 @@ public class InvokeTest
         );
 
         assertThat(
-            Invoke.invoke2(call).apply(Double.MAX_VALUE, Double.MAX_VALUE)
+            PartialInvoke.invoke2(call).apply(Double.MAX_VALUE, Double.MAX_VALUE)
             , is(true)
         );
     }
@@ -126,7 +125,7 @@ public class InvokeTest
         );
 
         assertThat(
-            Invoke.invoke1(call).apply(Double.MAX_VALUE)
+            PartialInvoke.invoke1(call).apply(Double.MAX_VALUE)
             , is(true)
         );
     }
@@ -144,7 +143,7 @@ public class InvokeTest
         );
 
         assertThat(
-            Invoke.invoke1(call).apply(Double.MAX_VALUE)
+            PartialInvoke.invoke1(call).apply(Double.MAX_VALUE)
             , is(true)
         );
     }
@@ -158,7 +157,7 @@ public class InvokeTest
         final var call = new StaticCall(COMPARE, Integer.class, List.of(new Hole(), new Hole()));
 
         assertThat(
-            Invoke.invoke2(call).apply(123, 123)
+            PartialInvoke.invoke2(call).apply(123, 123)
             , is(equalTo(0))
         );
     }
@@ -176,7 +175,7 @@ public class InvokeTest
         );
 
         assertThat(
-            Invoke.invoke2(call).apply(2, 1)
+            PartialInvoke.invoke2(call).apply(2, 1)
             , is(true)
         );
     }
@@ -194,7 +193,7 @@ public class InvokeTest
         );
 
         assertThat(
-            Invoke.invoke2(call).apply(3, 3)
+            PartialInvoke.invoke2(call).apply(3, 3)
             , is(true)
         );
     }
