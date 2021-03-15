@@ -50,17 +50,54 @@ public class Invoke
                 return invoke2(binaryCall.operator());
             }
 
-            if (binaryCall.left() instanceof StaticCall staticLeftBefore)
+            if (binaryCall.left() instanceof StaticCall && binaryCall.right() instanceof StaticCall)
             {
-                if (binaryCall.right() instanceof StaticCall staticRightBefore)
-                {
-                    return (a, b) ->
-                        invoke2(binaryCall.operator()).apply(
-                            invoke1(staticLeftBefore).apply(a)
-                            , invoke1(staticRightBefore).apply(b)
-                        );
-                }
+                return (a, b) ->
+                    invoke2(binaryCall.operator()).apply(
+                        invoke1(binaryCall.left()).apply(a)
+                        , invoke1(binaryCall.right()).apply(b)
+                    );
             }
+
+            if (binaryCall.left() instanceof StaticCall && binaryCall.right() instanceof Constant)
+            {
+                return (a, b) ->
+                    invoke2(binaryCall.operator()).apply(
+                        invoke2(binaryCall.left()).apply(a, b)
+                        , invoke1(binaryCall.right()).apply(null)
+                    );
+            }
+
+//            return (a, b) ->
+//                invoke2(binaryCall.operator()).apply(
+//                    invoke1(binaryCall.left()).apply(a)
+//                    , invoke1(binaryCall.right()).apply(b)
+//                );
+
+//            if (binaryCall.left() instanceof StaticCall staticLeftBefore)
+//            {
+//                if (binaryCall.right() instanceof StaticCall staticRightBefore)
+//                {
+//                    return (a, b) ->
+//                        invoke2(binaryCall.operator()).apply(
+//                            invoke1(staticLeftBefore).apply(a)
+//                            , invoke1(staticRightBefore).apply(b)
+//                        );
+//                }
+//            }
+
+//            if (binaryCall.left() instanceof Constant constantLeft)
+//            {
+//                if (binaryCall.right() instanceof StaticCall staticRightBefore)
+//                {
+//                    // TODO duplicate above?
+//                    return (a, b) ->
+//                        invoke2(binaryCall.operator()).apply(
+//                            invoke1(constantLeft).apply(a)
+//                            , invoke1(staticRightBefore).apply(b)
+//                        );
+//                }
+//            }
         }
 
         if (expr instanceof StaticCall staticCall)
@@ -78,8 +115,9 @@ public class Invoke
     {
         return switch (operator)
         {
-            case "<" -> Invoke::isLess;
             case "==" -> Invoke::isEquals;
+            case "<" -> Invoke::isLess;
+            case ">" -> Invoke::isMore;
             default -> throw new IllegalStateException("Unexpected value: " + operator);
         };
     }
@@ -105,6 +143,18 @@ public class Invoke
             , (f1, f2) -> f1 < f2
             , (i1, i2) -> i1 < i2
             , (l1, l2) -> l1 < l2
+        );
+    }
+
+    private static Boolean isMore(Object v1, Object v2)
+    {
+        return invokeBinary(
+            v1
+            , v2
+            , (d1, d2) -> d1 > d2
+            , (f1, f2) -> f1 > f2
+            , (i1, i2) -> i1 > i2
+            , (l1, l2) -> l1 > l2
         );
     }
 

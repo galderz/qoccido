@@ -162,4 +162,24 @@ public class InvokeTest
             , is(equalTo(0))
         );
     }
+
+    /**
+     * e.g. Integer.compare(_, _) > 0
+     */
+    @Test
+    void biStaticCallBinary()
+    {
+        final var call = new BinaryCall(
+            new StaticCall(COMPARE, Integer.class, List.of(new Hole(), new Hole()))
+            , ">"
+            , new Constant(0)
+        );
+
+        assertThat(
+            Invoke.invoke2(call).apply(2, 1)
+            , is(true)
+        );
+    }
+
+    // TODO test 1 == Integer.compare(3, 3)
 }
