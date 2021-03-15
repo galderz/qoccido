@@ -7,3 +7,4 @@ a.out
 *.dot
 .jqwik-database
 target
+out
