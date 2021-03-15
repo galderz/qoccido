@@ -198,5 +198,71 @@ public class PartialInvokeTest
         );
     }
 
-    // TODO 0 >= -Integer.compare(_, _)
+    /**
+     * e.g. -Double.doubleToRawLongBits(_)
+     */
+    @Test
+    void unaryStaticCall()
+    {
+        final Class<?> type = Double.class;
+        final var call = new UnaryCall("-", new StaticCall(DOUBLE_TO_RAW_LONG_BITS, type, List.of(new Hole())));
+
+        assertThat(
+            PartialInvoke.invoke1(call).apply(Double.MAX_VALUE)
+            , is(-9218868437227405311L)
+        );
+    }
+
+//    /**
+//     * e.g. -Integer.compare(_, _)
+//     */
+//    @Test
+//    void unaryStaticBiCall()
+//    {
+//        final var call = new UnaryCall(
+//            "-"
+//            , new StaticCall(COMPARE, Integer.class, List.of(new Hole(), new Hole()))
+//        );
+//
+//        assertThat(
+//            PartialInvoke.invoke2(call).apply(8, 4)
+//            , is(equalTo(-1))
+//        );
+//    }
+//
+//    /**
+//     * e.g. 0 >= -Integer.compare(_, _)
+//     */
+//    @Test
+//    void binaryConstantUnaryStaticBiCall()
+//    {
+//        final var call = new BinaryCall(
+//            new Constant(0)
+//            , ">="
+//            , new UnaryCall("-", new StaticCall(COMPARE, Integer.class, List.of(new Hole(), new Hole())))
+//        );
+//
+//        assertThat(
+//            PartialInvoke.invoke2(call).apply(8, 4)
+//            , is(true)
+//        );
+//    }
+
+//    /**
+//     * e.g. -Integer.compare(_, _) < 1
+//     */
+//    @Test
+//    void binaryUnaryStaticBiCallConstant()
+//    {
+//        final var call = new BinaryCall(
+//            new UnaryCall("-", new StaticCall(COMPARE, Integer.class, List.of(new Hole(), new Hole())))
+//            , "<"
+//            , new Constant(1)
+//        );
+//
+//        assertThat(
+//            PartialInvoke.invoke2(call).apply(4, 8)
+//            , is(true)
+//        );
+//    }
 }

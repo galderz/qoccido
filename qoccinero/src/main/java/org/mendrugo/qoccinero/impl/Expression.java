@@ -5,15 +5,5 @@ public sealed interface Expression permits
     , Constant
     , Hole
     , StaticCall
-{
-//    static boolean isHole(Expression expr)
-//    {
-//        return expr instanceof Hole;
-//    }
-//
-//    static boolean isStaticCall(Expression expr)
-//    {
-//        return expr instanceof StaticCall;
-//    }
-}
-
+    , UnaryCall
+{}

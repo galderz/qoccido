@@ -7,6 +7,20 @@ public class PartialInvoke
 {
     static Function1<Object, Object> invoke1(Expression expr)
     {
+        if (expr instanceof BinaryCall binaryCall)
+        {
+            return v ->
+                invoke2(binaryCall.operator()).apply(
+                    invoke1(binaryCall.left()).apply(v)
+                    , invoke1(binaryCall.right()).apply(v)
+                );
+        }
+
+        if (expr instanceof Constant constant)
+        {
+            return ignore -> constant.value();
+        }
+
         if (expr instanceof StaticCall staticCall)
         {
             final var head = staticCall.params().head();
@@ -24,18 +38,9 @@ public class PartialInvoke
             }
         }
 
-        if (expr instanceof BinaryCall binaryCall)
+        if (expr instanceof UnaryCall unaryCall)
         {
-            return v ->
-                invoke2(binaryCall.operator()).apply(
-                    invoke1(binaryCall.left()).apply(v)
-                    , invoke1(binaryCall.right()).apply(v)
-                );
-        }
-
-        if (expr instanceof Constant constant)
-        {
-            return ignore -> constant.value();
+            return invoke1(unaryCall.operator()).compose(invoke1(unaryCall.expr()));
         }
 
         throw new RuntimeException("NYI");
@@ -87,6 +92,57 @@ public class PartialInvoke
         }
 
         throw new RuntimeException("NYI");
+    }
+
+    private static Function1<Object, Object> invoke1(String operator)
+    {
+        return switch (operator)
+        {
+            case "-" -> PartialInvoke::negate;
+            default -> throw new IllegalStateException("Unexpected value: " + operator);
+        };
+    }
+
+    private static Number negate(Object v1)
+    {
+        return invokeUnary(
+            v1
+            , (d1) -> -d1
+            , (f1) -> -f1
+            , (i1) -> -i1
+            , (l1) -> -l1
+        );
+    }
+
+    private static Number invokeUnary(
+        Object v1
+        , Function1<Double, Double> doubleFn
+        , Function1<Float, Float> floatFn
+        , Function1<Integer, Integer> intFn
+        , Function1<Long, Long> longFn
+    )
+    {
+        if (v1 instanceof Double d1)
+        {
+            return doubleFn.apply(d1);
+        }
+        else if (v1 instanceof Float f1)
+        {
+            return floatFn.apply(f1);
+        }
+        else if (v1 instanceof Integer i1)
+        {
+            return intFn.apply(i1);
+        }
+        else if (v1 instanceof Long l1)
+        {
+            return longFn.apply(l1);
+        }
+
+        throw new RuntimeException(String.format(
+            "invoke unary not handled for combination of v1 class %s"
+            , v1.getClass()
+        ));
     }
 
     private static Function2<Object, Object, Object> invoke2(String operator)
