@@ -91,6 +91,11 @@ public class PartialInvoke
             }
         }
 
+        if (expr instanceof UnaryCall unaryCall)
+        {
+            return invoke2(unaryCall.expr()).andThen(invoke1(unaryCall.operator()));
+        }
+
         throw new RuntimeException("NYI");
     }
 

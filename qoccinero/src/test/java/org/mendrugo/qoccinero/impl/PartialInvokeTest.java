@@ -213,23 +213,23 @@ public class PartialInvokeTest
         );
     }
 
-//    /**
-//     * e.g. -Integer.compare(_, _)
-//     */
-//    @Test
-//    void unaryStaticBiCall()
-//    {
-//        final var call = new UnaryCall(
-//            "-"
-//            , new StaticCall(COMPARE, Integer.class, List.of(new Hole(), new Hole()))
-//        );
-//
-//        assertThat(
-//            PartialInvoke.invoke2(call).apply(8, 4)
-//            , is(equalTo(-1))
-//        );
-//    }
-//
+    /**
+     * e.g. -Integer.compare(_, _)
+     */
+    @Test
+    void unaryStaticBiCall()
+    {
+        final var call = new UnaryCall(
+            "-"
+            , new StaticCall(COMPARE, Integer.class, List.of(new Hole(), new Hole()))
+        );
+
+        assertThat(
+            PartialInvoke.invoke2(call).apply(8, 4)
+            , is(equalTo(-1))
+        );
+    }
+
 //    /**
 //     * e.g. 0 >= -Integer.compare(_, _)
 //     */
