@@ -135,7 +135,7 @@ public class InvokeTest
      * e.g. Double.doubleToRawLongBits(_) == C
      */
     @Test
-    void binaryCallStaticConstant()
+    void binaryStaticCallConstant()
     {
         final var call = new BinaryCall(
             new StaticCall(DOUBLE_TO_RAW_LONG_BITS, Double.class, List.of(new Hole()))
@@ -153,7 +153,7 @@ public class InvokeTest
      * e.g. Integer.compare(_, _)
      */
     @Test
-    void biStaticCall()
+    void staticBiCall()
     {
         final var call = new StaticCall(COMPARE, Integer.class, List.of(new Hole(), new Hole()));
 
@@ -167,7 +167,7 @@ public class InvokeTest
      * e.g. Integer.compare(_, _) > 0
      */
     @Test
-    void biStaticCallBinary()
+    void binaryStaticBiCallConstant()
     {
         final var call = new BinaryCall(
             new StaticCall(COMPARE, Integer.class, List.of(new Hole(), new Hole()))
@@ -181,5 +181,23 @@ public class InvokeTest
         );
     }
 
-    // TODO test 1 == Integer.compare(3, 3)
+    /**
+     * e.g. -1 <= Integer.compare(_, _)
+     */
+    @Test
+    void binaryConstantStaticBiCall()
+    {
+        final var call = new BinaryCall(
+            new Constant(-1)
+            , "<="
+            , new StaticCall(COMPARE, Integer.class, List.of(new Hole(), new Hole()))
+        );
+
+        assertThat(
+            Invoke.invoke2(call).apply(3, 3)
+            , is(true)
+        );
+    }
+
+    // TODO 0 >= -Integer.compare(_, _)
 }

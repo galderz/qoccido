@@ -2,6 +2,7 @@ package org.mendrugo.qoccinero.impl;
 
 import io.vavr.Function1;
 import io.vavr.Function2;
+import io.vavr.collection.List;
 
 public class Invoke
 {
@@ -68,36 +69,14 @@ public class Invoke
                     );
             }
 
-//            return (a, b) ->
-//                invoke2(binaryCall.operator()).apply(
-//                    invoke1(binaryCall.left()).apply(a)
-//                    , invoke1(binaryCall.right()).apply(b)
-//                );
-
-//            if (binaryCall.left() instanceof StaticCall staticLeftBefore)
-//            {
-//                if (binaryCall.right() instanceof StaticCall staticRightBefore)
-//                {
-//                    return (a, b) ->
-//                        invoke2(binaryCall.operator()).apply(
-//                            invoke1(staticLeftBefore).apply(a)
-//                            , invoke1(staticRightBefore).apply(b)
-//                        );
-//                }
-//            }
-
-//            if (binaryCall.left() instanceof Constant constantLeft)
-//            {
-//                if (binaryCall.right() instanceof StaticCall staticRightBefore)
-//                {
-//                    // TODO duplicate above?
-//                    return (a, b) ->
-//                        invoke2(binaryCall.operator()).apply(
-//                            invoke1(constantLeft).apply(a)
-//                            , invoke1(staticRightBefore).apply(b)
-//                        );
-//                }
-//            }
+            if (binaryCall.left() instanceof Constant && binaryCall.right() instanceof StaticCall)
+            {
+                return (a, b) ->
+                    invoke2(binaryCall.operator()).apply(
+                        invoke1(binaryCall.left()).apply(null)
+                        , invoke2(binaryCall.right()).apply(a, b)
+                    );
+            }
         }
 
         if (expr instanceof StaticCall staticCall)
@@ -118,6 +97,7 @@ public class Invoke
             case "==" -> Invoke::isEquals;
             case "<" -> Invoke::isLess;
             case ">" -> Invoke::isMore;
+            case "<=" -> (a, b) -> isLess(a, b) || isEquals(a, b);
             default -> throw new IllegalStateException("Unexpected value: " + operator);
         };
     }
