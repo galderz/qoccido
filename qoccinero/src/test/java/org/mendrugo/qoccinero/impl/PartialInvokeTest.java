@@ -248,21 +248,21 @@ public class PartialInvokeTest
         );
     }
 
-//    /**
-//     * e.g. -Integer.compare(_, _) < 1
-//     */
-//    @Test
-//    void binaryUnaryStaticBiCallConstant()
-//    {
-//        final var call = new BinaryCall(
-//            new UnaryCall("-", new StaticCall(COMPARE, Integer.class, List.of(new Hole(), new Hole())))
-//            , "<"
-//            , new Constant(1)
-//        );
-//
-//        assertThat(
-//            PartialInvoke.invoke2(call).apply(4, 8)
-//            , is(true)
-//        );
-//    }
+    /**
+     * e.g. -Integer.compare(_, _) < 1
+     */
+    @Test
+    void binaryUnaryStaticBiCallConstant()
+    {
+        final var call = new BinaryCall(
+            new UnaryCall("-", new StaticCall(COMPARE, Integer.class, List.of(new Hole(), new Hole())))
+            , "<"
+            , new Constant(1)
+        );
+
+        assertThat(
+            PartialInvoke.invoke2(call).apply(8, 4)
+            , is(true)
+        );
+    }
 }
