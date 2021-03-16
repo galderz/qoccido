@@ -55,32 +55,7 @@ public class PartialInvoke
                 return invoke2(binaryCall.operator());
             }
 
-            if (binaryCall.left() instanceof StaticCall && binaryCall.right() instanceof StaticCall)
-            {
-                return (a, b) ->
-                    invoke2(binaryCall.operator()).apply(
-                        invoke1(binaryCall.left()).apply(a)
-                        , invoke1(binaryCall.right()).apply(b)
-                    );
-            }
-
-            if (binaryCall.left() instanceof StaticCall && binaryCall.right() instanceof Constant)
-            {
-                return (a, b) ->
-                    invoke2(binaryCall.operator()).apply(
-                        invoke2(binaryCall.left()).apply(a, b)
-                        , invoke1(binaryCall.right()).apply(null)
-                    );
-            }
-
-            if (binaryCall.left() instanceof Constant && binaryCall.right() instanceof StaticCall)
-            {
-                return (a, b) ->
-                    invoke2(binaryCall.operator()).apply(
-                        invoke1(binaryCall.left()).apply(null)
-                        , invoke2(binaryCall.right()).apply(a, b)
-                    );
-            }
+            return invoke2(binaryCall.left(), binaryCall.operator(), binaryCall.right());
         }
 
         if (expr instanceof StaticCall staticCall)
@@ -96,7 +71,26 @@ public class PartialInvoke
             return invoke2(unaryCall.expr()).andThen(invoke1(unaryCall.operator()));
         }
 
-        throw new RuntimeException("NYI");
+        throw new RuntimeException(String.format("NYI: %s", expr));
+    }
+
+    private static Function2<Object, Object, Object> invoke2(Expression left, String operator, Expression right)
+    {
+        if (left instanceof Constant constant)
+        {
+            return invoke2(right).andThen(invoke2(operator).apply(constant.value()));
+        }
+
+        if (right instanceof Constant constant)
+        {
+            return invoke2(left).andThen(invoke2(operator).reversed().apply(constant.value()));
+        }
+
+        return (a, b) ->
+            invoke2(operator).apply(
+                invoke1(left).apply(a)
+                , invoke1(right).apply(b)
+            );
     }
 
     private static Function1<Object, Object> invoke1(String operator)
@@ -156,8 +150,9 @@ public class PartialInvoke
         {
             case "==" -> PartialInvoke::isEquals;
             case "<" -> PartialInvoke::isLess;
-            case ">" -> PartialInvoke::isMore;
+            case ">" -> PartialInvoke::isGreater;
             case "<=" -> (a, b) -> isLess(a, b) || isEquals(a, b);
+            case ">=" -> (a, b) -> isGreater(a, b) || isEquals(a, b);
             default -> throw new IllegalStateException("Unexpected value: " + operator);
         };
     }
@@ -186,7 +181,7 @@ public class PartialInvoke
         );
     }
 
-    private static Boolean isMore(Object v1, Object v2)
+    private static Boolean isGreater(Object v1, Object v2)
     {
         return invokeBinary(
             v1
