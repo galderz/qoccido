@@ -1,5 +1,8 @@
 package org.mendrugo.qoccinero.impl;
 
+import io.vavr.Function1;
+import io.vavr.Function2;
+
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -10,43 +13,40 @@ final class Show
         return switch (obj.getClass().getName())
         {
             case "java.lang.Double" ->
-                show(showDouble(obj), hexDouble(obj));
+                show()
+                    .apply(show((Double) obj))
+                    .apply(Function1.of(Show::prettyHex).compose(Double::doubleToRawLongBits).apply((Double) obj));
             case "java.lang.Long" ->
-                show(showLong(obj), prettyHex((Long) obj));
+                show()
+                    .apply(show((Long) obj))
+                    .apply(prettyHex((Long) obj));
             default ->
                 throw new RuntimeException("Unexpected type: " + obj.getClass());
         };
     }
 
-    private static String showLong(Object obj)
+    private static String show(Long l)
     {
-        return String.format("%sL", obj);
+        return String.format("%sL", l);
     }
 
-    private static String show(Object value, Object hex)
+    private static Function2<String, String, String> show()
     {
-        return String.format("%s /* %s */", value, hex);
+        return (v, hex) -> String.format("%s /* %s */", v, hex);
     }
 
-    private static String showDouble(Object obj)
+    private static String show(Double d)
     {
-        Double d = (Double) obj;
-
         if (Double.isNaN(d))
             return "Double.NaN";
 
-        if (obj.equals(Double.POSITIVE_INFINITY))
+        if (d.equals(Double.POSITIVE_INFINITY))
             return "Double.POSITIVE_INFINITY";
 
-        if (obj.equals(Double.NEGATIVE_INFINITY))
+        if (d.equals(Double.NEGATIVE_INFINITY))
             return "Double.NEGATIVE_INFINITY";
 
         return Double.toString(d);
-    }
-
-    private static String hexDouble(Object obj)
-    {
-        return prettyHex(Double.doubleToRawLongBits((Double) obj));
     }
 
     private static String prettyHex(long l)
