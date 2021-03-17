@@ -75,4 +75,16 @@ public class ScriptsTest
             , is("Double.doubleToRawLongBits(Double.longBitsToDouble(Double.doubleToRawLongBits(Double.longBitsToDouble(Long.MAX_VALUE))))")
         );
     }
+
+    /**
+     * e.g. 1 < 2
+     */
+    @Test
+    void binaryCall()
+    {
+        assertThat(
+            Scripts.script2(new BinaryCall(new Hole(), "<", new Hole())).apply("1", "2")
+            , is("1 < 2")
+        );
+    }
 }

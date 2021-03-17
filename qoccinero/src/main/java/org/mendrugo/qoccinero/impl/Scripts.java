@@ -1,6 +1,7 @@
 package org.mendrugo.qoccinero.impl;
 
 import io.vavr.Function1;
+import io.vavr.Function2;
 import io.vavr.collection.List;
 
 import java.lang.reflect.Method;
@@ -27,6 +28,21 @@ public class Scripts
         throw new RuntimeException("NYI");
     }
 
+    static Function2<String, String, String> script2(Expression expr)
+    {
+        if (expr instanceof BinaryCall binaryCall)
+        {
+            if (binaryCall.left() instanceof Hole && binaryCall.right() instanceof Hole)
+            {
+                return script2(binaryCall.operator());
+            }
+
+            //return function2(binaryCall.left(), binaryCall.operator(), binaryCall.right());
+        }
+
+        throw new RuntimeException(String.format("NYI: %s", expr));
+    }
+
     private static Function1<String, String> script1(Method method, Class<?> type)
     {
         return v -> String.format(
@@ -35,6 +51,11 @@ public class Scripts
             , method.getName()
             , v
         );
+    }
+
+    private static Function2<String, String, String> script2(String operator)
+    {
+        return (a, b) -> String.format("%s %s %s", a, operator, b);
     }
 
     private static String showClassName(Class<?> type)
