@@ -32,10 +32,7 @@ public class Functions
                 return Reflection.invoke1(method, type);
             }
 
-            if (head instanceof StaticCall staticBefore)
-            {
-                return Reflection.invoke1(method, type).compose(function1(staticBefore));
-            }
+            return Reflection.invoke1(method, type).compose(function1(head));
         }
 
         if (expr instanceof UnaryCall unaryCall)
