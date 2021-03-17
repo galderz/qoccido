@@ -20,6 +20,8 @@ public class Scripts
             {
                 return script1(method, type);
             }
+
+            return script1(method, type).compose(script1(head));
         }
 
         throw new RuntimeException("NYI");

@@ -17,6 +17,11 @@ public class ScriptsTest
             .unchecked()
             .apply("doubleToRawLongBits", new Class[]{double.class});
 
+    private static final Method LONG_BITS_TO_DOUBLE =
+        CheckedFunction2.<String, Class<?>[], Method>of(Double.class::getMethod)
+            .unchecked()
+            .apply("longBitsToDouble", new Class[]{long.class});
+
     /**
      * e.g. Double.doubleToRawLongBits(_)
      */
@@ -29,6 +34,24 @@ public class ScriptsTest
         assertThat(
             Scripts.script1(call).apply("Double.MAX_VALUE")
             , is(equalTo("Double.doubleToRawLongBits(Double.MAX_VALUE)"))
+        );
+    }
+
+    /**
+     * e.g. Double.doubleToRawLongBits(Double.longBitsToDouble(_))
+     */
+    @Test
+    void staticCallChainOfTwo()
+    {
+        final Class<?> type = Double.class;
+
+        final var call = new StaticCall(DOUBLE_TO_RAW_LONG_BITS, type, List.of(
+            new StaticCall(LONG_BITS_TO_DOUBLE, type, List.of(new Hole()))
+        ));
+
+        assertThat(
+            Scripts.script1(call).apply("Long.MAX_VALUE")
+            , is(equalTo("Double.doubleToRawLongBits(Double.longBitsToDouble(Long.MAX_VALUE))"))
         );
     }
 }
