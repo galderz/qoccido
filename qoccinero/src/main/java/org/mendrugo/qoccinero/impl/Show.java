@@ -11,9 +11,16 @@ final class Show
         {
             case "java.lang.Double" ->
                 show(showDouble(obj), hexDouble(obj));
+            case "java.lang.Long" ->
+                show(showLong(obj), prettyHex((Long) obj));
             default ->
-                throw new RuntimeException("Unexpected type: " + obj);
+                throw new RuntimeException("Unexpected type: " + obj.getClass());
         };
+    }
+
+    private static String showLong(Object obj)
+    {
+        return String.format("%sL", obj);
     }
 
     private static String show(Object value, Object hex)

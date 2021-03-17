@@ -11,6 +11,20 @@ public class Scripts
 {
     static Function1<String, String> script1(Expression expr)
     {
+        if (expr instanceof BinaryCall binaryCall)
+        {
+            return v ->
+                script2(binaryCall.operator()).apply(
+                    script1(binaryCall.left()).apply(v)
+                    , script1(binaryCall.right()).apply(v)
+                );
+        }
+
+        if (expr instanceof Constant constant)
+        {
+            return ignore -> Show.show(constant.value());
+        }
+
         if (expr instanceof StaticCall staticCall)
         {
             final var head = staticCall.params().head();
@@ -23,6 +37,11 @@ public class Scripts
             }
 
             return script1(method, type).compose(script1(head));
+        }
+
+        if (expr instanceof UnaryCall unaryCall)
+        {
+            return script1(unaryCall.operator()).compose(script1(unaryCall.expr()));
         }
 
         throw new RuntimeException("NYI");
@@ -41,6 +60,11 @@ public class Scripts
         }
 
         throw new RuntimeException(String.format("NYI: %s", expr));
+    }
+
+    private static Function1<String, String> script1(String operator)
+    {
+        return v -> String.format("%s%s", operator, v);
     }
 
     private static Function1<String, String> script1(Method method, Class<?> type)
