@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import java.lang.reflect.Method;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
 public class ScriptsTest
@@ -33,7 +32,7 @@ public class ScriptsTest
 
         assertThat(
             Scripts.script1(call).apply("Double.MAX_VALUE")
-            , is(equalTo("Double.doubleToRawLongBits(Double.MAX_VALUE)"))
+            , is("Double.doubleToRawLongBits(Double.MAX_VALUE)")
         );
     }
 
@@ -51,7 +50,7 @@ public class ScriptsTest
 
         assertThat(
             Scripts.script1(call).apply("Long.MAX_VALUE")
-            , is(equalTo("Double.doubleToRawLongBits(Double.longBitsToDouble(Long.MAX_VALUE))"))
+            , is("Double.doubleToRawLongBits(Double.longBitsToDouble(Long.MAX_VALUE))")
         );
     }
 
