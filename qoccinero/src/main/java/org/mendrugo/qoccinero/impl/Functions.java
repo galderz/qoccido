@@ -3,16 +3,16 @@ package org.mendrugo.qoccinero.impl;
 import io.vavr.Function1;
 import io.vavr.Function2;
 
-public class PartialInvoke
+public class Functions
 {
-    static Function1<Object, Object> invoke1(Expression expr)
+    static Function1<Object, Object> function1(Expression expr)
     {
         if (expr instanceof BinaryCall binaryCall)
         {
             return v ->
-                invoke2(binaryCall.operator()).apply(
-                    invoke1(binaryCall.left()).apply(v)
-                    , invoke1(binaryCall.right()).apply(v)
+                function2(binaryCall.operator()).apply(
+                    function1(binaryCall.left()).apply(v)
+                    , function1(binaryCall.right()).apply(v)
                 );
         }
 
@@ -34,28 +34,28 @@ public class PartialInvoke
 
             if (head instanceof StaticCall staticBefore)
             {
-                return Reflection.invoke1(method, type).compose(invoke1(staticBefore));
+                return Reflection.invoke1(method, type).compose(function1(staticBefore));
             }
         }
 
         if (expr instanceof UnaryCall unaryCall)
         {
-            return invoke1(unaryCall.operator()).compose(invoke1(unaryCall.expr()));
+            return function1(unaryCall.operator()).compose(function1(unaryCall.expr()));
         }
 
         throw new RuntimeException("NYI");
     }
 
-    static Function2<Object, Object, Object> invoke2(Expression expr)
+    static Function2<Object, Object, Object> function2(Expression expr)
     {
         if (expr instanceof BinaryCall binaryCall)
         {
             if (binaryCall.left() instanceof Hole && binaryCall.right() instanceof Hole)
             {
-                return invoke2(binaryCall.operator());
+                return function2(binaryCall.operator());
             }
 
-            return invoke2(binaryCall.left(), binaryCall.operator(), binaryCall.right());
+            return function2(binaryCall.left(), binaryCall.operator(), binaryCall.right());
         }
 
         if (expr instanceof StaticCall staticCall)
@@ -68,36 +68,36 @@ public class PartialInvoke
 
         if (expr instanceof UnaryCall unaryCall)
         {
-            return invoke2(unaryCall.expr()).andThen(invoke1(unaryCall.operator()));
+            return function2(unaryCall.expr()).andThen(function1(unaryCall.operator()));
         }
 
         throw new RuntimeException(String.format("NYI: %s", expr));
     }
 
-    private static Function2<Object, Object, Object> invoke2(Expression left, String operator, Expression right)
+    private static Function2<Object, Object, Object> function2(Expression left, String operator, Expression right)
     {
         if (left instanceof Constant constant)
         {
-            return invoke2(right).andThen(invoke2(operator).apply(constant.value()));
+            return function2(right).andThen(function2(operator).apply(constant.value()));
         }
 
         if (right instanceof Constant constant)
         {
-            return invoke2(left).andThen(invoke2(operator).reversed().apply(constant.value()));
+            return function2(left).andThen(function2(operator).reversed().apply(constant.value()));
         }
 
         return (a, b) ->
-            invoke2(operator).apply(
-                invoke1(left).apply(a)
-                , invoke1(right).apply(b)
+            function2(operator).apply(
+                function1(left).apply(a)
+                , function1(right).apply(b)
             );
     }
 
-    private static Function1<Object, Object> invoke1(String operator)
+    private static Function1<Object, Object> function1(String operator)
     {
         return switch (operator)
         {
-            case "-" -> PartialInvoke::negate;
+            case "-" -> Functions::negate;
             default -> throw new IllegalStateException("Unexpected value: " + operator);
         };
     }
@@ -144,13 +144,13 @@ public class PartialInvoke
         ));
     }
 
-    private static Function2<Object, Object, Object> invoke2(String operator)
+    private static Function2<Object, Object, Object> function2(String operator)
     {
         return switch (operator)
         {
-            case "==" -> PartialInvoke::isEquals;
-            case "<" -> PartialInvoke::isLess;
-            case ">" -> PartialInvoke::isGreater;
+            case "==" -> Functions::isEquals;
+            case "<" -> Functions::isLess;
+            case ">" -> Functions::isGreater;
             case "<=" -> (a, b) -> isLess(a, b) || isEquals(a, b);
             case ">=" -> (a, b) -> isGreater(a, b) || isEquals(a, b);
             default -> throw new IllegalStateException("Unexpected value: " + operator);

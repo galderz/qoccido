@@ -10,7 +10,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
-public class PartialInvokeTest
+public class FunctionsTest
 {
     private static final Method COMPARE =
         CheckedFunction2.<String, Class<?>[], Method>of(Integer.class::getMethod)
@@ -37,7 +37,7 @@ public class PartialInvokeTest
         final var call = new StaticCall(DOUBLE_TO_RAW_LONG_BITS, type, List.of(new Hole()));
 
         assertThat(
-            PartialInvoke.invoke1(call).apply(Double.MAX_VALUE)
+            Functions.function1(call).apply(Double.MAX_VALUE)
             , is(9218868437227405311L)
         );
     }
@@ -55,7 +55,7 @@ public class PartialInvokeTest
         ));
 
         assertThat(
-            PartialInvoke.invoke1(call).apply(Long.MAX_VALUE)
+            Functions.function1(call).apply(Long.MAX_VALUE)
             , is(Long.MAX_VALUE)
         );
     }
@@ -77,7 +77,7 @@ public class PartialInvokeTest
         ));
 
         assertThat(
-            PartialInvoke.invoke1(call).apply(Long.MAX_VALUE)
+            Functions.function1(call).apply(Long.MAX_VALUE)
             , is(Long.MAX_VALUE)
         );
     }
@@ -89,7 +89,7 @@ public class PartialInvokeTest
     void binaryCall()
     {
         assertThat(
-            PartialInvoke.invoke2(new BinaryCall(new Hole(), "<", new Hole())).apply(1, 2)
+            Functions.function2(new BinaryCall(new Hole(), "<", new Hole())).apply(1, 2)
             , is(true)
         );
     }
@@ -107,7 +107,7 @@ public class PartialInvokeTest
         );
 
         assertThat(
-            PartialInvoke.invoke2(call).apply(Double.MAX_VALUE, Double.MAX_VALUE)
+            Functions.function2(call).apply(Double.MAX_VALUE, Double.MAX_VALUE)
             , is(true)
         );
     }
@@ -125,7 +125,7 @@ public class PartialInvokeTest
         );
 
         assertThat(
-            PartialInvoke.invoke1(call).apply(Double.MAX_VALUE)
+            Functions.function1(call).apply(Double.MAX_VALUE)
             , is(true)
         );
     }
@@ -143,7 +143,7 @@ public class PartialInvokeTest
         );
 
         assertThat(
-            PartialInvoke.invoke1(call).apply(Double.MAX_VALUE)
+            Functions.function1(call).apply(Double.MAX_VALUE)
             , is(true)
         );
     }
@@ -157,7 +157,7 @@ public class PartialInvokeTest
         final var call = new StaticCall(COMPARE, Integer.class, List.of(new Hole(), new Hole()));
 
         assertThat(
-            PartialInvoke.invoke2(call).apply(123, 123)
+            Functions.function2(call).apply(123, 123)
             , is(equalTo(0))
         );
     }
@@ -175,7 +175,7 @@ public class PartialInvokeTest
         );
 
         assertThat(
-            PartialInvoke.invoke2(call).apply(2, 1)
+            Functions.function2(call).apply(2, 1)
             , is(true)
         );
     }
@@ -193,7 +193,7 @@ public class PartialInvokeTest
         );
 
         assertThat(
-            PartialInvoke.invoke2(call).apply(3, 3)
+            Functions.function2(call).apply(3, 3)
             , is(true)
         );
     }
@@ -208,7 +208,7 @@ public class PartialInvokeTest
         final var call = new UnaryCall("-", new StaticCall(DOUBLE_TO_RAW_LONG_BITS, type, List.of(new Hole())));
 
         assertThat(
-            PartialInvoke.invoke1(call).apply(Double.MAX_VALUE)
+            Functions.function1(call).apply(Double.MAX_VALUE)
             , is(-9218868437227405311L)
         );
     }
@@ -225,7 +225,7 @@ public class PartialInvokeTest
         );
 
         assertThat(
-            PartialInvoke.invoke2(call).apply(8, 4)
+            Functions.function2(call).apply(8, 4)
             , is(equalTo(-1))
         );
     }
@@ -243,7 +243,7 @@ public class PartialInvokeTest
         );
 
         assertThat(
-            PartialInvoke.invoke2(call).apply(8, 4)
+            Functions.function2(call).apply(8, 4)
             , is(true)
         );
     }
@@ -261,7 +261,7 @@ public class PartialInvokeTest
         );
 
         assertThat(
-            PartialInvoke.invoke2(call).apply(8, 4)
+            Functions.function2(call).apply(8, 4)
             , is(true)
         );
     }
