@@ -1,7 +1,6 @@
 package org.mendrugo.qoccinero.impl;
 
 import io.vavr.Function1;
-import io.vavr.Function2;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -13,29 +12,29 @@ final class Show
         return switch (obj.getClass().getName())
         {
             case "java.lang.Double" ->
-                show()
-                    .apply(show((Double) obj))
-                    .apply(Function1.of(Show::prettyHex).compose(Double::doubleToRawLongBits).apply((Double) obj));
+                show((Double) obj, Show::showDouble, Function1.of(Show::prettyHex).compose(Double::doubleToRawLongBits));
             case "java.lang.Long" ->
-                show()
-                    .apply(show((Long) obj))
-                    .apply(prettyHex((Long) obj));
+                show((Long) obj, Show::showLong, Show::prettyHex);
             default ->
                 throw new RuntimeException("Unexpected type: " + obj.getClass());
         };
     }
 
-    private static String show(Long l)
+    private static <T> String show(T obj, Function1<T, String> toLiteral, Function1<T, String> toHex)
+    {
+        return String.format(
+            "%s /* %s */"
+            , toLiteral.apply(obj)
+            , toHex.apply(obj)
+        );
+    }
+
+    private static String showLong(Long l)
     {
         return String.format("%sL", l);
     }
 
-    private static Function2<String, String, String> show()
-    {
-        return (v, hex) -> String.format("%s /* %s */", v, hex);
-    }
-
-    private static String show(Double d)
+    private static String showDouble(Double d)
     {
         if (Double.isNaN(d))
             return "Double.NaN";
