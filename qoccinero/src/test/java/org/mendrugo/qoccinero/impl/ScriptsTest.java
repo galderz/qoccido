@@ -87,4 +87,22 @@ public class ScriptsTest
             , is("1 < 2")
         );
     }
+
+    /**
+     * e.g. Double.doubleToRawLongBits(_) == Double.doubleToRawLongBits(_)
+     */
+    @Test
+    void binaryCallChain()
+    {
+        final var call = new BinaryCall(
+            new StaticCall(DOUBLE_TO_RAW_LONG_BITS, Double.class, List.of(new Hole()))
+            , "=="
+            , new StaticCall(DOUBLE_TO_RAW_LONG_BITS, Double.class, List.of(new Hole()))
+        );
+
+        assertThat(
+            Scripts.script2(call).apply("Double.MAX_VALUE", "Double.MAX_VALUE")
+            , is("Double.doubleToRawLongBits(Double.MAX_VALUE) == Double.doubleToRawLongBits(Double.MAX_VALUE)")
+        );
+    }
 }

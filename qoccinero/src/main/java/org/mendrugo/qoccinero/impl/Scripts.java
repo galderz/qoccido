@@ -37,7 +37,7 @@ public class Scripts
                 return script2(binaryCall.operator());
             }
 
-            //return function2(binaryCall.left(), binaryCall.operator(), binaryCall.right());
+            return script2(binaryCall.left(), binaryCall.operator(), binaryCall.right());
         }
 
         throw new RuntimeException(String.format("NYI: %s", expr));
@@ -56,6 +56,25 @@ public class Scripts
     private static Function2<String, String, String> script2(String operator)
     {
         return (a, b) -> String.format("%s %s %s", a, operator, b);
+    }
+
+    private static Function2<String, String, String> script2(Expression left, String operator, Expression right)
+    {
+        if (left instanceof Constant constant)
+        {
+            return script2(right).andThen(script2(operator).apply(Show.show(constant.value())));
+        }
+
+        if (right instanceof Constant constant)
+        {
+            return script2(left).andThen(script2(operator).reversed().apply(Show.show(constant.value())));
+        }
+
+        return (a, b) ->
+            script2(operator).apply(
+                script1(left).apply(a)
+                , script1(right).apply(b)
+            );
     }
 
     private static String showClassName(Class<?> type)
