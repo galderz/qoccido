@@ -54,4 +54,26 @@ public class ScriptsTest
             , is(equalTo("Double.doubleToRawLongBits(Double.longBitsToDouble(Long.MAX_VALUE))"))
         );
     }
+
+    /**
+     * e.g. Double.doubleToRawLongBits(Double.longBitsToDouble(Double.doubleToRawLongBits(Double.longBitsToDouble(_))))
+     */
+    @Test
+    void staticCallChainOfFour()
+    {
+        final Class<?> type = Double.class;
+
+        final var call = new StaticCall(DOUBLE_TO_RAW_LONG_BITS, type, List.of(
+            new StaticCall(LONG_BITS_TO_DOUBLE, type, List.of(
+                new StaticCall(DOUBLE_TO_RAW_LONG_BITS, type, List.of(
+                    new StaticCall(LONG_BITS_TO_DOUBLE, type, List.of(new Hole()))
+                ))
+            ))
+        ));
+
+        assertThat(
+            Scripts.script1(call).apply("Long.MAX_VALUE")
+            , is("Double.doubleToRawLongBits(Double.longBitsToDouble(Double.doubleToRawLongBits(Double.longBitsToDouble(Long.MAX_VALUE))))")
+        );
+    }
 }
