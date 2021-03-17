@@ -12,9 +12,11 @@ final class Show
         return switch (obj.getClass().getName())
         {
             case "java.lang.Double" ->
-                show((Double) obj, Show::showDouble, Function1.of(Show::prettyHex).compose(Double::doubleToRawLongBits));
+                show((Double) obj, Show::showDouble, Function1.of(Show::hexLong).compose(Double::doubleToRawLongBits));
+            case "java.lang.Integer" ->
+                show((Integer) obj, i -> Integer.toString(i), Show::hexInt);
             case "java.lang.Long" ->
-                show((Long) obj, Show::showLong, Show::prettyHex);
+                show((Long) obj, Show::showLong, Show::hexLong);
             default ->
                 throw new RuntimeException("Unexpected type: " + obj.getClass());
         };
@@ -27,11 +29,6 @@ final class Show
             , toLiteral.apply(obj)
             , toHex.apply(obj)
         );
-    }
-
-    private static String showLong(Long l)
-    {
-        return String.format("%sL", l);
     }
 
     private static String showDouble(Double d)
@@ -48,7 +45,22 @@ final class Show
         return Double.toString(d);
     }
 
-    private static String prettyHex(long l)
+    private static String showLong(Long l)
+    {
+        return String.format("%sL", l);
+    }
+
+    private static String hexInt(int i)
+    {
+        final var hex = Integer.toHexString(i).toUpperCase();
+        final var padding = "0".repeat(8 - hex.length());
+        final var paddedHex = padding + hex;
+        return Stream
+            .of(paddedHex.split("(?<=\\G.{4})"))
+            .collect(Collectors.joining("_", "0x", ""));
+    }
+
+    private static String hexLong(long l)
     {
         final var hex = Long.toHexString(l).toUpperCase();
         final var padding = "0".repeat(16 - hex.length());

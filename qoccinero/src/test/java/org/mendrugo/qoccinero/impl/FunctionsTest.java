@@ -158,6 +158,7 @@ public class FunctionsTest
 
         assertThat(
             Functions.function2(call).apply(123, 123)
+            // TODO unnecessary equalTo
             , is(equalTo(0))
         );
     }
@@ -226,6 +227,7 @@ public class FunctionsTest
 
         assertThat(
             Functions.function2(call).apply(8, 4)
+            // TODO unnecessary equalTo
             , is(equalTo(-1))
         );
     }

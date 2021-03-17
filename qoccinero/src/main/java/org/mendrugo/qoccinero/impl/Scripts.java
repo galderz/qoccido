@@ -59,6 +59,19 @@ public class Scripts
             return script2(binaryCall.left(), binaryCall.operator(), binaryCall.right());
         }
 
+        if (expr instanceof StaticCall staticCall)
+        {
+            if (staticCall.params().head() instanceof Hole && staticCall.params().tail().head() instanceof Hole)
+            {
+                return script2(staticCall.method(), staticCall.type());
+            }
+        }
+
+        if (expr instanceof UnaryCall unaryCall)
+        {
+            return script2(unaryCall.expr()).andThen(script1(unaryCall.operator()));
+        }
+
         throw new RuntimeException(String.format("NYI: %s", expr));
     }
 
@@ -74,6 +87,17 @@ public class Scripts
             , showClassName(type)
             , method.getName()
             , v
+        );
+    }
+
+    private static Function2<String, String, String> script2(Method method, Class<?> type)
+    {
+        return (a, b) -> String.format(
+            "%s.%s(%s, %s)"
+            , showClassName(type)
+            , method.getName()
+            , a
+            , b
         );
     }
 
