@@ -123,4 +123,22 @@ public class ScriptsTest
             , is("9218868437227405311L /* 0x7FEF_FFFF_FFFF_FFFFL */ == Double.doubleToRawLongBits(Double.MAX_VALUE)")
         );
     }
+
+    /**
+     * e.g. Double.doubleToRawLongBits(_) == C
+     */
+    @Test
+    void binaryStaticCallConstant()
+    {
+        final var call = new BinaryCall(
+            new StaticCall(DOUBLE_TO_RAW_LONG_BITS, Double.class, List.of(new Hole()))
+            , "=="
+            , new Constant(9218868437227405311L)
+        );
+
+        assertThat(
+            Scripts.script1(call).apply("Double.MAX_VALUE")
+            , is("Double.doubleToRawLongBits(Double.MAX_VALUE) == 9218868437227405311L /* 0x7FEF_FFFF_FFFF_FFFFL */")
+        );
+    }
 }
