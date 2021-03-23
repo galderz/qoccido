@@ -7,10 +7,9 @@ import org.junit.jupiter.api.Test;
 import java.lang.reflect.Method;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
-public class ScriptsTest
+public class ImplTest
 {
     private static final Method COMPARE =
         CheckedFunction2.<String, Class<?>[], Method>of(Integer.class::getMethod)
@@ -37,6 +36,11 @@ public class ScriptsTest
         final var call = new StaticCall(DOUBLE_TO_RAW_LONG_BITS, type, List.of(new Hole()));
 
         assertThat(
+            Functions.function1(call).apply(Double.MAX_VALUE)
+            , is(9218868437227405311L)
+        );
+
+        assertThat(
             Scripts.script1(call).apply("Double.MAX_VALUE")
             , is("Double.doubleToRawLongBits(Double.MAX_VALUE)")
         );
@@ -53,6 +57,11 @@ public class ScriptsTest
         final var call = new StaticCall(DOUBLE_TO_RAW_LONG_BITS, type, List.of(
             new StaticCall(LONG_BITS_TO_DOUBLE, type, List.of(new Hole()))
         ));
+
+        assertThat(
+            Functions.function1(call).apply(Long.MAX_VALUE)
+            , is(Long.MAX_VALUE)
+        );
 
         assertThat(
             Scripts.script1(call).apply("Long.MAX_VALUE")
@@ -77,6 +86,11 @@ public class ScriptsTest
         ));
 
         assertThat(
+            Functions.function1(call).apply(Long.MAX_VALUE)
+            , is(Long.MAX_VALUE)
+        );
+
+        assertThat(
             Scripts.script1(call).apply("Long.MAX_VALUE")
             , is("Double.doubleToRawLongBits(Double.longBitsToDouble(Double.doubleToRawLongBits(Double.longBitsToDouble(Long.MAX_VALUE))))")
         );
@@ -88,6 +102,11 @@ public class ScriptsTest
     @Test
     void binaryCall()
     {
+        assertThat(
+            Functions.function2(new BinaryCall(new Hole(), "<", new Hole())).apply(1, 2)
+            , is(true)
+        );
+
         assertThat(
             Scripts.script2(new BinaryCall(new Hole(), "<", new Hole())).apply("1", "2")
             , is("1 < 2")
@@ -104,6 +123,11 @@ public class ScriptsTest
             new StaticCall(DOUBLE_TO_RAW_LONG_BITS, Double.class, List.of(new Hole()))
             , "=="
             , new StaticCall(DOUBLE_TO_RAW_LONG_BITS, Double.class, List.of(new Hole()))
+        );
+
+        assertThat(
+            Functions.function2(call).apply(Double.MAX_VALUE, Double.MAX_VALUE)
+            , is(true)
         );
 
         assertThat(
@@ -125,6 +149,11 @@ public class ScriptsTest
         );
 
         assertThat(
+            Functions.function1(call).apply(Double.MAX_VALUE)
+            , is(true)
+        );
+
+        assertThat(
             Scripts.script1(call).apply("Double.MAX_VALUE")
             , is("9218868437227405311L /* 0x7FEF_FFFF_FFFF_FFFFL */ == Double.doubleToRawLongBits(Double.MAX_VALUE)")
         );
@@ -143,6 +172,11 @@ public class ScriptsTest
         );
 
         assertThat(
+            Functions.function1(call).apply(Double.MAX_VALUE)
+            , is(true)
+        );
+
+        assertThat(
             Scripts.script1(call).apply("Double.MAX_VALUE")
             , is("Double.doubleToRawLongBits(Double.MAX_VALUE) == 9218868437227405311L /* 0x7FEF_FFFF_FFFF_FFFFL */")
         );
@@ -155,6 +189,11 @@ public class ScriptsTest
     void staticBiCall()
     {
         final var call = new StaticCall(COMPARE, Integer.class, List.of(new Hole(), new Hole()));
+
+        assertThat(
+            Functions.function2(call).apply(123, 123)
+            , is(0)
+        );
 
         assertThat(
             Scripts.script2(call).apply("123", "123")
@@ -172,6 +211,11 @@ public class ScriptsTest
             new StaticCall(COMPARE, Integer.class, List.of(new Hole(), new Hole()))
             , ">"
             , new Constant(0)
+        );
+
+        assertThat(
+            Functions.function2(call).apply(2, 1)
+            , is(true)
         );
 
         assertThat(
@@ -193,6 +237,11 @@ public class ScriptsTest
         );
 
         assertThat(
+            Functions.function2(call).apply(3, 3)
+            , is(true)
+        );
+
+        assertThat(
             Scripts.script2(call).apply("3", "3")
             , is("-1 /* 0xFFFF_FFFF */ <= Integer.compare(3, 3)")
         );
@@ -206,6 +255,11 @@ public class ScriptsTest
     {
         final Class<?> type = Double.class;
         final var call = new UnaryCall("-", new StaticCall(DOUBLE_TO_RAW_LONG_BITS, type, List.of(new Hole())));
+
+        assertThat(
+            Functions.function1(call).apply(Double.MAX_VALUE)
+            , is(-9218868437227405311L)
+        );
 
         assertThat(
             Scripts.script1(call).apply("Double.MAX_VALUE")
@@ -222,6 +276,11 @@ public class ScriptsTest
         final var call = new UnaryCall(
             "-"
             , new StaticCall(COMPARE, Integer.class, List.of(new Hole(), new Hole()))
+        );
+
+        assertThat(
+            Functions.function2(call).apply(8, 4)
+            , is(-1)
         );
 
         assertThat(
@@ -243,6 +302,11 @@ public class ScriptsTest
         );
 
         assertThat(
+            Functions.function2(call).apply(8, 4)
+            , is(true)
+        );
+
+        assertThat(
             Scripts.script2(call).apply("8", "4")
             , is("0 /* 0x0000_0000 */ >= -Integer.compare(8, 4)")
         );
@@ -258,6 +322,11 @@ public class ScriptsTest
             new UnaryCall("-", new StaticCall(COMPARE, Integer.class, List.of(new Hole(), new Hole())))
             , "<"
             , new Constant(1)
+        );
+
+        assertThat(
+            Functions.function2(call).apply(8, 4)
+            , is(true)
         );
 
         assertThat(
