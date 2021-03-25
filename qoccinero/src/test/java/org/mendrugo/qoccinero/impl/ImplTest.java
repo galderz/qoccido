@@ -44,6 +44,11 @@ public class ImplTest
             Scripts.script1(call).apply("Double.MAX_VALUE")
             , is("Double.doubleToRawLongBits(Double.MAX_VALUE)")
         );
+
+        assertThat(
+            Holes.types(call)
+            , is(List.of(double.class))
+        );
     }
 
     /**
@@ -66,6 +71,11 @@ public class ImplTest
         assertThat(
             Scripts.script1(call).apply("Long.MAX_VALUE")
             , is("Double.doubleToRawLongBits(Double.longBitsToDouble(Long.MAX_VALUE))")
+        );
+
+        assertThat(
+            Holes.types(call)
+            , is(List.of(long.class))
         );
     }
 
@@ -94,6 +104,11 @@ public class ImplTest
             Scripts.script1(call).apply("Long.MAX_VALUE")
             , is("Double.doubleToRawLongBits(Double.longBitsToDouble(Double.doubleToRawLongBits(Double.longBitsToDouble(Long.MAX_VALUE))))")
         );
+
+        assertThat(
+            Holes.types(call)
+            , is(List.of(long.class))
+        );
     }
 
     /**
@@ -102,14 +117,21 @@ public class ImplTest
     @Test
     void binaryCall()
     {
+        var call = new BinaryCall(new Hole(), "<", new Hole());
+
         assertThat(
-            Functions.function2(new BinaryCall(new Hole(), "<", new Hole())).apply(1, 2)
+            Functions.function2(call).apply(1, 2)
             , is(true)
         );
 
         assertThat(
-            Scripts.script2(new BinaryCall(new Hole(), "<", new Hole())).apply("1", "2")
+            Scripts.script2(call).apply("1", "2")
             , is("1 < 2")
+        );
+
+        assertThat(
+            Holes.types(call)
+            , is(List.of(int.class, int.class))
         );
     }
 
@@ -134,6 +156,11 @@ public class ImplTest
             Scripts.script2(call).apply("Double.MAX_VALUE", "Double.MAX_VALUE")
             , is("Double.doubleToRawLongBits(Double.MAX_VALUE) == Double.doubleToRawLongBits(Double.MAX_VALUE)")
         );
+
+        assertThat(
+            Holes.types(call)
+            , is(List.of(double.class, double.class))
+        );
     }
 
     /**
@@ -156,6 +183,11 @@ public class ImplTest
         assertThat(
             Scripts.script1(call).apply("Double.MAX_VALUE")
             , is("9218868437227405311L /* 0x7FEF_FFFF_FFFF_FFFFL */ == Double.doubleToRawLongBits(Double.MAX_VALUE)")
+        );
+
+        assertThat(
+            Holes.types(call)
+            , is(List.of(double.class))
         );
     }
 
@@ -180,6 +212,11 @@ public class ImplTest
             Scripts.script1(call).apply("Double.MAX_VALUE")
             , is("Double.doubleToRawLongBits(Double.MAX_VALUE) == 9218868437227405311L /* 0x7FEF_FFFF_FFFF_FFFFL */")
         );
+
+        assertThat(
+            Holes.types(call)
+            , is(List.of(double.class))
+        );
     }
 
     /**
@@ -198,6 +235,11 @@ public class ImplTest
         assertThat(
             Scripts.script2(call).apply("123", "123")
             , is("Integer.compare(123, 123)")
+        );
+
+        assertThat(
+            Holes.types(call)
+            , is(List.of(int.class, int.class))
         );
     }
 
@@ -222,6 +264,11 @@ public class ImplTest
             Scripts.script2(call).apply("2", "1")
             , is("Integer.compare(2, 1) > 0 /* 0x0000_0000 */")
         );
+
+        assertThat(
+            Holes.types(call)
+            , is(List.of(int.class, int.class))
+        );
     }
 
     /**
@@ -245,6 +292,11 @@ public class ImplTest
             Scripts.script2(call).apply("3", "3")
             , is("-1 /* 0xFFFF_FFFF */ <= Integer.compare(3, 3)")
         );
+
+        assertThat(
+            Holes.types(call)
+            , is(List.of(int.class, int.class))
+        );
     }
 
     /**
@@ -264,6 +316,11 @@ public class ImplTest
         assertThat(
             Scripts.script1(call).apply("Double.MAX_VALUE")
             , is("-Double.doubleToRawLongBits(Double.MAX_VALUE)")
+        );
+
+        assertThat(
+            Holes.types(call)
+            , is(List.of(double.class))
         );
     }
 
@@ -286,6 +343,11 @@ public class ImplTest
         assertThat(
             Scripts.script2(call).apply("8", "4")
             , is("-Integer.compare(8, 4)")
+        );
+
+        assertThat(
+            Holes.types(call)
+            , is(List.of(int.class, int.class))
         );
     }
 
@@ -310,6 +372,11 @@ public class ImplTest
             Scripts.script2(call).apply("8", "4")
             , is("0 /* 0x0000_0000 */ >= -Integer.compare(8, 4)")
         );
+
+        assertThat(
+            Holes.types(call)
+            , is(List.of(int.class, int.class))
+        );
     }
 
     /**
@@ -332,6 +399,11 @@ public class ImplTest
         assertThat(
             Scripts.script2(call).apply("8", "4")
             , is("-Integer.compare(8, 4) < 1 /* 0x0000_0001 */")
+        );
+
+        assertThat(
+            Holes.types(call)
+            , is(List.of(int.class, int.class))
         );
     }
 }

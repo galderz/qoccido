@@ -3,8 +3,10 @@ package org.mendrugo.qoccinero.impl;
 import io.vavr.CheckedFunction2;
 import io.vavr.Function1;
 import io.vavr.Function2;
+import io.vavr.collection.List;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 
 public class Reflection
 {
@@ -22,5 +24,10 @@ public class Reflection
             CheckedFunction2.<Object, Object[], Object>of(method::invoke)
                 .unchecked()
                 .apply(type, new Object[]{a, b});
+    }
+
+    static List<Class<?>> parameterTypes(Method method)
+    {
+        return List.ofAll(Arrays.stream(method.getParameterTypes()));
     }
 }

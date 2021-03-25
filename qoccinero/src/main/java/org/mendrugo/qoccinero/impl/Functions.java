@@ -147,6 +147,7 @@ public class Functions
         {
             case "==" -> Functions::isEquals;
             case "<" -> Functions::isLess;
+            // TODO is greater not required, just change the order of the parameters and do isLess
             case ">" -> Functions::isGreater;
             case "<=" -> (a, b) -> isLess(a, b) || isEquals(a, b);
             case ">=" -> (a, b) -> isGreater(a, b) || isEquals(a, b);
