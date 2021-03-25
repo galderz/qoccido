@@ -8,7 +8,7 @@ import io.vavr.collection.List;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
-public class Reflection
+final class Reflection
 {
     static Function1<Object, Object> invoke1(Method method, Class<?> type)
     {

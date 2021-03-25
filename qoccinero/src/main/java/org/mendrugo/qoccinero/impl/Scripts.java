@@ -7,7 +7,7 @@ import io.vavr.collection.List;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
-public class Scripts
+final class Scripts
 {
     static Function1<String, String> script1(Expression expr)
     {

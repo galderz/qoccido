@@ -1,6 +1,6 @@
 package org.mendrugo.qoccinero.impl;
 
-public class Asserts
+final class Asserts
 {
     static String assertThat(String script, Object returns)
     {

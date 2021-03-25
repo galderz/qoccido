@@ -3,7 +3,7 @@ package org.mendrugo.qoccinero.impl;
 import io.vavr.Function1;
 import io.vavr.Function2;
 
-public class Functions
+final class Functions
 {
     static Function1<Object, Object> function1(Expression expr)
     {

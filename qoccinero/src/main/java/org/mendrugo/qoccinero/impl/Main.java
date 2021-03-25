@@ -1,6 +1,6 @@
 package org.mendrugo.qoccinero.impl;
 
-final class Main
+public final class Main
 {
     static void main()
     {
