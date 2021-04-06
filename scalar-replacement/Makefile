@@ -33,12 +33,16 @@ qcc-jar-main := $(QCC_HOME)/main/target/qcc-main-1.0.0-SNAPSHOT.jar
 qcc-jar-runtime-unwind := $(QCC_HOME)/runtime/unwind/target/qcc-runtime-unwind-1.0.0-SNAPSHOT.jar
 qcc-jar-runtime-main := $(QCC_HOME)/runtime/main/target/qcc-runtime-main-1.0.0-SNAPSHOT.jar
 qcc-jar-runtime-gc-nogc := $(QCC_HOME)/runtime/gc/nogc/target/qcc-runtime-gc-nogc-1.0.0-SNAPSHOT.jar
+qcc-jar-runtime-posix := $(QCC_HOME)/runtime/posix/target/qcc-runtime-posix-1.0.0-SNAPSHOT.jar
+
 qcc-sources := $(shell find $(QCC_HOME)/ -type f -name '*.java')
 qcc-cp-compile := $(qcc-jar-api)
 qcc-boot-jars += $(qcc-cp-compile)
 qcc-boot-jars += $(qcc-jar-runtime-unwind)
 qcc-boot-jars += $(qcc-jar-runtime-main)
 qcc-boot-jars += $(qcc-jar-runtime-gc-nogc)
+qcc-boot-jars += $(qcc-jar-runtime-posix)
+
 qcc-cp-boot = $(subst $(space),:,$(qcc-boot-jars))
 qcc-runtime-jars = $(shell find $(QCC_HOME)/main/target/libs -type f -name '*.jar')
 qcc-cp-runtime = $(qcc-jar-main):$(subst $(space),:,$(qcc-runtime-jars))
