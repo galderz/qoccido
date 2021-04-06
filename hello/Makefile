@@ -23,6 +23,8 @@ javafiles := $(shell find . -type f -name '*.java')
 classfiles := $(patsubst %.java,%.class,$(javafiles))
 
 javacmd := java
+# Big enough thread stack size to avoid https://github.com/quarkuscc/qcc/issues/262
+javacmd += -Xss16m
 javadebugcmd += $(javacmd)
 javadebugcmd += -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:4004
 
@@ -39,8 +41,11 @@ qcc-boot-jars += $(qcc-cp-compile)
 qcc-boot-jars += $(qcc-jar-runtime-unwind)
 qcc-boot-jars += $(qcc-jar-runtime-main)
 qcc-boot-jars += $(qcc-jar-runtime-gc-nogc)
-qcc-boot-jars += $(qcc-jar-runtime-gc-nogc)
 qcc-boot-jars += $(qcc-jar-runtime-posix)
+
+qcc-cp-boot = $(subst $(space),:,$(qcc-boot-jars))
+qcc-runtime-jars = $(shell find $(QCC_HOME)/main/target/libs -type f -name '*.jar')
+qcc-cp-runtime = $(qcc-jar-main):$(subst $(space),:,$(qcc-runtime-jars))
 
 noop=
 space = $(noop) $(noop)
@@ -49,16 +54,10 @@ run: $(program)
 > $(program)
 .PHONY: run
 
-run-classpath:
-> $(eval dependencies := $(shell find $(QCC_HOME)/main/target/libs -type f -name '*.jar'))
-> $(eval qcc-cp-runtime := $(qcc-jar-main):$(subst $(space),:,$(dependencies)))
-.PHONY: run-classpath
-
-$(program): example.jar run-classpath
-> $(eval qcc-cp-boot := $(subst $(space),:,$(qcc-boot-jars)))
+$(program): $(gen-jar-path)
 > $(call run,$(javacmd))
 
-example.jar: $(classfiles)
+$(gen-jar-path): $(classfiles)
 > jar cvfe $@ example $^
 
 %.class: %.java $(qcc-jar-api)
@@ -77,7 +76,7 @@ clean:
 > mvn clean
 .PHONY: clean
 
-debug: run-classpath
+debug:
 > $(call run,$(javadebugcmd))
 .PHONY: debug
 
