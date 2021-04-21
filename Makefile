@@ -38,15 +38,17 @@ git checkout main
 git pull
 endef
 
-install:
+install-qcc:
 > $(call install,$(QCC_HOME))
+
+install-qcc-class-library:
 > $(call install,$(QCC_CL_HOME))
 
 copy-dependencies:
 > cd $(QCC_HOME)
 > mvn -pl main dependency:copy-dependencies -DoutputDirectory=\$${project.build.directory}/libs
 
-refresh: pull install copy-dependencies
+refresh: pull install-qcc install-qcc-class-library copy-dependencies
 
 define install
 cd ${1}
