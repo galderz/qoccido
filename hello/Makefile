@@ -11,6 +11,7 @@ endif
 .RECIPEPREFIX = >
 
 QCC_HOME := /opt/qcc-qcc
+VERSION := 0.1.0-SNAPSHOT
 
 gen-main-name := example.Example
 gen-jar-path := example.jar
@@ -28,12 +29,12 @@ javacmd += -Xss16m
 javadebugcmd += $(javacmd)
 javadebugcmd += -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:4004
 
-qcc-jar-api := $(QCC_HOME)/runtime/api/target/qcc-runtime-api-1.0.0-SNAPSHOT.jar
-qcc-jar-main := $(QCC_HOME)/main/target/qcc-main-1.0.0-SNAPSHOT.jar
-qcc-jar-runtime-unwind := $(QCC_HOME)/runtime/unwind/target/qcc-runtime-unwind-1.0.0-SNAPSHOT.jar
-qcc-jar-runtime-main := $(QCC_HOME)/runtime/main/target/qcc-runtime-main-1.0.0-SNAPSHOT.jar
-qcc-jar-runtime-gc-nogc := $(QCC_HOME)/runtime/gc/nogc/target/qcc-runtime-gc-nogc-1.0.0-SNAPSHOT.jar
-qcc-jar-runtime-posix := $(QCC_HOME)/runtime/posix/target/qcc-runtime-posix-1.0.0-SNAPSHOT.jar
+qcc-jar-api := $(QCC_HOME)/runtime/api/target/qbicc-runtime-api-$(VERSION).jar
+qcc-jar-main := $(QCC_HOME)/main/target/qbicc-main-$(VERSION).jar
+qcc-jar-runtime-unwind := $(QCC_HOME)/runtime/unwind/target/qbicc-runtime-unwind-$(VERSION).jar
+qcc-jar-runtime-main := $(QCC_HOME)/runtime/main/target/qbicc-runtime-main-$(VERSION).jar
+qcc-jar-runtime-gc-nogc := $(QCC_HOME)/runtime/gc/nogc/target/qbicc-runtime-gc-nogc-$(VERSION).jar
+qcc-jar-runtime-posix := $(QCC_HOME)/runtime/posix/target/qbicc-runtime-posix-$(VERSION).jar
 
 qcc-sources := $(shell find $(QCC_HOME)/ -type f -name '*.java')
 qcc-cp-compile := $(qcc-jar-api)
@@ -88,8 +89,8 @@ $(qcc-jar-api): $(qcc-sources)
 define run
 $(1) \
   -classpath $(qcc-cp-runtime) \
-  cc.quarkus.qcc.main.Main \
-  --boot-module-path $(gen-jar-path):/opt/qccrt/qccrt-java.base-11.0.1-SNAPSHOT.jar:$(qcc-cp-boot) \
+  org.qbicc.main.Main \
+  --boot-module-path $(gen-jar-path):/opt/qccrt/qbicc-rt-java.base-11.0.1-SNAPSHOT.jar:$(qcc-cp-boot) \
   --output-path $(targetdir) \
   $(gen-main-name)
 endef
