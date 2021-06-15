@@ -8,10 +8,19 @@ import net.jqwik.api.Tuple;
 
 final class Values
 {
+    static List<?> values(int count, Class<?> type)
+    {
+        return Function2.of(Values::valuesArbitrary).curried()
+            .apply(count)
+            .compose(Values::arbitraryForType)
+            .apply(type);
+    }
+
     static List<List<?>> values(int count, List<Class<?>> types)
     {
         return types.map(
-            Function2.of(Values::valuesArbitrary).apply(count)
+            Function2.of(Values::valuesArbitrary).curried()
+                .apply(count)
                 .compose(Values::arbitraryForType)
         );
     }
@@ -34,6 +43,11 @@ final class Values
     {
         return List.ofAll(arbitrary.sampleStream().limit(count));
     }
+
+//    private static List<?> valuesArbitrary(int count, Arbitrary<?> arbitrary)
+//    {
+//        return List.ofAll(arbitrary.sampleStream().limit(count));
+//    }
 
     private static Arbitrary<Double> doubles()
     {

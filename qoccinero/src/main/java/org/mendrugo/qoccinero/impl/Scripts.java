@@ -9,6 +9,7 @@ import java.util.Arrays;
 
 final class Scripts
 {
+    // TODO consider taking Object and returning String (that way it can solely responsibility of Show)
     static Function1<String, String> script1(Expression expr)
     {
         if (expr instanceof BinaryCall binaryCall)
