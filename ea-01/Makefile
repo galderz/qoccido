@@ -35,6 +35,7 @@ qcc-jar-runtime-unwind := $(QCC_HOME)/runtime/unwind/target/qbicc-runtime-unwind
 qcc-jar-runtime-main := $(QCC_HOME)/runtime/main/target/qbicc-runtime-main-$(VERSION).jar
 qcc-jar-runtime-gc-nogc := $(QCC_HOME)/runtime/gc/nogc/target/qbicc-runtime-gc-nogc-$(VERSION).jar
 qcc-jar-runtime-posix := $(QCC_HOME)/runtime/posix/target/qbicc-runtime-posix-$(VERSION).jar
+qcc-jar-runtime-deserialization := $(QCC_HOME)/runtime/deserialization/target/qbicc-runtime-deserialization-$(VERSION).jar
 
 qcc-sources := $(shell find $(QCC_HOME)/ -type f -name '*.java')
 qcc-cp-compile := $(qcc-jar-api)
@@ -43,6 +44,7 @@ qcc-boot-jars += $(qcc-jar-runtime-unwind)
 qcc-boot-jars += $(qcc-jar-runtime-main)
 qcc-boot-jars += $(qcc-jar-runtime-gc-nogc)
 qcc-boot-jars += $(qcc-jar-runtime-posix)
+qcc-boot-jars += $(qcc-jar-runtime-deserialization)
 
 qcc-cp-boot = $(subst $(space),:,$(qcc-boot-jars))
 qcc-runtime-jars = $(shell find $(QCC_HOME)/main/target/libs -type f -name '*.jar')
