@@ -32,8 +32,8 @@ public class example
 
     static int single(int a, int b, int c)
     {
-        example exampleVar = new example(a, b, c);
-        example tmp = exampleVar;
+        example localVariable = new example(a, b, c);
+        example tmp = localVariable;
         return tmp.fieldA;
     }
 

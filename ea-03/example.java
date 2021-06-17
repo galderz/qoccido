@@ -16,6 +16,8 @@ import static org.qbicc.runtime.CNative.*;
  */
 public class example
 {
+    static example staticVariable;
+
     final int fieldA;
     final int fieldB;
     final int fieldC;
@@ -32,8 +34,8 @@ public class example
 
     static int single(int a, int b, int c)
     {
-        example localVariable = new example(a, b, c);
-        return localVariable.fieldA;
+        staticVariable = new example(a, b, c);
+        return staticVariable.fieldA;
     }
 
     public static void main(String[] args)
