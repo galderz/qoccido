@@ -70,14 +70,17 @@ runjar: example.jar
 > java -jar $<
 .PHONY: run-jar
 
-clean:
+clean: clean-dist
+> cd $(QCC_HOME)
+> mvn clean
+.PHONY: clean
+
+clean-dist:
 > rm -f *.class
 > rm -f *.jar
 > rm -f output.ll
 > rm -drf $(targetdir)
-> cd $(QCC_HOME)
-> mvn clean
-.PHONY: clean
+.PHONY: clean-dist
 
 debug:
 > $(call run,$(javadebugcmd))
@@ -94,5 +97,6 @@ $(1) \
   org.qbicc.main.Main \
   --boot-module-path $(gen-jar-path):/opt/qccrt/qbicc-rt-java.base-11.0.1-SNAPSHOT.jar:$(qcc-cp-boot) \
   --output-path $(targetdir) \
-  $(gen-main-name)
+  $(gen-main-name) \
+  | tee console.log
 endef

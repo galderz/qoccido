@@ -8,3 +8,4 @@ a.out
 .jqwik-database
 target
 out
+*.log

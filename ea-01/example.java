@@ -32,8 +32,8 @@ public class example
 
     static int single(int a, int b, int c)
     {
-        example obj = new example(a, b, c);
-        return obj.fieldA;
+        example exampleVar = new example(a, b, c);
+        return exampleVar.fieldA;
     }
 
     public static void main(String[] args)
