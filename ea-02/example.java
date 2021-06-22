@@ -1,18 +1,9 @@
 import static org.qbicc.runtime.CNative.*;
 
 /**
- * An example to achieve stack allocation of 'example' object.
- *
- * From:
- *   %L0 = call i8 addrspace(1)* (i8 addrspace(1)*, i64, i32) @exact.org.qbicc.runtime.gc.nogc.NoGcHelpers.allocate.ref.1.class.java-lang-Object.2.s64.s32(i8 a
- * ddrspace(1)* %thr0, i64 16, i32 8), !dbg !34
- *
- * To:
- *   %L0 = alloca %T.example, i32 1, align 8
- *
- * Note:
- * With further analysis, the object access can be strength reduced,
- * and the creation of object may be eliminated.
+ * An example to see the effects of local variable assignment.
+ * A deferred node should be set between the local variable,
+ * and the variable to which the new object is assigned.
  */
 public class example
 {
