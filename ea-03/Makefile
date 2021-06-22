@@ -13,6 +13,9 @@ endif
 QCC_HOME := /opt/qcc-qcc
 VERSION := 0.1.0-SNAPSHOT
 
+BYTEMAN_HOME := /opt/byteman
+byteman-jar := $(BYTEMAN_HOME)/lib/byteman.jar
+
 gen-main-name := example
 gen-jar-path := example.jar
 
@@ -93,6 +96,7 @@ $(qcc-jar-api): $(qcc-sources)
 
 define run
 $(1) \
+  -javaagent:$(byteman-jar)=boot:$(byteman-jar),script:logging.btm \
   -classpath $(qcc-cp-runtime) \
   org.qbicc.main.Main \
   --boot-module-path $(gen-jar-path):/opt/qccrt/qbicc-rt-java.base-11.0.1-SNAPSHOT.jar:$(qcc-cp-boot) \
