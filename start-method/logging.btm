@@ -1,0 +1,18 @@
+RULE ea bbb new
+CLASS DelegatingBasicBlockBuilder
+METHOD startMethod
+AT EXIT
+IF $this.getCurrentElement().toString().contains("example.first()")
+DO traceln("(" + Thread.currentThread().getName() + ") start method " + $this.getCurrentElement().toString() + " with " + $1.toString())
+ENDRULE
+
+RULE param value toString
+CLASS Object
+METHOD toString
+AT RETURN
+BIND
+  isPV = org.qbicc.graph.ParameterValue.class.isInstance($this);
+  aPV : org.qbicc.graph.ParameterValue = (isPV ? $this : null);
+IF (isPV)
+DO $! = aPV.label
+ENDRULE
