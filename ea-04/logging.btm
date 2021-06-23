@@ -1,0 +1,124 @@
+RULE set up ea bbb
+CLASS EscapeAnalysisBasicBlockBuilder
+METHOD <init>
+AT EXIT
+IF $2.getCurrentElement().toString().contains("first")
+DO
+  link("threadName", Thread.currentThread().getName());
+  traceln("(" + Thread.currentThread().getName() + ") construct EscapeAnalysisBBB for " + $2.getCurrentElement().toString())
+ENDRULE
+
+RULE ea bbb new
+CLASS DelegatingBasicBlockBuilder
+METHOD new_
+AT EXIT
+BIND
+  isEA = org.qbicc.plugin.opt.EscapeAnalysisBasicBlockBuilder.class.isInstance($this);
+  threadName = linked("threadName");
+IF
+  isEA
+  AND
+  Thread.currentThread().getName().equals(threadName)
+DO
+  traceln("(" + Thread.currentThread().getName() + ") exit new_(" + $1.toString() + ") with " + $!);
+ENDRULE
+
+RULE ea bbb constructor
+CLASS EscapeAnalysisBasicBlockBuilder
+METHOD invokeConstructor
+AT EXIT
+BIND
+  threadName = linked("threadName")
+IF Thread.currentThread().getName().equals(threadName)
+DO traceln("(" + Thread.currentThread().getName() + ") invoke constructor on " + $2.toString() + " returns " + $!)
+ENDRULE
+
+RULE ea bbb instance field of
+CLASS EscapeAnalysisBasicBlockBuilder
+METHOD instanceFieldOf
+AT ENTRY
+BIND
+  threadName = linked("threadName")
+IF Thread.currentThread().getName().equals(threadName)
+DO traceln("(" + Thread.currentThread().getName() + ") entry instanceFieldOf for handle " + $1.toString() + " -> " + $1.getValueDependency(0))
+ENDRULE
+
+RULE ea bbb load
+CLASS DelegatingBasicBlockBuilder
+METHOD load
+AT EXIT
+BIND
+  isEA = org.qbicc.plugin.opt.EscapeAnalysisBasicBlockBuilder.class.isInstance($this);
+  threadName = linked("threadName");
+IF
+  isEA
+  AND
+  Thread.currentThread().getName().equals(threadName)
+DO
+  traceln("(" + Thread.currentThread().getName() + ") exit load(" + $1.toString() + ") with " + $!);
+ENDRULE
+
+RULE ea bbb call
+CLASS EscapeAnalysisBasicBlockBuilder
+METHOD call
+AT ENTRY
+BIND
+  threadName = linked("threadName")
+IF Thread.currentThread().getName().equals(threadName)
+DO traceln("(" + Thread.currentThread().getName() + ") entry call " + $1.toString() + " with arguments " + $2.toString())
+ENDRULE
+
+RULE ea bbb begin
+CLASS DelegatingBasicBlockBuilder
+METHOD begin
+AT EXIT
+BIND
+  isEA = org.qbicc.plugin.opt.EscapeAnalysisBasicBlockBuilder.class.isInstance($this);
+  threadName = linked("threadName");
+IF
+  isEA
+  AND
+  Thread.currentThread().getName().equals(threadName)
+DO
+  traceln("(" + Thread.currentThread().getName() + ") exit begin(" + $1.toString() + ") with " + $!);
+ENDRULE
+
+RULE cg field edges
+CLASS EscapeAnalysis$ConnectionGraph
+METHOD addFieldEdges
+AT ENTRY
+BIND
+  threadName = linked("threadName")
+IF Thread.currentThread().getName().equals(threadName)
+DO traceln("(" + Thread.currentThread().getName() + ") add field edges from " + $1.toString() + " to " + $2.toString())
+ENDRULE
+
+RULE cg global escape
+CLASS EscapeAnalysis$ConnectionGraph
+METHOD setGlobalEscape
+AT ENTRY
+BIND
+  threadName = linked("threadName")
+IF Thread.currentThread().getName().equals(threadName)
+DO traceln("(" + Thread.currentThread().getName() + ") set " + $1.toString() + " to GLOBAL_ESCAPE")
+ENDRULE
+
+RULE cg no escape
+CLASS EscapeAnalysis$ConnectionGraph
+METHOD setNoEscape
+AT ENTRY
+BIND
+  threadName = linked("threadName")
+IF Thread.currentThread().getName().equals(threadName)
+DO traceln("(" + Thread.currentThread().getName() + ") set " + $1.toString() + " to NO_ESCAPE")
+ENDRULE
+
+RULE cg fix points-to
+CLASS EscapeAnalysis$ConnectionGraph
+METHOD fixPointsToIfNeeded
+AT ENTRY
+BIND
+  threadName = linked("threadName")
+IF Thread.currentThread().getName().equals(threadName)
+DO traceln("(" + Thread.currentThread().getName() + ") fix points-to edge from " + $2.toString() + " to " + $1.toString())
+ENDRULE
