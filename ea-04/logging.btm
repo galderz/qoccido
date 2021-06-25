@@ -115,10 +115,14 @@ ENDRULE
 
 RULE cg fix points-to
 CLASS EscapeAnalysis$ConnectionGraph
-METHOD fixPointsToIfNeeded
-AT ENTRY
+METHOD fixMissingPointsToIfNeeded
+AT RETURN
 BIND
-  threadName = linked("threadName")
-IF Thread.currentThread().getName().equals(threadName)
-DO traceln("(" + Thread.currentThread().getName() + ") fix points-to edge from " + $2.toString() + " to " + $1.toString())
+  threadName = linked("threadName");
+  success = $!;
+IF
+  Thread.currentThread().getName().equals(threadName)
+  AND
+  success
+DO traceln("(" + Thread.currentThread().getName() + ") fixed points-to edge from " + $1.toString() + " to " + $2.toString())
 ENDRULE
