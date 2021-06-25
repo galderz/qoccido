@@ -65,11 +65,11 @@ run: $(program)
 $(program): $(gen-jar-path)
 > $(call run,$(javacmd))
 
-debug:
+debug: $(gen-jar-path)
 > $(call run,$(javadebugcmd))
 .PHONY: debug
 
-verbose:
+verbose: $(gen-jar-path)
 > $(call run,$(javaverbosecmd))
 .PHONY: verbose
 
@@ -102,6 +102,7 @@ $(qcc-jar-api): $(qcc-sources)
 
 define run
 $(1) \
+  -Dorg.jboss.byteman.transform.all=true \
   -javaagent:$(byteman-jar)=boot:$(byteman-jar),script:logging.btm \
   -classpath $(qcc-cp-runtime) \
   org.qbicc.main.Main \

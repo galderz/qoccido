@@ -31,6 +31,8 @@ javacmd += java
 javacmd += -Xss16m
 javadebugcmd += $(javacmd)
 javadebugcmd += -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:4004
+javaverbosecmd += $(javacmd)
+javaverbosecmd += -Dorg.jboss.byteman.verbose=true
 
 qcc-jar-api := $(QCC_HOME)/runtime/api/target/qbicc-runtime-api-$(VERSION).jar
 qcc-jar-main := $(QCC_HOME)/main/target/qbicc-main-$(VERSION).jar
@@ -63,6 +65,14 @@ run: $(program)
 $(program): $(gen-jar-path)
 > $(call run,$(javacmd))
 
+debug: $(gen-jar-path)
+> $(call run,$(javadebugcmd))
+.PHONY: debug
+
+verbose: $(gen-jar-path)
+> $(call run,$(javaverbosecmd))
+.PHONY: verbose
+
 $(gen-jar-path): $(classfiles)
 > jar cvfe $@ example $^
 
@@ -85,10 +95,6 @@ clean-dist:
 > rm -drf $(targetdir)
 .PHONY: clean-dist
 
-debug:
-> $(call run,$(javadebugcmd))
-.PHONY: debug
-
 $(qcc-jar-api): $(qcc-sources)
 > cd $(QCC_HOME)
 > mvn -DskipTests=true install
@@ -96,6 +102,7 @@ $(qcc-jar-api): $(qcc-sources)
 
 define run
 $(1) \
+  -Dorg.jboss.byteman.transform.all=true \
   -javaagent:$(byteman-jar)=boot:$(byteman-jar),script:logging.btm \
   -classpath $(qcc-cp-runtime) \
   org.qbicc.main.Main \
