@@ -20,7 +20,8 @@ gen-main-name := example
 gen-jar-path := example.jar
 
 currentdir := $(notdir $(shell pwd))
-targetdir := /tmp/qoccido/$(currentdir)
+qoccidodir := /tmp/qoccido
+targetdir := $(qoccidodir)/$(currentdir)
 bitcode := output.ll
 program := $(targetdir)/a.out
 javafiles := $(shell find . -type f -name '*.java')
@@ -54,6 +55,9 @@ qcc-boot-jars += $(qcc-jar-runtime-deserialization)
 qcc-cp-boot = $(subst $(space),:,$(qcc-boot-jars))
 qcc-runtime-jars = $(shell find $(QCC_HOME)/main/target/libs -type f -name '*.jar')
 qcc-cp-runtime = $(qcc-jar-main):$(subst $(space),:,$(qcc-runtime-jars))
+
+dotfiles := $(shell find . -type f -name '*.dot')
+svgfiles := $(patsubst %.dot,%.svg,$(dotfiles))
 
 noop=
 space = $(noop) $(noop)
@@ -93,6 +97,9 @@ clean-dist:
 > rm -f *.jar
 > rm -f output.ll
 > rm -drf $(targetdir)
+> rm -f *.dot
+> rm -f *.svg
+> rm -f trace*.log
 .PHONY: clean-dist
 
 $(qcc-jar-api): $(qcc-sources)
@@ -100,10 +107,16 @@ $(qcc-jar-api): $(qcc-sources)
 > mvn -DskipTests=true install
 > mvn dependency:copy-dependencies -DoutputDirectory=target/libs
 
+%.svg: %.dot
+> dot -Tsvg $< > $@
+
+graphs: $(svgfiles)
+.PHONY: graphs
+
 define run
 $(1) \
   -Dorg.jboss.byteman.transform.all=true \
-  -javaagent:$(byteman-jar)=boot:$(byteman-jar),script:logging.btm \
+  -javaagent:$(byteman-jar)=boot:$(byteman-jar),script:logging.btm,script:cg.btm \
   -classpath $(qcc-cp-runtime) \
   org.qbicc.main.Main \
   --boot-module-path $(gen-jar-path):/opt/qccrt/qbicc-rt-java.base-11.0.1-SNAPSHOT.jar:$(qcc-cp-boot) \

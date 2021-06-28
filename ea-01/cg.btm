@@ -1,0 +1,53 @@
+RULE begin cg
+CLASS EscapeAnalysisBasicBlockBuilder
+METHOD <init>
+AT EXIT
+BIND
+  method = $2.getCurrentElement().toString().replaceAll("[\\.\\[(/;)]", "_")
+IF
+  $2.getCurrentElement().toString().startsWith("example")
+DO
+  traceOpen($2.getCurrentElement(), method + ".dot");
+  trace($2.getCurrentElement(), "digraph " + method + " {\n");
+ENDRULE
+
+RULE cg field edge if absent
+CLASS EscapeAnalysis
+METHOD addFieldEdgeIfAbsent
+AT EXIT
+BIND
+  obj = $2.toString().replaceAll("[\\.@]", "_");
+  field = $3.toString().replaceAll("[\\.@]", "_");
+  success = $!;
+IF
+  $1.toString().startsWith("example")
+  AND
+  success
+DO
+  trace($1, obj + " -> " + field + " [label = \"F\"]\n");
+ENDRULE
+
+RULE cg points-to edge if absent
+CLASS EscapeAnalysis
+METHOD addPointsToEdgeIfAbsent
+AT EXIT
+BIND
+  ref = $2.toString().replaceAll("[\\.@]", "_");
+  obj = $3.toString().replaceAll("[\\.@]", "_");
+  success = $!;
+IF
+  $1.toString().startsWith("example")
+  AND
+  success
+DO
+  trace($1, ref + " -> " + obj + " [label = \"P\"]\n");
+ENDRULE
+
+RULE close cg graph
+CLASS EscapeAnalysis
+METHOD methodExit
+AT EXIT
+IF
+  $1.toString().startsWith("example")
+DO trace($1, "}\n")
+ENDRULE

@@ -9,3 +9,4 @@ a.out
 target
 out
 *.log
+*.svg
