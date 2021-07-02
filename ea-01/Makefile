@@ -62,18 +62,18 @@ svgfiles := $(patsubst %.dot,%.svg,$(dotfiles))
 noop=
 space = $(noop) $(noop)
 
-run: $(program)
+run: clean-dot $(program)
 > $(program)
 .PHONY: run
 
 $(program): $(gen-jar-path)
 > $(call run,$(javacmd))
 
-debug: $(gen-jar-path)
+debug: clean-dot $(gen-jar-path)
 > $(call run,$(javadebugcmd))
 .PHONY: debug
 
-verbose: $(gen-jar-path)
+verbose: clean-dot $(gen-jar-path)
 > $(call run,$(javaverbosecmd))
 .PHONY: verbose
 
@@ -92,15 +92,19 @@ clean: clean-dist
 > mvn clean
 .PHONY: clean
 
-clean-dist:
+clean-dist: clean-dot
 > rm -f *.class
 > rm -f *.jar
 > rm -f output.ll
 > rm -drf $(targetdir)
-> rm -f *.dot
 > rm -f *.svg
-> rm -f trace*.log
+> rm -f .*.svg
+> rm -f *.log
 .PHONY: clean-dist
+
+clean-dot:
+> rm -f *.dot
+.PHONY: clean-dot
 
 $(qcc-jar-api): $(qcc-sources)
 > cd $(QCC_HOME)

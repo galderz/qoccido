@@ -8,116 +8,34 @@ DO
   traceln("(" + Thread.currentThread().getName() + ") construct EscapeAnalysisBBB for " + $2.getCurrentElement().toString())
 ENDRULE
 
-RULE ea bbb new
-CLASS DelegatingBasicBlockBuilder
-METHOD new_
-AT EXIT
-BIND
-  isEA = org.qbicc.plugin.opt.EscapeAnalysisBasicBlockBuilder.class.isInstance($this);
-  threadName = linked("threadName");
-IF
-  isEA
-  AND
-  Thread.currentThread().getName().equals(threadName)
-DO
-  traceln("(" + Thread.currentThread().getName() + ") exit new_(" + $1.toString() + ") with " + $!);
-ENDRULE
-
-RULE ea bbb constructor
+RULE instance field of
 CLASS EscapeAnalysisBasicBlockBuilder
-METHOD invokeConstructor
-AT EXIT
-BIND
-  threadName = linked("threadName")
-IF Thread.currentThread().getName().equals(threadName)
-DO traceln("(" + Thread.currentThread().getName() + ") invoke constructor on " + $2.toString() + " returns " + $!)
+METHOD instanceFieldOf
+AT ENTRY
+IF $this.getCurrentElement().toString().startsWith("example.single")
+DO traceln("(" + Thread.currentThread().getName() + ") instanceFieldOf " + $1.toString())
 ENDRULE
 
-RULE ea bbb store
+RULE store
 CLASS EscapeAnalysisBasicBlockBuilder
 METHOD store
 AT ENTRY
-BIND
-  threadName = linked("threadName")
-IF Thread.currentThread().getName().equals(threadName)
+IF $this.getCurrentElement().toString().startsWith("example.single")
 DO traceln("(" + Thread.currentThread().getName() + ") store " + $2.toString() + " into " + $1.toString())
 ENDRULE
 
-RULE ea bbb instance field of entry
+RULE finish
 CLASS EscapeAnalysisBasicBlockBuilder
-METHOD instanceFieldOf
+METHOD finish
 AT ENTRY
-BIND
-  threadName = linked("threadName")
-IF Thread.currentThread().getName().equals(threadName)
-DO traceln("(" + Thread.currentThread().getName() + ") instanceFieldOf ENTRY for handle " + $1.toString() + " -> " + $1.getValueDependency(0))
+IF $this.getCurrentElement().toString().startsWith("example.single")
+DO traceln("(" + Thread.currentThread().getName() + ") finish " + $this.getCurrentElement().toString())
 ENDRULE
 
-RULE ea bbb instance field of exit
-CLASS EscapeAnalysisBasicBlockBuilder
-METHOD instanceFieldOf
-AT EXIT
-BIND
-  threadName = linked("threadName")
-IF Thread.currentThread().getName().equals(threadName)
-DO traceln("(" + Thread.currentThread().getName() + ") instanceFieldOf EXIT for handle " + $1.toString() + " -> " + $1.getValueDependency(0) + " returns " + $!)
-ENDRULE
-
-RULE ea bbb load
-CLASS DelegatingBasicBlockBuilder
-METHOD load
-AT EXIT
-BIND
-  isEA = org.qbicc.plugin.opt.EscapeAnalysisBasicBlockBuilder.class.isInstance($this);
-  threadName = linked("threadName");
-IF
-  isEA
-  AND
-  Thread.currentThread().getName().equals(threadName)
-DO
-  traceln("(" + Thread.currentThread().getName() + ") exit load(" + $1.toString() + ") with " + $!);
-ENDRULE
-
-RULE cg field edges
-CLASS EscapeAnalysis$ConnectionGraph
-METHOD addFieldEdge
-AT ENTRY
-BIND
-  threadName = linked("threadName")
-IF Thread.currentThread().getName().equals(threadName)
-DO traceln("(" + Thread.currentThread().getName() + ") add field edge from " + $1.toString() + " to " + $2.toString())
-ENDRULE
-
-RULE cg global escape
-CLASS EscapeAnalysis$ConnectionGraph
-METHOD setGlobalEscape
-AT ENTRY
-BIND
-  threadName = linked("threadName")
-IF Thread.currentThread().getName().equals(threadName)
-DO traceln("(" + Thread.currentThread().getName() + ") set " + $1.toString() + " to GLOBAL_ESCAPE")
-ENDRULE
-
-RULE cg no escape
-CLASS EscapeAnalysis$ConnectionGraph
+RULE set no escape
+CLASS EscapeAnalysis
 METHOD setNoEscape
 AT ENTRY
-BIND
-  threadName = linked("threadName")
-IF Thread.currentThread().getName().equals(threadName)
-DO traceln("(" + Thread.currentThread().getName() + ") set " + $1.toString() + " to NO_ESCAPE")
+IF $1.toString().startsWith("example.single")
+DO traceln("(" + Thread.currentThread().getName() + ") set " + $2.toString() + " in " + $1.toString() + " to NO_ESCAPE")
 ENDRULE
-
-#RULE cg fix points-to
-#CLASS EscapeAnalysis$ConnectionGraph
-#METHOD fixPointsToNewIfNeeded
-#AT RETURN
-#BIND
-#  threadName = linked("threadName");
-#  success = $!;
-#IF
-#  Thread.currentThread().getName().equals(threadName)
-#  AND
-#  success
-#DO traceln("(" + Thread.currentThread().getName() + ") fixed points-to edge from " + $1.toString() + " to " + $2.toString())
-#ENDRULE
