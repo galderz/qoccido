@@ -16,6 +16,14 @@ IF $this.getCurrentElement().toString().startsWith("example.single")
 DO traceln("(" + Thread.currentThread().getName() + ") instanceFieldOf " + $1.toString())
 ENDRULE
 
+RULE handle reference
+CLASS EscapeAnalysisBasicBlockBuilder
+METHOD handleInstanceFieldOf
+AT ENTRY
+IF $this.getCurrentElement().toString().startsWith("example.single")
+DO traceln("(" + Thread.currentThread().getName() + ") handleReference " + $1.toString() + " with target " + $3.toString())
+ENDRULE
+
 RULE store
 CLASS EscapeAnalysisBasicBlockBuilder
 METHOD store
@@ -38,4 +46,12 @@ METHOD setNoEscape
 AT ENTRY
 IF $1.toString().startsWith("example.single")
 DO traceln("(" + Thread.currentThread().getName() + ") set " + $2.toString() + " in " + $1.toString() + " to NO_ESCAPE")
+ENDRULE
+
+RULE set global escape
+CLASS EscapeAnalysis
+METHOD setGlobalEscape
+AT ENTRY
+IF $1.toString().startsWith("example.single")
+DO traceln("(" + Thread.currentThread().getName() + ") set " + $2.toString() + " in " + $1.toString() + " to GLOBAL_ESCAPE")
 ENDRULE

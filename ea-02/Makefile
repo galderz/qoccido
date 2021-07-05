@@ -62,18 +62,18 @@ svgfiles := $(patsubst %.dot,%.svg,$(dotfiles))
 noop=
 space = $(noop) $(noop)
 
-run: clean-dot $(program)
+run: $(program)
 > $(program)
 .PHONY: run
 
 $(program): $(gen-jar-path)
 > $(call run,$(javacmd))
 
-debug: clean-dot $(gen-jar-path)
+debug: $(gen-jar-path)
 > $(call run,$(javadebugcmd))
 .PHONY: debug
 
-verbose: clean-dot $(gen-jar-path)
+verbose: $(gen-jar-path)
 > $(call run,$(javaverbosecmd))
 .PHONY: verbose
 
@@ -92,19 +92,17 @@ clean: clean-dist
 > mvn clean
 .PHONY: clean
 
-clean-dist: clean-dot
+clean-dist:
 > rm -f *.class
 > rm -f *.jar
 > rm -f output.ll
 > rm -drf $(targetdir)
+> rm -f *.dot
 > rm -f *.svg
 > rm -f .*.svg
 > rm -f *.log
+> rm -drf methods
 .PHONY: clean-dist
-
-clean-dot:
-> rm -f *.dot
-.PHONY: clean-dot
 
 $(qcc-jar-api): $(qcc-sources)
 > cd $(QCC_HOME)
@@ -117,6 +115,10 @@ $(qcc-jar-api): $(qcc-sources)
 graphs: $(svgfiles)
 .PHONY: graphs
 
+copy-graphs:
+> cp -r $(targetdir)/example/methods .
+.PHONY: copy-graphs
+
 define run
 $(1) \
   -Dorg.jboss.byteman.transform.all=true \
@@ -125,6 +127,7 @@ $(1) \
   org.qbicc.main.Main \
   --boot-module-path $(gen-jar-path):/opt/qccrt/qbicc-rt-java.base-11.0.1-SNAPSHOT.jar:$(qcc-cp-boot) \
   --output-path $(targetdir) \
+  --gen-graph \
   $(gen-main-name) \
   | tee console.log
 endef

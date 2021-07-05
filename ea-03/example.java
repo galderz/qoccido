@@ -9,23 +9,19 @@ public class example
 {
     static example staticVariable;
 
-    final int fieldA;
-    final int fieldB;
-    final int fieldC;
-
-    public example(int a, int b, int c)
-    {
-        this.fieldA = a;
-        this.fieldB = b;
-        this.fieldC = c;
-    }
+    int fieldA;
+    int fieldB;
+    int fieldC;
 
     @extern
     public static native int putchar(int arg);
 
     static int single(int a, int b, int c)
     {
-        staticVariable = new example(a, b, c);
+        staticVariable = new example();
+        staticVariable.fieldA = a;
+        staticVariable.fieldB = b;
+        staticVariable.fieldC = c;
         return staticVariable.fieldA;
     }
 
