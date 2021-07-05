@@ -20,7 +20,8 @@ gen-main-name := example
 gen-jar-path := example.jar
 
 currentdir := $(notdir $(shell pwd))
-targetdir := /tmp/qoccido/$(currentdir)
+qoccidodir := /tmp/qoccido
+targetdir := $(qoccidodir)/$(currentdir)
 bitcode := output.ll
 program := $(targetdir)/a.out
 javafiles := $(shell find . -type f -name '*.java')
@@ -55,21 +56,24 @@ qcc-cp-boot = $(subst $(space),:,$(qcc-boot-jars))
 qcc-runtime-jars = $(shell find $(QCC_HOME)/main/target/libs -type f -name '*.jar')
 qcc-cp-runtime = $(qcc-jar-main):$(subst $(space),:,$(qcc-runtime-jars))
 
+dotfiles := $(shell find . -type f -name '*.dot')
+svgfiles := $(patsubst %.dot,%.svg,$(dotfiles))
+
 noop=
 space = $(noop) $(noop)
 
-run: $(program)
+run: clean-dot $(program)
 > $(program)
 .PHONY: run
 
 $(program): $(gen-jar-path)
 > $(call run,$(javacmd))
 
-debug: $(gen-jar-path)
+debug: clean-dot $(gen-jar-path)
 > $(call run,$(javadebugcmd))
 .PHONY: debug
 
-verbose: $(gen-jar-path)
+verbose: clean-dot $(gen-jar-path)
 > $(call run,$(javaverbosecmd))
 .PHONY: verbose
 
@@ -88,22 +92,35 @@ clean: clean-dist
 > mvn clean
 .PHONY: clean
 
-clean-dist:
+clean-dist: clean-dot
 > rm -f *.class
 > rm -f *.jar
 > rm -f output.ll
 > rm -drf $(targetdir)
+> rm -f *.svg
+> rm -f .*.svg
+> rm -f *.log
 .PHONY: clean-dist
+
+clean-dot:
+> rm -f *.dot
+.PHONY: clean-dot
 
 $(qcc-jar-api): $(qcc-sources)
 > cd $(QCC_HOME)
 > mvn -DskipTests=true install
 > mvn dependency:copy-dependencies -DoutputDirectory=target/libs
 
+%.svg: %.dot
+> dot -Tsvg $< > $@
+
+graphs: $(svgfiles)
+.PHONY: graphs
+
 define run
 $(1) \
   -Dorg.jboss.byteman.transform.all=true \
-  -javaagent:$(byteman-jar)=boot:$(byteman-jar),script:logging.btm \
+  -javaagent:$(byteman-jar)=boot:$(byteman-jar),script:logging.btm,script:cg.btm \
   -classpath $(qcc-cp-runtime) \
   org.qbicc.main.Main \
   --boot-module-path $(gen-jar-path):/opt/qccrt/qbicc-rt-java.base-11.0.1-SNAPSHOT.jar:$(qcc-cp-boot) \

@@ -1,0 +1,41 @@
+RULE set up ea bbb
+CLASS EscapeAnalysisBasicBlockBuilder
+METHOD <init>
+AT EXIT
+IF $2.getCurrentElement().toString().startsWith("example.single")
+DO
+  link("threadName", Thread.currentThread().getName());
+  traceln("(" + Thread.currentThread().getName() + ") construct EscapeAnalysisBBB for " + $2.getCurrentElement().toString())
+ENDRULE
+
+RULE instance field of
+CLASS EscapeAnalysisBasicBlockBuilder
+METHOD instanceFieldOf
+AT ENTRY
+IF $this.getCurrentElement().toString().startsWith("example.single")
+DO traceln("(" + Thread.currentThread().getName() + ") instanceFieldOf " + $1.toString())
+ENDRULE
+
+RULE store
+CLASS EscapeAnalysisBasicBlockBuilder
+METHOD store
+AT ENTRY
+IF $this.getCurrentElement().toString().startsWith("example.single")
+DO traceln("(" + Thread.currentThread().getName() + ") store " + $2.toString() + " into " + $1.toString())
+ENDRULE
+
+RULE finish
+CLASS EscapeAnalysisBasicBlockBuilder
+METHOD finish
+AT ENTRY
+IF $this.getCurrentElement().toString().startsWith("example.single")
+DO traceln("(" + Thread.currentThread().getName() + ") finish " + $this.getCurrentElement().toString())
+ENDRULE
+
+RULE set no escape
+CLASS EscapeAnalysis
+METHOD setNoEscape
+AT ENTRY
+IF $1.toString().startsWith("example.single")
+DO traceln("(" + Thread.currentThread().getName() + ") set " + $2.toString() + " in " + $1.toString() + " to NO_ESCAPE")
+ENDRULE

@@ -7,23 +7,19 @@ import static org.qbicc.runtime.CNative.*;
  */
 public class example
 {
-    final int fieldA;
-    final int fieldB;
-    final int fieldC;
-
-    public example(int a, int b, int c)
-    {
-        this.fieldA = a;
-        this.fieldB = b;
-        this.fieldC = c;
-    }
+    int fieldA;
+    int fieldB;
+    int fieldC;
 
     @extern
     public static native int putchar(int arg);
 
     static int single(int a, int b, int c)
     {
-        example localVariable = new example(a, b, c);
+        example localVariable = new example();
+        localVariable.fieldA = a;
+        localVariable.fieldB = b;
+        localVariable.fieldC = c;
         example tmp = localVariable;
         return tmp.fieldA;
     }
