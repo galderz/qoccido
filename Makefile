@@ -54,3 +54,19 @@ define install
 cd ${1}
 mvn clean install
 endef
+
+ea-examples += ea-01
+ea-examples += ea-02
+ea-examples += ea-03
+ea-examples += ea-04
+ea-examples += ea-05
+
+sync-ea-files:
+> for ex1 in $(ea-examples) ; do \
+>     for ex2 in $(ea-examples) ; do \
+>         rsync -auvh $$ex1/Makefile $$ex2/Makefile ; \
+>         rsync -auvh $$ex1/cg.btm $$ex2/cg.btm ; \
+>         rsync -auvh $$ex1/logging.btm $$ex2/logging.btm ; \
+>     done \
+> done
+.PHONY: sync-ea-files
