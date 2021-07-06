@@ -11,14 +11,16 @@ public class example
     @extern
     public static native int putchar(int arg);
 
-    static int first()
+    static int single()
     {
         example e = new example();
         e.data = 10;
-        return second(e);
+
+        final int result = single2(e);
+        return result;
     }
 
-    static int second(example paramE) {
+    static int single2(example paramE) {
         paramE.exampleRef = new example();
         paramE.exampleRef.data = 20;
         return paramE.exampleRef.data;
@@ -26,6 +28,6 @@ public class example
 
     public static void main(String[] args)
     {
-        putchar(first() == 20 ? '.' : 'F');
+        putchar(single() == 20 ? '.' : 'F');
     }
 }

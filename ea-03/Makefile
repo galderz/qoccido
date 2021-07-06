@@ -56,13 +56,10 @@ qcc-cp-boot = $(subst $(space),:,$(qcc-boot-jars))
 qcc-runtime-jars = $(shell find $(QCC_HOME)/main/target/libs -type f -name '*.jar')
 qcc-cp-runtime = $(qcc-jar-main):$(subst $(space),:,$(qcc-runtime-jars))
 
-dotfiles := $(shell find . -type f -name '*.dot')
-svgfiles := $(patsubst %.dot,%.svg,$(dotfiles))
-
 noop=
 space = $(noop) $(noop)
 
-run: $(program)
+run: clean-dot $(program)
 > $(program)
 .PHONY: run
 
@@ -92,27 +89,28 @@ clean: clean-dist
 > mvn clean
 .PHONY: clean
 
-clean-dist:
+clean-dist: clean-dot
 > rm -f *.class
 > rm -f *.jar
 > rm -f output.ll
 > rm -drf $(targetdir)
-> rm -f *.dot
 > rm -f *.svg
 > rm -f .*.svg
 > rm -f *.log
 > rm -drf methods
 .PHONY: clean-dist
 
+clean-dot:
+> rm -f *.dot
+.PHONY: clean-dot
+
 $(qcc-jar-api): $(qcc-sources)
 > cd $(QCC_HOME)
 > mvn -DskipTests=true install
 > mvn dependency:copy-dependencies -DoutputDirectory=target/libs
 
-%.svg: %.dot
-> dot -Tsvg $< > $@
-
-graphs: $(svgfiles)
+graphs: copy-graphs
+> find . -iname '*.dot' -exec bash -c 'dot -Tsvg "{}" > "{}".svg' \;
 .PHONY: graphs
 
 copy-graphs:

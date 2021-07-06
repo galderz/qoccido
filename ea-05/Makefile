@@ -20,7 +20,8 @@ gen-main-name := example
 gen-jar-path := example.jar
 
 currentdir := $(notdir $(shell pwd))
-targetdir := /tmp/qoccido/$(currentdir)
+qoccidodir := /tmp/qoccido
+targetdir := $(qoccidodir)/$(currentdir)
 bitcode := output.ll
 program := $(targetdir)/a.out
 javafiles := $(shell find . -type f -name '*.java')
@@ -58,7 +59,7 @@ qcc-cp-runtime = $(qcc-jar-main):$(subst $(space),:,$(qcc-runtime-jars))
 noop=
 space = $(noop) $(noop)
 
-run: $(program)
+run: clean-dot $(program)
 > $(program)
 .PHONY: run
 
@@ -88,26 +89,43 @@ clean: clean-dist
 > mvn clean
 .PHONY: clean
 
-clean-dist:
+clean-dist: clean-dot
 > rm -f *.class
 > rm -f *.jar
 > rm -f output.ll
 > rm -drf $(targetdir)
+> rm -f *.svg
+> rm -f .*.svg
+> rm -f *.log
+> rm -drf methods
 .PHONY: clean-dist
+
+clean-dot:
+> rm -f *.dot
+.PHONY: clean-dot
 
 $(qcc-jar-api): $(qcc-sources)
 > cd $(QCC_HOME)
 > mvn -DskipTests=true install
 > mvn dependency:copy-dependencies -DoutputDirectory=target/libs
 
+graphs: copy-graphs
+> find . -iname '*.dot' -exec bash -c 'dot -Tsvg "{}" > "{}".svg' \;
+.PHONY: graphs
+
+copy-graphs:
+> cp -r $(targetdir)/example/methods .
+.PHONY: copy-graphs
+
 define run
 $(1) \
   -Dorg.jboss.byteman.transform.all=true \
-  -javaagent:$(byteman-jar)=boot:$(byteman-jar),script:logging.btm \
+  -javaagent:$(byteman-jar)=boot:$(byteman-jar),script:logging.btm,script:cg.btm \
   -classpath $(qcc-cp-runtime) \
   org.qbicc.main.Main \
   --boot-module-path $(gen-jar-path):/opt/qccrt/qbicc-rt-java.base-11.0.1-SNAPSHOT.jar:$(qcc-cp-boot) \
   --output-path $(targetdir) \
+  --gen-graph \
   $(gen-main-name) \
   | tee console.log
 endef
