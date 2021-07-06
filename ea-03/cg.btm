@@ -12,42 +12,42 @@ DO
 ENDRULE
 
 RULE cg field edge if absent
-CLASS EscapeAnalysis
+CLASS EscapeAnalysis$ConnectionGraph
 METHOD addFieldEdgeIfAbsent
 AT EXIT
 BIND
-  obj = $2.toString().replaceAll("[\\.@]", "_");
-  field = $3.toString().replaceAll("[\\.@]", "_");
+  obj = $1.toString().replaceAll("[\\.@]", "_");
+  field = $2.toString().replaceAll("[\\.@]", "_");
   success = $!;
 IF
-  $1.toString().startsWith("example")
+  $this.element.toString().startsWith("example")
   AND
   success
 DO
-  trace($1, obj + " -> " + field + " [label = \"F\"]\n");
+  trace($this.element, obj + " -> " + field + " [label = \"F\"]\n");
 ENDRULE
 
 RULE cg points-to edge if absent
-CLASS EscapeAnalysis
+CLASS EscapeAnalysis$ConnectionGraph
 METHOD addPointsToEdgeIfAbsent
 AT EXIT
 BIND
-  ref = $2.toString().replaceAll("[\\.@]", "_");
-  obj = $3.toString().replaceAll("[\\.@]", "_");
+  ref = $1.toString().replaceAll("[\\.@]", "_");
+  obj = $2.toString().replaceAll("[\\.@]", "_");
   success = $!;
 IF
-  $1.toString().startsWith("example")
+  $this.element.toString().startsWith("example")
   AND
   success
 DO
-  trace($1, ref + " -> " + obj + " [label = \"P\"]\n");
+  trace($this.element, ref + " -> " + obj + " [label = \"P\"]\n");
 ENDRULE
 
 RULE close cg graph
-CLASS EscapeAnalysis
+CLASS EscapeAnalysis$ConnectionGraph
 METHOD methodExit
 AT EXIT
 IF
-  $1.toString().startsWith("example")
-DO trace($1, "}\n")
+  $this.element.toString().startsWith("example")
+DO trace($this.element, "}\n")
 ENDRULE

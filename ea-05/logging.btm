@@ -49,25 +49,25 @@ DO traceln("(" + Thread.currentThread().getName() + ") finish " + $this.getCurre
 ENDRULE
 
 RULE set arg escape
-CLASS EscapeAnalysis
+CLASS EscapeAnalysis$ConnectionGraph
 METHOD setArgEscape
 AT ENTRY
-IF $1.toString().startsWith("example.single")
-DO traceln("(" + Thread.currentThread().getName() + ") set " + $2.toString() + " in " + $1.toString() + " to ARG_ESCAPE")
+IF $this.element.toString().startsWith("example.single")
+DO traceln("(" + Thread.currentThread().getName() + ") set " + $1.toString() + " in " + $this.element.toString() + " to ARG_ESCAPE")
 ENDRULE
 
 RULE set global escape
-CLASS EscapeAnalysis
+CLASS EscapeAnalysis$ConnectionGraph
 METHOD setGlobalEscape
 AT ENTRY
-IF $1.toString().startsWith("example.single")
-DO traceln("(" + Thread.currentThread().getName() + ") set " + $2.toString() + " in " + $1.toString() + " to GLOBAL_ESCAPE")
+IF $this.element.toString().startsWith("example.single")
+DO traceln("(" + Thread.currentThread().getName() + ") set " + $1.toString() + " in " + $this.element.toString() + " to GLOBAL_ESCAPE")
 ENDRULE
 
 RULE set no escape
 CLASS EscapeAnalysis
 METHOD setNoEscape
 AT ENTRY
-IF $1.toString().startsWith("example.single")
-DO traceln("(" + Thread.currentThread().getName() + ") set " + $2.toString() + " in " + $1.toString() + " to NO_ESCAPE")
+IF $this.element.toString().startsWith("example.single")
+DO traceln("(" + Thread.currentThread().getName() + ") set " + $1.toString() + " in " + $this.element.toString() + " to NO_ESCAPE")
 ENDRULE

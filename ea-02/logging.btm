@@ -21,7 +21,7 @@ CLASS EscapeAnalysisBasicBlockBuilder
 METHOD handleInstanceFieldOf
 AT ENTRY
 IF $this.getCurrentElement().toString().startsWith("example.single")
-DO traceln("(" + Thread.currentThread().getName() + ") handleReference " + $1.toString() + " with target " + $3.toString())
+DO traceln("(" + Thread.currentThread().getName() + ") handleInstanceFieldOf " + $1.toString() + " with target " + $3.toString())
 ENDRULE
 
 RULE store
@@ -32,6 +32,14 @@ IF $this.getCurrentElement().toString().startsWith("example.single")
 DO traceln("(" + Thread.currentThread().getName() + ") store " + $2.toString() + " into " + $1.toString())
 ENDRULE
 
+RULE start method
+CLASS EscapeAnalysisBasicBlockBuilder
+METHOD startMethod
+AT ENTRY
+IF $this.getCurrentElement().toString().startsWith("example.single")
+DO traceln("(" + Thread.currentThread().getName() + ") start method " + $this.getCurrentElement().toString() + " with " + $1.toString())
+ENDRULE
+
 RULE finish
 CLASS EscapeAnalysisBasicBlockBuilder
 METHOD finish
@@ -40,18 +48,26 @@ IF $this.getCurrentElement().toString().startsWith("example.single")
 DO traceln("(" + Thread.currentThread().getName() + ") finish " + $this.getCurrentElement().toString())
 ENDRULE
 
+RULE set arg escape
+CLASS EscapeAnalysis$ConnectionGraph
+METHOD setArgEscape
+AT ENTRY
+IF $this.element.toString().startsWith("example.single")
+DO traceln("(" + Thread.currentThread().getName() + ") set " + $1.toString() + " in " + $this.element.toString() + " to ARG_ESCAPE")
+ENDRULE
+
+RULE set global escape
+CLASS EscapeAnalysis$ConnectionGraph
+METHOD setGlobalEscape
+AT ENTRY
+IF $this.element.toString().startsWith("example.single")
+DO traceln("(" + Thread.currentThread().getName() + ") set " + $1.toString() + " in " + $this.element.toString() + " to GLOBAL_ESCAPE")
+ENDRULE
+
 RULE set no escape
 CLASS EscapeAnalysis
 METHOD setNoEscape
 AT ENTRY
-IF $1.toString().startsWith("example.single")
-DO traceln("(" + Thread.currentThread().getName() + ") set " + $2.toString() + " in " + $1.toString() + " to NO_ESCAPE")
-ENDRULE
-
-RULE set global escape
-CLASS EscapeAnalysis
-METHOD setGlobalEscape
-AT ENTRY
-IF $1.toString().startsWith("example.single")
-DO traceln("(" + Thread.currentThread().getName() + ") set " + $2.toString() + " in " + $1.toString() + " to GLOBAL_ESCAPE")
+IF $this.element.toString().startsWith("example.single")
+DO traceln("(" + Thread.currentThread().getName() + ") set " + $1.toString() + " in " + $this.element.toString() + " to NO_ESCAPE")
 ENDRULE
