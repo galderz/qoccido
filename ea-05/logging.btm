@@ -2,80 +2,129 @@ RULE set up ea bbb
 CLASS EscapeAnalysisBasicBlockBuilder
 METHOD <init>
 AT EXIT
-IF $2.getCurrentElement().toString().startsWith("example.single")
-DO traceln("(" + Thread.currentThread().getName() + ") construct EscapeAnalysisBBB for " + $2.getCurrentElement().toString())
+BIND
+  th = Thread.currentThread();
+  element = $2.getCurrentElement();
+  prefix = "(" + th.getName() + ") ";
+IF
+  element.toString().startsWith("example.single")
+DO
+  link(th, "cg", $this.connectionGraph);
+  link(th, "name", element.toString());
+  link(th, "prefix", prefix);
+  traceln(prefix + "[ea-bbb] construct EscapeAnalysisBBB for " + element.toString());
 ENDRULE
 
 RULE instance field of
 CLASS EscapeAnalysisBasicBlockBuilder
 METHOD instanceFieldOf
 AT ENTRY
-IF $this.getCurrentElement().toString().startsWith("example.single")
-DO traceln("(" + Thread.currentThread().getName() + ") instanceFieldOf " + $1.toString())
+BIND
+  th = Thread.currentThread();
+  cg = linked(th, "cg");
+  prefix = linked(th, "prefix");
+IF
+  $this.connectionGraph == cg
+DO traceln(prefix.toString() + "[ea-bbb] instanceFieldOf " + $1.toString())
 ENDRULE
 
 RULE handle reference
 CLASS EscapeAnalysisBasicBlockBuilder
 METHOD handleInstanceFieldOf
 AT ENTRY
-IF $this.getCurrentElement().toString().startsWith("example.single")
-DO traceln("(" + Thread.currentThread().getName() + ") handleInstanceFieldOf " + $1.toString() + " with target " + $3.toString())
+BIND
+  th = Thread.currentThread();
+  cg = linked(th, "cg");
+  prefix = linked(th, "prefix");
+IF $this.connectionGraph == cg
+DO traceln(prefix.toString() + "[ea-bbb] handleInstanceFieldOf " + $1.toString() + " with target " + $3.toString())
 ENDRULE
 
 RULE store
 CLASS EscapeAnalysisBasicBlockBuilder
 METHOD store
 AT ENTRY
-IF $this.getCurrentElement().toString().startsWith("example.single")
-DO traceln("(" + Thread.currentThread().getName() + ") store " + $2.toString() + " into " + $1.toString())
+BIND
+  th = Thread.currentThread();
+  cg = linked(th, "cg");
+  prefix = linked(th, "prefix");
+IF $this.connectionGraph == cg
+DO traceln(prefix.toString() + "[ea-bbb] store " + $2.toString() + " into " + $1.toString())
 ENDRULE
 
 RULE call method
 CLASS EscapeAnalysisBasicBlockBuilder
 METHOD call
 AT EXIT
-IF $this.getCurrentElement().toString().startsWith("example.single")
-DO traceln("(" + Thread.currentThread().getName() + ") call " + $1.toString() + " with " + $2.toString() + " returns " + $!)
+BIND
+  th = Thread.currentThread();
+  cg = linked(th, "cg");
+  prefix = linked(th, "prefix");
+IF $this.connectionGraph == cg
+DO traceln(prefix.toString + "call "[ea-bbb] + $1.toString() + " with " + $2.toString() + " returns " + $!)
 ENDRULE
 
 RULE start method
 CLASS EscapeAnalysisBasicBlockBuilder
 METHOD startMethod
 AT ENTRY
-IF $this.getCurrentElement().toString().startsWith("example.single")
-DO traceln("(" + Thread.currentThread().getName() + ") start method " + $this.getCurrentElement().toString() + " with " + $1.toString())
+BIND
+  th = Thread.currentThread();
+  cg = linked(th, "cg");
+  prefix = linked(th, "prefix");
+IF $this.connectionGraph == cg
+DO traceln(prefix.toString() + "[ea-bbb] start method " + $this.getCurrentElement().toString() + " with " + $1.toString())
 ENDRULE
 
 RULE finish
 CLASS EscapeAnalysisBasicBlockBuilder
 METHOD finish
 AT ENTRY
-IF $this.getCurrentElement().toString().startsWith("example.single")
-DO traceln("(" + Thread.currentThread().getName() + ") finish " + $this.getCurrentElement().toString())
+BIND
+  th = Thread.currentThread();
+  cg = linked(th, "cg");
+  prefix = linked(th, "prefix");
+IF $this.connectionGraph == cg
+DO traceln(prefix.toString() + "[ea-bbb] finish " + $this.getCurrentElement().toString())
 ENDRULE
 
 RULE set arg escape
 CLASS EscapeAnalysis$ConnectionGraph
 METHOD setArgEscape
 AT ENTRY
-IF $this.element.toString().startsWith("example.single")
-DO traceln("(" + Thread.currentThread().getName() + ") set " + $1.toString() + " in " + $this.element.toString() + " to ARG_ESCAPE")
+BIND
+  th = Thread.currentThread();
+  cg = linked(th, "cg");
+  name = linked(th, "name");
+  prefix = linked(th, "prefix");
+IF $this == cg
+DO traceln(prefix.toString() + "[ea] set " + $1.toString() + " in " + name + " to ARG_ESCAPE")
 ENDRULE
 
 RULE set global escape
 CLASS EscapeAnalysis$ConnectionGraph
 METHOD setGlobalEscape
 AT ENTRY
-IF $this.element.toString().startsWith("example.single")
-DO traceln("(" + Thread.currentThread().getName() + ") set " + $1.toString() + " in " + $this.element.toString() + " to GLOBAL_ESCAPE")
+BIND
+  th = Thread.currentThread();
+  cg = linked(th, "cg");
+  name = linked(th, "name");
+  prefix = linked(th, "prefix");
+IF $this == cg
+DO traceln(prefix.toString() + "[ea] set " + $1.toString() + " in " + name + " to GLOBAL_ESCAPE")
 ENDRULE
 
 RULE set no escape
 CLASS EscapeAnalysis
 METHOD setNoEscape
 AT ENTRY
-IF $this.element.toString().startsWith("example.single")
-DO traceln("(" + Thread.currentThread().getName() + ") set " + $1.toString() + " in " + $this.element.toString() + " to NO_ESCAPE")
+BIND
+  th = Thread.currentThread();
+  cg = linked(th, "cg");
+  name = linked(th, "name");
+  prefix = linked(th, "prefix");
+IF $this == cg
+DO traceln(prefix.toString() + "[ea] set " + $1.toString() + " in " + name + " to NO_ESCAPE")
 ENDRULE
 
 RULE call method ea uc
