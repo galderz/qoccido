@@ -3,13 +3,15 @@ CLASS EscapeAnalysisBasicBlockBuilder
 METHOD <init>
 AT EXIT
 BIND
-  method = $2.getCurrentElement().toString().replaceAll("[\\.\\[(/;)]", "_")
+  method = $2.getCurrentElement().toString().replaceAll("[\\.\\[(/;)]", "_");
+  element = $2.getCurrentElement();
 IF
-  $2.getCurrentElement().toString().startsWith("example")
+  element.toString().startsWith("example")
 DO
-  traceOpen($2.getCurrentElement(), method + ".dot");
-  trace($2.getCurrentElement(), "digraph " + method + " {\n");
-  trace($2.getCurrentElement(), "node [colorscheme=pastel23]\n");
+  traceOpen(element, method + ".dot");
+  trace(element, "digraph " + method + " {\n");
+  trace(element, "rankdir=LR\n");
+  trace(element, "node [colorscheme=pastel23]\n");
 ENDRULE
 
 RULE cg field edge if absent
