@@ -3,9 +3,7 @@ CLASS EscapeAnalysisBasicBlockBuilder
 METHOD <init>
 AT EXIT
 IF $2.getCurrentElement().toString().startsWith("example.single")
-DO
-  link("threadName", Thread.currentThread().getName());
-  traceln("(" + Thread.currentThread().getName() + ") construct EscapeAnalysisBBB for " + $2.getCurrentElement().toString())
+DO traceln("(" + Thread.currentThread().getName() + ") construct EscapeAnalysisBBB for " + $2.getCurrentElement().toString())
 ENDRULE
 
 RULE instance field of
@@ -30,6 +28,14 @@ METHOD store
 AT ENTRY
 IF $this.getCurrentElement().toString().startsWith("example.single")
 DO traceln("(" + Thread.currentThread().getName() + ") store " + $2.toString() + " into " + $1.toString())
+ENDRULE
+
+RULE call method
+CLASS EscapeAnalysisBasicBlockBuilder
+METHOD call
+AT EXIT
+IF $this.getCurrentElement().toString().startsWith("example.single")
+DO traceln("(" + Thread.currentThread().getName() + ") call " + $1.toString() + " with " + $2.toString() + " returns " + $!)
 ENDRULE
 
 RULE start method
@@ -70,4 +76,12 @@ METHOD setNoEscape
 AT ENTRY
 IF $this.element.toString().startsWith("example.single")
 DO traceln("(" + Thread.currentThread().getName() + ") set " + $1.toString() + " in " + $this.element.toString() + " to NO_ESCAPE")
+ENDRULE
+
+RULE call method ea uc
+CLASS EscapeAnalysisUpdateCallerBasicBlockBuilder
+METHOD call
+AT EXIT
+IF $this.getCurrentElement().toString().startsWith("example.single")
+DO traceln("(" + Thread.currentThread().getName() + ") [ea-uc] call " + $1.toString() + " with " + $2.toString() + " returns " + $!)
 ENDRULE
