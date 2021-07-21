@@ -61,7 +61,7 @@ BIND
   cg = linked(th, "cg");
   prefix = linked(th, "prefix");
 IF $this.connectionGraph == cg
-DO traceln(prefix.toString + "call "[ea-bbb] + $1.toString() + " with " + $2.toString() + " returns " + $!)
+DO traceln(prefix.toString() + "[ea-bbb] call " + $1.toString() + " with " + $2.toString() + " returns " + $!)
 ENDRULE
 
 RULE start method
@@ -115,7 +115,7 @@ DO traceln(prefix.toString() + "[ea] set " + $1.toString() + " in " + name + " t
 ENDRULE
 
 RULE set no escape
-CLASS EscapeAnalysis
+CLASS EscapeAnalysis$ConnectionGraph
 METHOD setNoEscape
 AT ENTRY
 BIND
@@ -127,10 +127,26 @@ IF $this == cg
 DO traceln(prefix.toString() + "[ea] set " + $1.toString() + " in " + name + " to NO_ESCAPE")
 ENDRULE
 
-RULE call method ea uc
-CLASS EscapeAnalysisUpdateCallerBasicBlockBuilder
-METHOD call
+RULE call graph calls
+CLASS EscapeAnalysis$CallGraph
+METHOD calls
+AT ENTRY
+IF $1.toString().startsWith("example")
+DO traceln("(" + Thread.currentThread().getName() + ") [ea-call] track " + $1.toString() + " to " + $2.getValueHandle().toString())
+ENDRULE
+
+RULE update connection graph enter
+CLASS EscapeAnalysis
+METHOD updateConnectionGraph
+AT ENTRY
+IF $1.toString().startsWith("example")
+DO traceln("(" + Thread.currentThread().getName() + ") [ea] update connection graph entry for " + $1.toString())
+ENDRULE
+
+RULE update caller nodes
+CLASS EscapeAnalysis
+METHOD updateCallerNodes
 AT EXIT
-IF $this.getCurrentElement().toString().startsWith("example.single")
-DO traceln("(" + Thread.currentThread().getName() + ") [ea-uc] call " + $1.toString() + " with " + $2.toString() + " returns " + $!)
+IF $1.toString().startsWith("example")
+DO traceln("(" + Thread.currentThread().getName() + ")" + " [ea] update caller nodes of " + $1.toString() + " that calls " + $2)
 ENDRULE
