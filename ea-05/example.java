@@ -17,6 +17,7 @@ public class example
         e.data = 10;
 
         final int result = single2(e);
+        putchar(result);
         return result;
     }
 
