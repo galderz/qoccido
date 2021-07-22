@@ -20,23 +20,19 @@ public class EASample_01_Basic
 
     public static void main(String[] args)
     {
-        putchar(sample(10, 20, 30) == 10 ? '.' : 'F');
+        putchar(sample(10) == 10 ? '.' : 'F');
     }
 
-    static int sample(int one, int two, int three)
+    static int sample(int data)
     {
         A a = new A();
-        a.one = one;
-        a.two = two;
-        a.three = three;
-        return a.one;
+        a.aField = data;
+        return a.aField;
     }
 
     public static class A
     {
-        int one;
-        int two;
-        int three;
+        int aField;
     }
 
     @extern

@@ -19,26 +19,22 @@ public class EASample_02_StaticAssignment
 
     public static void main(String[] args)
     {
-        putchar(sample(10, 20, 30) == 10 ? '.' : 'F');
+        putchar(sample(10) == 10 ? '.' : 'F');
     }
 
-    static int sample(int one, int two, int three)
+    static int sample(int data)
     {
         A a = new A();
-        a.one = one;
-        a.two = two;
-        a.three = three;
+        a.aField = data;
 
         sink = a;
 
-        return a.one;
+        return a.aField;
     }
 
     public static class A
     {
-        int one;
-        int two;
-        int three;
+        int aField;
     }
 
     @extern
