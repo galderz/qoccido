@@ -94,5 +94,5 @@ $(1) \
   --output-path $(qoccido_dir) \
   --gen-graph \
   $(main) \
-  | tee console.log
+  | tee target/console.log
 endef
