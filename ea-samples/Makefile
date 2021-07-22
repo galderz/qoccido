@@ -45,6 +45,7 @@ byteman_jar := $(BYTEMAN_HOME)/lib/byteman.jar
 main := org.example.ea.samples.Main
 name := ea-samples
 target_dir := target
+graphs_dir := $(target_dir)/graphs
 jar := $(target_dir)/$(name).jar
 java_sources := $(shell find src -type f -name '*.java')
 
@@ -81,6 +82,15 @@ $(qbicc_jar_runtime_api): $(qbicc_sources)
 clean:
 > rm -drf $(target_dir)
 .PHONY: clean
+
+graphs: $(graphs_dir)
+> cp -r $(qoccido_dir)/org/example/ea/samples/EASample* $<
+> find $< -depth -name '*$$*' -execdir bash -c 'mv -- "$$1" "$${1//\$$/_}"' bash {} \;
+> find $< -iname '*.dot' -exec bash -c 'dot -Tsvg "{}" > "{}".svg' \;
+.PHONY: graphs
+
+$(graphs_dir):
+> mkdir -p $@
 
 define run-qbicc
 mkdir -p target/graphs/intra-procedure

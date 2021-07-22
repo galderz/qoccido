@@ -1,4 +1,7 @@
-package org.example.ea.samples;
+package org.example.ea;
+
+import org.example.ea.samples.EASample_01_Basic;
+import org.example.ea.samples.EASample_02_StaticAssignment;
 
 public class Main
 {

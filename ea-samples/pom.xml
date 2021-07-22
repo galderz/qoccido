@@ -33,7 +33,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>org.example.ea.samples.Main</mainClass>
+                            <mainClass>org.example.ea.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
