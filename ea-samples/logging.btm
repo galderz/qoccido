@@ -1,0 +1,152 @@
+RULE set up ea bbb
+CLASS EscapeAnalysisBasicBlockBuilder
+METHOD <init>
+AT EXIT
+BIND
+  th = Thread.currentThread();
+  element = $2.getCurrentElement();
+  prefix = "(" + th.getName() + ") ";
+IF
+  element.toString().contains(".sample")
+DO
+  link(th, "logging.cg", $this.connectionGraph);
+  link(th, "logging.name", element.toString());
+  link(th, "logging.prefix", prefix);
+  traceln(prefix + "[ea-bbb] construct EscapeAnalysisBBB for " + element.toString());
+ENDRULE
+
+RULE instance field of
+CLASS EscapeAnalysisBasicBlockBuilder
+METHOD instanceFieldOf
+AT ENTRY
+BIND
+  th = Thread.currentThread();
+  cg = linked(th, "logging.cg");
+  prefix = linked(th, "logging.prefix");
+IF
+  $this.connectionGraph == cg
+DO traceln(prefix.toString() + "[ea-bbb] instanceFieldOf " + $1.toString())
+ENDRULE
+
+RULE handle reference
+CLASS EscapeAnalysisBasicBlockBuilder
+METHOD handleInstanceFieldOf
+AT ENTRY
+BIND
+  th = Thread.currentThread();
+  cg = linked(th, "logging.cg");
+  prefix = linked(th, "logging.prefix");
+IF $this.connectionGraph == cg
+DO traceln(prefix.toString() + "[ea-bbb] handleInstanceFieldOf " + $1.toString() + " with target " + $3.toString())
+ENDRULE
+
+RULE store
+CLASS EscapeAnalysisBasicBlockBuilder
+METHOD store
+AT ENTRY
+BIND
+  th = Thread.currentThread();
+  cg = linked(th, "logging.cg");
+  prefix = linked(th, "logging.prefix");
+IF $this.connectionGraph == cg
+DO traceln(prefix.toString() + "[ea-bbb] store " + $2.toString() + " into " + $1.toString())
+ENDRULE
+
+RULE call method
+CLASS EscapeAnalysisBasicBlockBuilder
+METHOD call
+AT EXIT
+BIND
+  th = Thread.currentThread();
+  cg = linked(th, "logging.cg");
+  prefix = linked(th, "logging.prefix");
+IF $this.connectionGraph == cg
+DO traceln(prefix.toString() + "[ea-bbb] call " + $1.toString() + " with " + $2.toString() + " returns " + $!)
+ENDRULE
+
+RULE start method
+CLASS EscapeAnalysisBasicBlockBuilder
+METHOD startMethod
+AT ENTRY
+BIND
+  th = Thread.currentThread();
+  cg = linked(th, "logging.cg");
+  prefix = linked(th, "logging.prefix");
+IF $this.connectionGraph == cg
+DO traceln(prefix.toString() + "[ea-bbb] start method " + $this.getCurrentElement().toString() + " with " + $1.toString())
+ENDRULE
+
+RULE finish
+CLASS EscapeAnalysisBasicBlockBuilder
+METHOD finish
+AT ENTRY
+BIND
+  th = Thread.currentThread();
+  cg = linked(th, "logging.cg");
+  prefix = linked(th, "logging.prefix");
+IF $this.connectionGraph == cg
+DO traceln(prefix.toString() + "[ea-bbb] finish " + $this.getCurrentElement().toString())
+ENDRULE
+
+RULE set arg escape
+CLASS EscapeAnalysis$ConnectionGraph
+METHOD setArgEscape
+AT ENTRY
+BIND
+  th = Thread.currentThread();
+  cg = linked(th, "logging.cg");
+  name = linked(th, "logging.name");
+  prefix = linked(th, "logging.prefix");
+IF $this == cg
+DO traceln(prefix.toString() + "[ea] set " + $1.toString() + " in " + name + " to ARG_ESCAPE")
+ENDRULE
+
+RULE set global escape
+CLASS EscapeAnalysis$ConnectionGraph
+METHOD setGlobalEscape
+AT ENTRY
+BIND
+  th = Thread.currentThread();
+  cg = linked(th, "logging.cg");
+  name = linked(th, "logging.name");
+  prefix = linked(th, "logging.prefix");
+IF $this == cg
+DO traceln(prefix.toString() + "[ea] set " + $1.toString() + " in " + name + " to GLOBAL_ESCAPE")
+ENDRULE
+
+RULE set no escape
+CLASS EscapeAnalysis$ConnectionGraph
+METHOD setNoEscape
+AT ENTRY
+BIND
+  th = Thread.currentThread();
+  cg = linked(th, "logging.cg");
+  name = linked(th, "logging.name");
+  prefix = linked(th, "logging.prefix");
+IF $this == cg
+DO traceln(prefix.toString() + "[ea] set " + $1.toString() + " in " + name + " to NO_ESCAPE")
+ENDRULE
+
+RULE call graph calls
+CLASS EscapeAnalysis$CallGraph
+METHOD calls
+AT ENTRY
+IF $1.toString().startsWith("org.example.ea.samples")
+DO traceln("(" + Thread.currentThread().getName() + ") [ea-call] track " + $1.toString() + " to " + $2.getValueHandle().toString())
+ENDRULE
+
+RULE update connection graph enter
+CLASS EscapeAnalysis
+METHOD updateConnectionGraph
+AT ENTRY
+IF $1.toString().startsWith("org.example.ea.samples")
+DO traceln("(" + Thread.currentThread().getName() + ") [ea] update connection graph entry for " + $1.toString())
+ENDRULE
+
+RULE update caller nodes
+CLASS EscapeAnalysis
+METHOD updateCallerNodes
+AT EXIT
+IF $1.toString().startsWith("org.example.ea.samples")
+DO traceln("(" + Thread.currentThread().getName() + ")" + " [ea] update caller nodes of " + $1.toString() + " that calls " + $2)
+ENDRULE
