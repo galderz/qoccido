@@ -42,7 +42,7 @@ qbicc_cp_runtime = $(qbicc_jar_main):$(subst $(space),:,$(qbicc_jars))
 
 byteman_jar := $(BYTEMAN_HOME)/lib/byteman.jar
 
-main := org.example.ea.samples.Main
+main := org.example.ea.Main
 name := ea-samples
 target_dir := target
 graphs_dir := $(target_dir)/graphs
@@ -82,6 +82,11 @@ $(qbicc_jar_runtime_api): $(qbicc_sources)
 clean:
 > rm -drf $(target_dir)
 .PHONY: clean
+
+clean-all: clean
+> cd $(QBICC_HOME)
+> mvn clean
+.PHONY: clean-all
 
 graphs: $(graphs_dir)
 > cp -r $(qoccido_dir)/org/example/ea/samples/EASample* $<
