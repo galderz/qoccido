@@ -56,7 +56,7 @@ java += java
 java += -Xss16m
 java_debug += $(java)
 java_debug += -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:4004
-java_verbose += $(javacmd)
+java_verbose += $(java)
 java_verbose += -Dorg.jboss.byteman.verbose=true
 
 run: $(program)
@@ -65,6 +65,10 @@ run: $(program)
 
 $(program): $(jar)
 > $(call run-qbicc,$(java))
+
+verbose: $(jar)
+> $(call run-qbicc,$(java_verbose))
+.PHONY: verbose
 
 $(jar): $(java_sources) $(qbicc_jar_runtime_api)
 > mvn package
@@ -79,6 +83,8 @@ clean:
 .PHONY: clean
 
 define run-qbicc
+mkdir -p target/graphs/intra-procedure
+mkdir -p target/graphs/inter-procedure
 $(1) \
   -Dorg.jboss.byteman.transform.all=true \
   -javaagent:$(byteman_jar)=boot:$(byteman_jar),script:logging.btm,script:cg.btm \

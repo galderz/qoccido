@@ -11,7 +11,7 @@ IF
   elementName.contains("_sample")
 DO
   link(th, "cg", cg);
-  traceOpen(cg, elementName + ".dot");
+  traceOpen(cg, String.format("target/graphs/intra-procedure/%s.dot", new Object[]{elementName}));
   trace(cg, "digraph " + elementName + " {\n");
   trace(cg, "rankdir=LR\n");
   trace(cg, "node [colorscheme=pastel23]\n");
