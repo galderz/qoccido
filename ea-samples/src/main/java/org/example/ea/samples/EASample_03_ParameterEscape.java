@@ -15,8 +15,8 @@ public class EASample_03_ParameterEscape
      *
      * define i32 @exact.org.example.ea.samples.EASample_03_ParameterEscape.sample2.s32.1.ref.1.class.org-example-ea-samples-EASample_03_ParameterEscape$A(i8 addrspace(1)* %thr0, i8 addrspace(1)* %p0) "frame-pointer"="non-leaf" uwtable gc "statepoint-example" !dbg !49 {
      *     ...
-     *     %L4 = call i8 addrspace(1)* (i8 addrspace(1)*, i64, i32) @exact.org.qbicc.runtime.gc.nogc.NoGcHelpers.allocate.ref.1.class.java-lang-Object.2.s64.s32(i8 addrspace(1)* %thr0, i64 16, i32 8), !dbg !50 ; EASample_03_ParameterEscape.java:48 bci@1
-     *     %L5 = bitcast i8 addrspace(1)* %L4 to %T.org.example.ea.samples.EASample_03_ParameterEscape$A addrspace(1)*, !dbg !50 ; EASample_03_ParameterEscape.java:48 bci@1
+     *     %L4 = call i8 addrspace(1)* (i8 addrspace(1)*, i64, i32) @exact.org.qbicc.runtime.gc.nogc.NoGcHelpers.allocate.ref.1.class.java-lang-Object.2.s64.s32(i8 addrspace(1)* %thr0, i64 16, i32 8), !dbg !50 ; EASample_03_ParameterEscape.java:xx bci@1
+     *     %L5 = bitcast i8 addrspace(1)* %L4 to %T.org.example.ea.samples.EASample_03_ParameterEscape$A addrspace(1)*, !dbg !50 ; EASample_03_ParameterEscape.java:xx bci@1
      *
      * The A instance in sample2 method could still be allocated as thread local,
      * meaning that any potential synchronization could be skipped.

@@ -4,7 +4,6 @@ import static org.qbicc.runtime.CNative.*;
 
 public class EASample_01_Basic
 {
-
     /*
      * This sample showcases basic escape analysis.
      *
