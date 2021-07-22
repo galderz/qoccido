@@ -6,7 +6,7 @@ BIND
   th = Thread.currentThread();
   cg = $this.connectionGraph;
   element = $2.getCurrentElement();
-  elementName = element.toString().replaceAll("[\\.\\[(/;)]", "_");
+  elementName = element.toString().replaceAll("[\\$\\.\\[(/;)]", "_");
 IF
   elementName.contains("_sample")
 DO
