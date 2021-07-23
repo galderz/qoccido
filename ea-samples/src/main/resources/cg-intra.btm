@@ -6,12 +6,14 @@ BIND
   th = Thread.currentThread();
   cg = $this.connectionGraph;
   element = $2.getCurrentElement();
-  elementName = element.toString().replaceAll("[\\$\\.\\[(/;)]", "_");
+  elementName = element.toString().replaceAll("[\\s\\$\\.\\[(/;)]", "_");
 IF
-  elementName.contains("_sample")
+  elementName.contains("_samples")
+  OR
+  elementName.contains("_main")
 DO
   link(th, "cg", cg);
-  traceOpen(cg, String.format("target/graphs/intra-procedure/%s.dot", new Object[]{elementName}));
+  traceOpen(cg, String.format("target/connection-graphs/intra-procedure/%s.dot", new Object[]{elementName}));
   trace(cg, "digraph " + elementName + " {\n");
   trace(cg, "rankdir=LR\n");
   trace(cg, "node [colorscheme=pastel23]\n");
@@ -90,7 +92,7 @@ ENDRULE
 
 RULE cg set arg escape
 CLASS EscapeAnalysis$ConnectionGraph
-METHOD setArgEscape
+METHOD setEscape
 AT ENTRY
 BIND
   th = Thread.currentThread();
@@ -98,12 +100,14 @@ BIND
   node = $1.toString().replaceAll("[\\.@]", "_");
 IF
   $this == cg
+  AND
+  $2 == EscapeAnalysis$EscapeState.ARG_ESCAPE
 DO trace(cg, node + " [style=filled, fillcolor = 3]\n")
 ENDRULE
 
 RULE cg set global escape
 CLASS EscapeAnalysis$ConnectionGraph
-METHOD setGlobalEscape
+METHOD setEscape
 AT ENTRY
 BIND
   th = Thread.currentThread();
@@ -111,12 +115,14 @@ BIND
   node = $1.toString().replaceAll("[\\.@]", "_");
 IF
   $this == cg
+  AND
+  $2 == EscapeAnalysis$EscapeState.GLOBAL_ESCAPE
 DO trace(cg, node + " [style=filled, fillcolor = 2]\n")
 ENDRULE
 
 RULE cg set no escape
 CLASS EscapeAnalysis$ConnectionGraph
-METHOD setNoEscape
+METHOD setEscape
 AT ENTRY
 BIND
   th = Thread.currentThread();
@@ -124,5 +130,19 @@ BIND
   node = $1.toString().replaceAll("[\\.@]", "_");
 IF
   $this == cg
+  AND
+  $2 == EscapeAnalysis$EscapeState.NO_ESCAPE
 DO trace(cg, node + " [style=filled, fillcolor = 1]\n")
+ENDRULE
+
+RULE new toString
+CLASS Object
+METHOD toString
+AT RETURN
+BIND
+  isNew = org.qbicc.graph.New.class.isInstance($this);
+  aNew : org.qbicc.graph.New = (isNew ? $this : null);
+IF
+  isNew
+DO $! = "New_" + aNew.type.toString().replaceAll("[\\()/\\$]", "_")
 ENDRULE

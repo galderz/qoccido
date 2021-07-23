@@ -45,7 +45,8 @@ byteman_jar := $(BYTEMAN_HOME)/lib/byteman.jar
 main := org.example.ea.Main
 name := ea-samples
 target_dir := target
-graphs_dir := $(target_dir)/graphs
+qbicc_graphs_dir := $(target_dir)/qbicc-graphs
+connection_graphs_dir := $(target_dir)/connection-graphs
 jar := $(target_dir)/$(name).jar
 java_sources := $(shell find src -type f -name '*.java')
 
@@ -88,18 +89,26 @@ clean-all: clean
 > mvn clean
 .PHONY: clean-all
 
-graphs: $(graphs_dir)
-> cp -r $(qoccido_dir)/org/example/ea/samples/EASample* $<
-> find $< -depth -name '*$$*' -execdir bash -c 'mv -- "$$1" "$${1//\$$/_}"' bash {} \;
-> find $< -iname '*.dot' -exec bash -c 'dot -Tsvg "{}" > "{}".svg' \;
+graphs: qbicc-graphs connection-graphs
 .PHONY: graphs
 
-$(graphs_dir):
-> mkdir -p $@
+connection-graphs:
+> find $(connection_graphs_dir) -iname '*.dot' -exec bash -c 'dot -Tsvg "{}" > "{}".svg' \;
+.PHONY: connection-graphs
+
+qbicc-graphs:
+> rm -drf $(qbicc_graphs_dir)
+> mkdir -p $(qbicc_graphs_dir)
+> cp -r $(qoccido_dir)/org/example/ea/samples/EASample* $(qbicc_graphs_dir)
+> cp -r $(qoccido_dir)/org/qbicc/runtime/main/Main* $(qbicc_graphs_dir)
+> find $(qbicc_graphs_dir) -depth -name '*$$*' -execdir bash -c 'mv -- "$$1" "$${1//\$$/_}"' bash {} \;
+> find $(qbicc_graphs_dir) -iname '*.dot' -exec bash -c 'dot -Tsvg "{}" > "{}".svg' \;
+.PHONY: qbicc-graphs
 
 define run-qbicc
-mkdir -p target/graphs/intra-procedure
-mkdir -p target/graphs/inter-procedure
+rm -drf $(connection_graphs_dir)
+mkdir -p target/connection-graphs/intra-procedure
+mkdir -p target/connection-graphs/inter-procedure
 $(1) \
   -Dorg.jboss.byteman.transform.all=true \
   -javaagent:$(byteman_jar)=boot:$(byteman_jar),script:src/main/resources/logging.btm,script:src/main/resources/cg-intra.btm \

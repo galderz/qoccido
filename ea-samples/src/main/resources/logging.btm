@@ -8,6 +8,8 @@ BIND
   prefix = "(" + th.getName() + ") ";
 IF
   element.toString().contains(".sample")
+  OR
+  element.toString().contains("function main")
 DO
   link(th, "logging.cg", $this.connectionGraph);
   link(th, "logging.name", element.toString());
@@ -90,7 +92,7 @@ ENDRULE
 
 RULE set arg escape
 CLASS EscapeAnalysis$ConnectionGraph
-METHOD setArgEscape
+METHOD setEscape
 AT ENTRY
 BIND
   th = Thread.currentThread();
@@ -98,33 +100,7 @@ BIND
   name = linked(th, "logging.name");
   prefix = linked(th, "logging.prefix");
 IF $this == cg
-DO traceln(prefix.toString() + "[ea] set " + $1.toString() + " in " + name + " to ARG_ESCAPE")
-ENDRULE
-
-RULE set global escape
-CLASS EscapeAnalysis$ConnectionGraph
-METHOD setGlobalEscape
-AT ENTRY
-BIND
-  th = Thread.currentThread();
-  cg = linked(th, "logging.cg");
-  name = linked(th, "logging.name");
-  prefix = linked(th, "logging.prefix");
-IF $this == cg
-DO traceln(prefix.toString() + "[ea] set " + $1.toString() + " in " + name + " to GLOBAL_ESCAPE")
-ENDRULE
-
-RULE set no escape
-CLASS EscapeAnalysis$ConnectionGraph
-METHOD setNoEscape
-AT ENTRY
-BIND
-  th = Thread.currentThread();
-  cg = linked(th, "logging.cg");
-  name = linked(th, "logging.name");
-  prefix = linked(th, "logging.prefix");
-IF $this == cg
-DO traceln(prefix.toString() + "[ea] set " + $1.toString() + " in " + name + " to NO_ESCAPE")
+DO traceln(prefix.toString() + "[ea] set " + $1.toString() + " in " + name + " to " + $2.toString())
 ENDRULE
 
 RULE call graph calls
