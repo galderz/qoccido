@@ -150,3 +150,11 @@ AT EXIT
 IF $1.toString().startsWith("org.example.ea.samples")
 DO traceln("(" + Thread.currentThread().getName() + ")" + " [ea] update caller nodes of " + $1.toString() + " that calls " + $2)
 ENDRULE
+
+RULE stack allocate
+CLASS EscapeAnalysisOptimizeVisitor
+METHOD stackAllocate
+AT ENTRY
+IF TRUE
+DO traceln("(" + Thread.currentThread().getName() + ")" + " [ea-opt] New " + $1.toString() + " on " + $2.getCurrentElement() + " does not escape, so stack allocate it")
+ENDRULE
