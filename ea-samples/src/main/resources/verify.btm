@@ -1,0 +1,9 @@
+RULE stack allocate
+CLASS EscapeAnalysisOptimizeVisitor
+METHOD stackAllocate
+AT ENTRY
+IF $1.toString().contains("ea/samples")
+DO
+  traceOpen("log", "target/verify.log");
+  traceln("log", "(" + Thread.currentThread().getName() + ")" + " [ea-opt] New " + $1.toString() + " on " + $2.getCurrentElement() + " does not escape, so stack allocate it");
+ENDRULE

@@ -40,6 +40,9 @@ qbicc_cp_boot = $(subst $(space),:,$(qbicc_cp_boot_jars))
 qbicc_jars = $(shell find $(QBICC_HOME)/main/target/libs -type f -name '*.jar')
 qbicc_cp_runtime = $(qbicc_jar_main):$(subst $(space),:,$(qbicc_jars))
 
+print = echo '$(1)'
+comma := ,
+
 byteman_jar := $(BYTEMAN_HOME)/lib/byteman.jar
 
 main := org.example.ea.Main
@@ -58,19 +61,23 @@ java += java
 java += -Xss16m
 java_debug += $(java)
 java_debug += -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:4004
-java_verbose += $(java)
-java_verbose += -Dorg.jboss.byteman.verbose=true
+
+ifdef VERBOSE
+  java += -Dorg.jboss.byteman.verbose=true
+endif
 
 run: $(program)
 > $(program)
 .PHONY: run
 
 $(program): $(jar)
-> $(call run-qbicc,$(java))
+> $(call run-qbicc,$(java),$(comma)script:src/main/resources/nodes.btm$(comma)script:src/main/resources/logging.btm$(comma)script:src/main/resources/cg-intra.btm)
 
-verbose: $(jar)
-> $(call run-qbicc,$(java_verbose))
-.PHONY: verbose
+verify: $(jar)
+> $(call run-qbicc,$(java),$(comma)script:src/main/resources/verify.btm)
+> cat target/verify.log
+> $(program)
+.PHONY: verify
 
 $(jar): $(java_sources) $(qbicc_jar_runtime_api)
 > mvn package
@@ -111,7 +118,7 @@ mkdir -p target/connection-graphs/intra-procedure
 mkdir -p target/connection-graphs/inter-procedure
 $(1) \
   -Dorg.jboss.byteman.transform.all=true \
-  -javaagent:$(byteman_jar)=boot:$(byteman_jar),script:src/main/resources/nodes.btm,script:src/main/resources/logging.btm,script:src/main/resources/cg-intra.btm \
+  -javaagent:$(byteman_jar)=boot:$(byteman_jar)$(2) \
   -classpath $(qbicc_cp_runtime) \
   org.qbicc.main.Main \
   --boot-module-path $(jar):/opt/qccrt/qbicc-rt-java.base-11.0.1-SNAPSHOT.jar:$(qbicc_cp_boot) \
