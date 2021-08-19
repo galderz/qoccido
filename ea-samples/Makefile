@@ -111,7 +111,7 @@ mkdir -p target/connection-graphs/intra-procedure
 mkdir -p target/connection-graphs/inter-procedure
 $(1) \
   -Dorg.jboss.byteman.transform.all=true \
-  -javaagent:$(byteman_jar)=boot:$(byteman_jar),script:src/main/resources/logging.btm,script:src/main/resources/cg-intra.btm \
+  -javaagent:$(byteman_jar)=boot:$(byteman_jar),script:src/main/resources/nodes.btm,script:src/main/resources/logging.btm,script:src/main/resources/cg-intra.btm \
   -classpath $(qbicc_cp_runtime) \
   org.qbicc.main.Main \
   --boot-module-path $(jar):/opt/qccrt/qbicc-rt-java.base-11.0.1-SNAPSHOT.jar:$(qbicc_cp_boot) \

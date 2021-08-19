@@ -78,6 +78,18 @@ IF $this.connectionGraph == cg
 DO traceln(prefix.toString() + "[ea-bbb] start method " + $this.getCurrentElement().toString() + " with " + $1.toString())
 ENDRULE
 
+RULE return_
+CLASS EscapeAnalysisBasicBlockBuilder
+METHOD return_
+AT ENTRY
+BIND
+  th = Thread.currentThread();
+  cg = linked(th, "logging.cg");
+  prefix = linked(th, "logging.prefix");
+IF $this.connectionGraph == cg
+DO traceln(prefix.toString() + "[ea-bbb] return_ " + $1.toString() + " from " + $this.getCurrentElement().toString())
+ENDRULE
+
 RULE finish
 CLASS EscapeAnalysisBasicBlockBuilder
 METHOD finish

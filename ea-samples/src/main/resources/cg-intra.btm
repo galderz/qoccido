@@ -102,7 +102,7 @@ IF
   $this == cg
   AND
   $2 == EscapeAnalysis$EscapeState.ARG_ESCAPE
-DO trace(cg, node + " [style=filled, fillcolor = 3]\n")
+DO trace(cg, "\"" + node + "\" [style=filled, fillcolor = 3]\n")
 ENDRULE
 
 RULE cg set global escape
@@ -133,16 +133,4 @@ IF
   AND
   $2 == EscapeAnalysis$EscapeState.NO_ESCAPE
 DO trace(cg, node + " [style=filled, fillcolor = 1]\n")
-ENDRULE
-
-RULE new toString
-CLASS Object
-METHOD toString
-AT RETURN
-BIND
-  isNew = org.qbicc.graph.New.class.isInstance($this);
-  aNew : org.qbicc.graph.New = (isNew ? $this : null);
-IF
-  isNew
-DO $! = "New_" + aNew.type.toString().replaceAll("[\\()/\\$]", "_")
 ENDRULE
