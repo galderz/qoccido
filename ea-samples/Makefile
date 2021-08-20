@@ -81,6 +81,19 @@ run-jar: $(jar)
 > java -jar $(jar)
 .PHONY: run-jar
 
+CLASS ?= EASample_01_Basic
+
+run-class: $(jar)
+> java \
+> -XX:-TieredCompilation \
+> -Xbatch \
+> -Xcomp \
+> -XX:+UnlockDiagnosticVMOptions \
+> -XX:+PrintEscapeAnalysis \
+> -XX:+PrintEliminateAllocations \
+> -cp target/ea-samples.jar \
+> org.example.ea.samples.$(CLASS)
+
 $(program): $(jar)
 > rm -f target/verify.log
 > rm -drf $(connection_graphs_dir)

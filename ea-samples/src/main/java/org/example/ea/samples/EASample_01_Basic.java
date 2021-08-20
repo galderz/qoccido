@@ -20,6 +20,8 @@ public class EASample_01_Basic
     public static void main(String[] args)
     {
         Main.print(sample(10) == 10 ? '.' : 'F');
+
+        // Main.print(sample(20) == 20 ? '.' : 'F'); -- TODO calling again results in A escaping, why?
     }
 
     static int sample(int data)
@@ -33,4 +35,10 @@ public class EASample_01_Basic
     {
         int aField;
     }
+
+    // Only relevant for JVM runs to print escape analysis:
+    // You need to initialize the object once to get class initialized
+    // C2 rightfully bails when EA encounters uninitialized class.
+    // So, before the method call, add:
+    // new A();
 }
