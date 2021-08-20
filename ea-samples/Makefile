@@ -74,6 +74,7 @@ $(program): $(jar)
 > $(call run-qbicc,$(java),$(comma)script:src/main/resources/nodes.btm$(comma)script:src/main/resources/logging.btm$(comma)script:src/main/resources/cg-intra.btm)
 
 verify: $(jar)
+> rm -f target/verify.log
 > $(call run-qbicc,$(java),$(comma)script:src/main/resources/verify.btm)
 > cat target/verify.log
 > $(program)
