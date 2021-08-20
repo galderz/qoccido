@@ -1,6 +1,6 @@
 package org.example.ea.samples;
 
-import static org.qbicc.runtime.CNative.*;
+import org.example.ea.Main;
 
 public class EASample_03_ParameterEscape
 {
@@ -31,7 +31,7 @@ public class EASample_03_ParameterEscape
 
     public static void main(String[] args)
     {
-        putchar(sample() == 20 ? '.' : 'F');
+        Main.print(sample() == 20 ? '.' : 'F');
     }
 
     static int sample()
@@ -55,7 +55,4 @@ public class EASample_03_ParameterEscape
         int aField;
         A next;
     }
-
-    @extern
-    public static native int putchar(int arg);
 }

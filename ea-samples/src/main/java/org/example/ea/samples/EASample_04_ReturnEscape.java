@@ -1,6 +1,6 @@
 package org.example.ea.samples;
 
-import static org.qbicc.runtime.CNative.*;
+import org.example.ea.Main;
 
 public class EASample_04_ReturnEscape
 {
@@ -18,7 +18,7 @@ public class EASample_04_ReturnEscape
 
     public static void main(String[] args)
     {
-        putchar(sample() == 10 ? '.' : 'F');
+        Main.print(sample() == 10 ? '.' : 'F');
     }
 
     static int sample()
@@ -38,7 +38,4 @@ public class EASample_04_ReturnEscape
     {
         int aField;
     }
-
-    @extern
-    public static native int putchar(int arg);
 }

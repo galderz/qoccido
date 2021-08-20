@@ -77,6 +77,10 @@ run: $(program)
 > test -f target/verify.log && cat target/verify.log || true
 .PHONY: run
 
+run-jar: $(jar)
+> java -jar $(jar)
+.PHONY: run-jar
+
 $(program): $(jar)
 > rm -f target/verify.log
 > rm -drf $(connection_graphs_dir)

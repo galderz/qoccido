@@ -1,6 +1,6 @@
 package org.example.ea.samples;
 
-import static org.qbicc.runtime.CNative.*;
+import org.example.ea.Main;
 
 public class EASample_02_StaticAssignment
 {
@@ -19,7 +19,7 @@ public class EASample_02_StaticAssignment
 
     public static void main(String[] args)
     {
-        putchar(sample(10) == 10 ? '.' : 'F');
+        Main.print(sample(10) == 10 ? '.' : 'F');
     }
 
     static int sample(int data)
@@ -36,7 +36,4 @@ public class EASample_02_StaticAssignment
     {
         int aField;
     }
-
-    @extern
-    public static native int putchar(int arg);
 }
