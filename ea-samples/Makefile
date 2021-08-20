@@ -82,6 +82,7 @@ verify: $(jar)
 
 $(jar): $(java_sources) $(qbicc_jar_runtime_api)
 > mvn package
+> touch $(jar)
 
 $(qbicc_jar_runtime_api): $(qbicc_sources)
 > cd $(QBICC_HOME)
@@ -128,3 +129,5 @@ $(1) \
   $(main) \
   | tee target/console.log
 endef
+
+# TODO add a target to run one of ea examples with java with options such as: -XX:+UnlockDiagnosticVMOptions -XX:+PrintEscapeAnalysis -XX:+PrintEliminateAllocations
