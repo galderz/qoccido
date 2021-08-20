@@ -51,7 +51,7 @@ target_dir := target
 qbicc_graphs_dir := $(target_dir)/qbicc-graphs
 connection_graphs_dir := $(target_dir)/connection-graphs
 jar := $(target_dir)/$(name).jar
-java_sources := $(shell find src -type f -name '*.java')
+sources := $(shell find src -type f -name '*')
 
 qoccido_dir := /tmp/qoccido/$(notdir $(shell pwd))
 program := $(qoccido_dir)/a.out
@@ -110,7 +110,7 @@ $(program): $(jar)
 >  $(main) \
 >  | tee target/console.log
 
-$(jar): $(java_sources) $(qbicc_jar_runtime_api)
+$(jar): $(sources) $(qbicc_jar_runtime_api)
 > mvn package
 > touch $(jar)
 

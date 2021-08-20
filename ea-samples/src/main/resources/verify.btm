@@ -1,9 +1,21 @@
-RULE stack allocate
+RULE create verify log
+CLASS Main
+METHOD <init>
+AT EXIT
+IF TRUE
+DO
+  traceOpen("log", "target/verify.log");
+  traceln("log", String.format("======== Stack allocations%n%n%-64s%-32s%n", new Object[]{"Method", "Type"}));
+ENDRULE
+
+RULE record stack allocations
 CLASS EscapeAnalysisOptimizeVisitor
 METHOD stackAllocate
 AT ENTRY
-IF $1.toString().contains("ea/samples")
+BIND
+  aClassObjectType : org.qbicc.type.ClassObjectType = $1;
+IF
+  $1.toString().contains("ea/samples")
 DO
-  traceOpen("log", "target/verify.log");
-  traceln("log", "(" + Thread.currentThread().getName() + ")" + " [ea-opt] New " + $1.toString() + " on " + $2.getCurrentElement() + " does not escape, so stack allocate it");
+  traceln("log", String.format("%-64s%-32s", new Object[]{$2.getCurrentElement(), aClassObjectType.definition.getInternalName()}));
 ENDRULE
