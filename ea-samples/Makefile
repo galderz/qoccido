@@ -66,19 +66,32 @@ ifdef VERBOSE
   java += -Dorg.jboss.byteman.verbose=true
 endif
 
+ifdef VERIFY
+  byteman_scripts := $(comma)script:src/main/resources/verify.btm
+else
+  byteman_scripts := $(comma)script:src/main/resources/nodes.btm$(comma)script:src/main/resources/logging.btm$(comma)script:src/main/resources/cg-intra.btm
+endif
+
 run: $(program)
 > $(program)
+> test -f target/verify.log && cat target/verify.log || true
 .PHONY: run
 
 $(program): $(jar)
-> $(call run-qbicc,$(java),$(comma)script:src/main/resources/nodes.btm$(comma)script:src/main/resources/logging.btm$(comma)script:src/main/resources/cg-intra.btm)
-
-verify: $(jar)
 > rm -f target/verify.log
-> $(call run-qbicc,$(java),$(comma)script:src/main/resources/verify.btm)
-> cat target/verify.log
-> $(program)
-.PHONY: verify
+> rm -drf $(connection_graphs_dir)
+> mkdir -p target/connection-graphs/intra-procedure
+> mkdir -p target/connection-graphs/inter-procedure
+> $(java) \
+>  -Dorg.jboss.byteman.transform.all=true \
+>  -javaagent:$(byteman_jar)=boot:$(byteman_jar)$(byteman_scripts) \
+>  -classpath $(qbicc_cp_runtime) \
+>  org.qbicc.main.Main \
+>  --boot-module-path $(jar):/opt/qccrt/qbicc-rt-java.base-11.0.1-SNAPSHOT.jar:$(qbicc_cp_boot) \
+>  --output-path $(qoccido_dir) \
+>  --gen-graph \
+>  $(main) \
+>  | tee target/console.log
 
 $(jar): $(java_sources) $(qbicc_jar_runtime_api)
 > mvn package
@@ -113,21 +126,5 @@ qbicc-graphs:
 > find $(qbicc_graphs_dir) -depth -name '*$$*' -execdir bash -c 'mv -- "$$1" "$${1//\$$/_}"' bash {} \;
 > find $(qbicc_graphs_dir) -iname '*.dot' -exec bash -c 'dot -Tsvg "{}" > "{}".svg' \;
 .PHONY: qbicc-graphs
-
-define run-qbicc
-rm -drf $(connection_graphs_dir)
-mkdir -p target/connection-graphs/intra-procedure
-mkdir -p target/connection-graphs/inter-procedure
-$(1) \
-  -Dorg.jboss.byteman.transform.all=true \
-  -javaagent:$(byteman_jar)=boot:$(byteman_jar)$(2) \
-  -classpath $(qbicc_cp_runtime) \
-  org.qbicc.main.Main \
-  --boot-module-path $(jar):/opt/qccrt/qbicc-rt-java.base-11.0.1-SNAPSHOT.jar:$(qbicc_cp_boot) \
-  --output-path $(qoccido_dir) \
-  --gen-graph \
-  $(main) \
-  | tee target/console.log
-endef
 
 # TODO add a target to run one of ea examples with java with options such as: -XX:+UnlockDiagnosticVMOptions -XX:+PrintEscapeAnalysis -XX:+PrintEliminateAllocations
