@@ -1,5 +1,5 @@
 RULE begin cg
-CLASS EscapeAnalysisBasicBlockBuilder
+CLASS EscapeAnalysisIntraMethodBuilder
 METHOD <init>
 AT EXIT
 BIND
@@ -20,7 +20,7 @@ DO
 ENDRULE
 
 RULE cg field edge if absent
-CLASS EscapeAnalysis$ConnectionGraph
+CLASS ConnectionGraph
 METHOD addFieldEdgeIfAbsent
 AT EXIT
 BIND
@@ -38,7 +38,7 @@ DO
 ENDRULE
 
 RULE cg points-to edge if absent
-CLASS EscapeAnalysis$ConnectionGraph
+CLASS ConnectionGraph
 METHOD addPointsToEdgeIfAbsent
 AT EXIT
 BIND
@@ -56,7 +56,7 @@ DO
 ENDRULE
 
 RULE cg deferred edge if absent
-CLASS EscapeAnalysis$ConnectionGraph
+CLASS ConnectionGraph
 METHOD addDeferredEdgeIfAbsent
 AT EXIT
 BIND
@@ -74,14 +74,14 @@ DO
 ENDRULE
 
 RULE close cg graph
-CLASS EscapeAnalysis$ConnectionGraph
-METHOD methodExit
+CLASS EscapeAnalysisIntraMethodBuilder
+METHOD finish
 AT EXIT
 BIND
   th = Thread.currentThread();
   cg = linked(th, "cg");
 IF
-  $this == cg
+  $this.connectionGraph == cg
 DO
   trace(cg, "\"Global Escape\" [style=filled fillcolor = 2]\n");
   trace(cg, "\"Arg Escape\" [style=filled fillcolor = 3]\n");
@@ -91,8 +91,8 @@ DO
 ENDRULE
 
 RULE cg set arg escape
-CLASS EscapeAnalysis$ConnectionGraph
-METHOD setEscape
+CLASS ConnectionGraph
+METHOD setEscapeValue
 AT ENTRY
 BIND
   th = Thread.currentThread();
@@ -101,13 +101,13 @@ BIND
 IF
   $this == cg
   AND
-  $2 == EscapeAnalysis$EscapeState.ARG_ESCAPE
+  $2 == EscapeValue.ARG_ESCAPE
 DO trace(cg, "\"" + node + "\" [style=filled, fillcolor = 3]\n")
 ENDRULE
 
 RULE cg set global escape
-CLASS EscapeAnalysis$ConnectionGraph
-METHOD setEscape
+CLASS ConnectionGraph
+METHOD setEscapeValue
 AT ENTRY
 BIND
   th = Thread.currentThread();
@@ -116,13 +116,13 @@ BIND
 IF
   $this == cg
   AND
-  $2 == EscapeAnalysis$EscapeState.GLOBAL_ESCAPE
+  $2 == EscapeValue.GLOBAL_ESCAPE
 DO trace(cg, node + " [style=filled, fillcolor = 2]\n")
 ENDRULE
 
 RULE cg set no escape
-CLASS EscapeAnalysis$ConnectionGraph
-METHOD setEscape
+CLASS ConnectionGraph
+METHOD setEscapeValue
 AT ENTRY
 BIND
   th = Thread.currentThread();
@@ -131,6 +131,6 @@ BIND
 IF
   $this == cg
   AND
-  $2 == EscapeAnalysis$EscapeState.NO_ESCAPE
+  $2 == EscapeValue.NO_ESCAPE
 DO trace(cg, node + " [style=filled, fillcolor = 1]\n")
 ENDRULE
