@@ -10,8 +10,8 @@ ifeq ($(origin .RECIPEPREFIX), undefined)
 endif
 .RECIPEPREFIX = >
 
-QCC_HOME := /opt/qcc-qcc
-QCC_CL_HOME := /opt/qcc-class-library
+QBICC_HOME := /opt/qbicc-qbicc
+QBICC_CL_HOME := /opt/qbicc-class-library
 
 all: hello
 .PHONY: all
@@ -29,8 +29,8 @@ make ${2}
 endef
 
 pull:
-> $(call pull,$(QCC_HOME))
-> $(call pull,$(QCC_CL_HOME))
+> $(call pull,$(QBICC_HOME))
+> $(call pull,$(QBICC_CL_HOME))
 
 define pull
 cd ${1}
@@ -38,17 +38,17 @@ git checkout main
 git pull
 endef
 
-install-qcc:
-> $(call install,$(QCC_HOME))
+install-qbicc:
+> $(call install,$(QBICC_HOME))
 
-install-qcc-class-library:
-> $(call install,$(QCC_CL_HOME))
+install-qbicc-class-library:
+> $(call install,$(QBICC_CL_HOME))
 
 copy-dependencies:
-> cd $(QCC_HOME)
+> cd $(QBICC_HOME)
 > mvn -pl main dependency:copy-dependencies -DoutputDirectory=\$${project.build.directory}/libs
 
-refresh: pull install-qcc install-qcc-class-library copy-dependencies
+refresh: pull install-qbicc install-qbicc-class-library copy-dependencies
 
 define install
 cd ${1}
