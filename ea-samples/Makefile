@@ -104,7 +104,7 @@ $(program): $(jar)
 >  -javaagent:$(byteman_jar)=boot:$(byteman_jar)$(byteman_scripts) \
 >  -classpath $(qbicc_cp_runtime) \
 >  org.qbicc.main.Main \
->  --boot-module-path $(jar):/opt/qccrt/qbicc-rt-java.base-11.0.1-SNAPSHOT.jar:$(qbicc_cp_boot) \
+>  --boot-module-path $(jar):/opt/qbicc-rt/qbicc-rt-java.base-11.0.1-SNAPSHOT.jar:$(qbicc_cp_boot) \
 >  --output-path $(qoccido_dir) \
 >  --gen-graph \
 >  $(main) \
