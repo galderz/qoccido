@@ -25,7 +25,6 @@ qbicc_jar_runtime_unwind := $(QBICC_HOME)/runtime/unwind/target/qbicc-runtime-un
 qbicc_jar_runtime_main := $(QBICC_HOME)/runtime/main/target/qbicc-runtime-main-$(VERSION).jar
 qbicc_jar_runtime_gc_nogc := $(QBICC_HOME)/runtime/gc/nogc/target/qbicc-runtime-gc-nogc-$(VERSION).jar
 qbicc_jar_runtime_posix := $(QBICC_HOME)/runtime/posix/target/qbicc-runtime-posix-$(VERSION).jar
-qbicc_jar_runtime_deserialization := $(QBICC_HOME)/runtime/deserialization/target/qbicc-runtime-deserialization-$(VERSION).jar
 
 qbicc_cp_compile := $(qbicc_jar_runtime_api)
 
@@ -34,7 +33,6 @@ qbicc_cp_boot_jars += $(qbicc_jar_runtime_unwind)
 qbicc_cp_boot_jars += $(qbicc_jar_runtime_main)
 qbicc_cp_boot_jars += $(qbicc_jar_runtime_gc_nogc)
 qbicc_cp_boot_jars += $(qbicc_jar_runtime_posix)
-qbicc_cp_boot_jars += $(qbicc_jar_runtime_deserialization)
 qbicc_cp_boot = $(subst $(space),:,$(qbicc_cp_boot_jars))
 
 qbicc_jars = $(shell find $(QBICC_HOME)/main/target/libs -type f -name '*.jar')
@@ -94,6 +92,9 @@ run-class: $(jar)
 > -cp target/ea-samples.jar \
 > org.example.ea.samples.$(CLASS)
 
+# TODO Temporarily removed --gen-graph due to
+#      https://github.com/qbicc/qbicc/issues/629
+#      Restore it when the issue is fixed.
 $(program): $(jar)
 > rm -f target/verify.log
 > rm -drf $(connection_graphs_dir)
@@ -106,7 +107,6 @@ $(program): $(jar)
 >  org.qbicc.main.Main \
 >  --boot-module-path $(jar):/opt/qbicc-rt/qbicc-rt-java.base-11.0.1-SNAPSHOT.jar:$(qbicc_cp_boot) \
 >  --output-path $(qoccido_dir) \
->  --gen-graph \
 >  $(main) \
 >  | tee target/console.log
 
