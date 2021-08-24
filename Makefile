@@ -39,21 +39,22 @@ git pull
 endef
 
 install-qbicc:
-> $(call install,$(QBICC_HOME))
+> cd $(QBICC_HOME)
+> mvn clean install -DskipTests
+
+test-qbicc:
+> cd $(QBICC_HOME)
+> mvn install
 
 install-qbicc-class-library:
-> $(call install,$(QBICC_CL_HOME))
+> cd $(QBICC_CL_HOME)
+> mvn clean install
 
 copy-dependencies:
 > cd $(QBICC_HOME)
 > mvn -pl main dependency:copy-dependencies -DoutputDirectory=\$${project.build.directory}/libs
 
-refresh: pull install-qbicc install-qbicc-class-library copy-dependencies
-
-define install
-cd ${1}
-mvn clean install
-endef
+refresh: pull install-qbicc install-qbicc-class-library test-qbicc copy-dependencies
 
 ea-examples += ea-01
 ea-examples += ea-02
