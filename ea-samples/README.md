@@ -3,7 +3,7 @@
 To verify:
 
 ```bash
-$ make verify
+$ VERIFY=true make
 ...
 ======== Stack allocations
 
