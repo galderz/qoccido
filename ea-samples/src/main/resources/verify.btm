@@ -40,7 +40,7 @@ BIND
 IF
   java.util.Objects.equals(expected, actual)
 DO
-  traceln(String.format("%nTest allocations:%nSuccess%n"));
+  traceln(String.format("%nTest allocations:%nSuccess%n", new Object[]{}));
 ENDRULE
 
 RULE main call failure
