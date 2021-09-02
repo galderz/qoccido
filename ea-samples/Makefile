@@ -10,23 +10,26 @@ ifeq ($(origin .RECIPEPREFIX), undefined)
 endif
 .RECIPEPREFIX = >
 
+all: run
+
+# Qbicc
 QBICC_HOME := /opt/qbicc-qbicc
-BYTEMAN_HOME := /opt/byteman
-VERSION := 0.1.0-SNAPSHOT
+QBICC_VERSION := 0.1.0-SNAPSHOT
+
+qbicc_jars = $(shell find $(QBICC_HOME)/main/target/libs -type f -name '*.jar')
+qbicc_jar_main := $(QBICC_HOME)/main/target/qbicc-main-$(QBICC_VERSION).jar
+qbicc_jar_runtime_api := $(QBICC_HOME)/runtime/api/target/qbicc-runtime-api-$(QBICC_VERSION).jar
+qbicc_jar_runtime_unwind := $(QBICC_HOME)/runtime/unwind/target/qbicc-runtime-unwind-$(QBICC_VERSION).jar
+qbicc_jar_runtime_main := $(QBICC_HOME)/runtime/main/target/qbicc-runtime-main-$(QBICC_VERSION).jar
+qbicc_jar_runtime_gc_nogc := $(QBICC_HOME)/runtime/gc/nogc/target/qbicc-runtime-gc-nogc-$(QBICC_VERSION).jar
+qbicc_jar_runtime_posix := $(QBICC_HOME)/runtime/posix/target/qbicc-runtime-posix-$(QBICC_VERSION).jar
+qbicc_sources := $(shell find $(QBICC_HOME)/ -type f -name '*.java')
 
 noop=
 space = $(noop) $(noop)
 
-qbicc_sources := $(shell find $(QBICC_HOME)/ -type f -name '*.java')
-
-qbicc_jar_main := $(QBICC_HOME)/main/target/qbicc-main-$(VERSION).jar
-qbicc_jar_runtime_api := $(QBICC_HOME)/runtime/api/target/qbicc-runtime-api-$(VERSION).jar
-qbicc_jar_runtime_unwind := $(QBICC_HOME)/runtime/unwind/target/qbicc-runtime-unwind-$(VERSION).jar
-qbicc_jar_runtime_main := $(QBICC_HOME)/runtime/main/target/qbicc-runtime-main-$(VERSION).jar
-qbicc_jar_runtime_gc_nogc := $(QBICC_HOME)/runtime/gc/nogc/target/qbicc-runtime-gc-nogc-$(VERSION).jar
-qbicc_jar_runtime_posix := $(QBICC_HOME)/runtime/posix/target/qbicc-runtime-posix-$(VERSION).jar
-
 qbicc_cp_compile := $(qbicc_jar_runtime_api)
+qbicc_cp_runtime = $(qbicc_jar_main):$(subst $(space),:,$(qbicc_jars))
 
 qbicc_cp_boot_jars += $(qbicc_cp_compile)
 qbicc_cp_boot_jars += $(qbicc_jar_runtime_unwind)
@@ -35,28 +38,34 @@ qbicc_cp_boot_jars += $(qbicc_jar_runtime_gc_nogc)
 qbicc_cp_boot_jars += $(qbicc_jar_runtime_posix)
 qbicc_cp_boot = $(subst $(space),:,$(qbicc_cp_boot_jars))
 
-qbicc_jars = $(shell find $(QBICC_HOME)/main/target/libs -type f -name '*.jar')
-qbicc_cp_runtime = $(qbicc_jar_main):$(subst $(space),:,$(qbicc_jars))
+$(qbicc_jar_runtime_api): $(qbicc_sources)
+> cd $(QBICC_HOME)
+> mvn -DskipTests=true install
+> mvn dependency:copy-dependencies -DoutputDirectory=target/libs
 
-print = echo '$(1)'
-comma := ,
+clean-qbicc:
+> cd $(QBICC_HOME)
+> mvn clean
+.PHONY: clean-qbicc
+
+# Samples
+BYTEMAN_HOME := /opt/byteman
 
 byteman_jar := $(BYTEMAN_HOME)/lib/byteman.jar
-
 main := org.example.ea.Main
 name := ea-samples
+qoccido_dir := /tmp/qoccido/$(notdir $(shell pwd))
+resources_dir := src/main/resources
+sources := $(shell find src -type f -name '*')
 target_dir := target
-qbicc_graphs_dir := $(target_dir)/qbicc-graphs
+
 connection_graphs_dir := $(target_dir)/connection-graphs
 jar := $(target_dir)/$(name).jar
-sources := $(shell find src -type f -name '*')
-
-qoccido_dir := /tmp/qoccido/$(notdir $(shell pwd))
 program := $(qoccido_dir)/a.out
+qbicc_graphs_dir := $(target_dir)/qbicc-graphs
 
 java += java
-# Big enough thread stack size to avoid https://github.com/quarkuscc/qcc/issues/262
-java += -Xss16m
+java += -Xss16m # Big enough thread stack size to avoid https://github.com/quarkuscc/qcc/issues/262
 java_debug += $(java)
 java_debug += -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:4004
 
@@ -64,10 +73,13 @@ ifdef VERBOSE
   java += -Dorg.jboss.byteman.verbose=true
 endif
 
+print = echo '$(1)'
+comma := ,
+
 ifdef VERIFY
-  byteman_scripts := $(comma)script:src/main/resources/verify.btm
+  byteman_scripts := $(comma)script:$(resources_dir)/verify.btm
 else
-  byteman_scripts := $(comma)script:src/main/resources/nodes.btm$(comma)script:src/main/resources/logging.btm$(comma)script:src/main/resources/cg-intra.btm
+  byteman_scripts := $(comma)script:$(resources_dir)/nodes.btm$(comma)script:$(resources_dir)/logging.btm$(comma)script:$(resources_dir)/cg-intra.btm
 endif
 
 run: $(jar)
@@ -109,19 +121,9 @@ $(jar): $(sources) $(qbicc_jar_runtime_api)
 > mvn package
 > touch $(jar)
 
-$(qbicc_jar_runtime_api): $(qbicc_sources)
-> cd $(QBICC_HOME)
-> mvn -DskipTests=true install
-> mvn dependency:copy-dependencies -DoutputDirectory=target/libs
-
 clean:
 > rm -drf $(target_dir)
 .PHONY: clean
-
-clean-all: clean
-> cd $(QBICC_HOME)
-> mvn clean
-.PHONY: clean-all
 
 graphs: qbicc-graphs connection-graphs
 .PHONY: graphs
