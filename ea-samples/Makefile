@@ -65,9 +65,9 @@ ifdef VERBOSE
 endif
 
 ifdef VERIFY
-  byteman_scripts := $(comma)script:src/test/resources/verify.btm
+  byteman_scripts := $(comma)script:src/main/resources/verify.btm
 else
-  byteman_scripts := $(comma)script:src/test/resources/nodes.btm$(comma)script:src/test/resources/logging.btm$(comma)script:src/test/resources/cg-intra.btm
+  byteman_scripts := $(comma)script:src/main/resources/nodes.btm$(comma)script:src/main/resources/logging.btm$(comma)script:src/main/resources/cg-intra.btm
 endif
 
 run: $(jar)
