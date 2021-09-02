@@ -1,5 +1,5 @@
 RULE New toString
-CLASS Object
+CLASS java.lang.Object
 METHOD toString
 AT RETURN
 BIND
@@ -11,7 +11,7 @@ DO $! = "New_" + aNew.type.toString().replaceAll("[\\()/\\$]", "_")
 ENDRULE
 
 RULE Load toString
-CLASS Object
+CLASS java.lang.Object
 METHOD toString
 AT RETURN
 BIND

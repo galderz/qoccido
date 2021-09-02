@@ -65,12 +65,25 @@ ifdef VERBOSE
 endif
 
 ifdef VERIFY
-  byteman_scripts := $(comma)script:src/main/resources/verify.btm
+  byteman_scripts := $(comma)script:src/test/resources/verify.btm
 else
-  byteman_scripts := $(comma)script:src/main/resources/nodes.btm$(comma)script:src/main/resources/logging.btm$(comma)script:src/main/resources/cg-intra.btm
+  byteman_scripts := $(comma)script:src/test/resources/nodes.btm$(comma)script:src/test/resources/logging.btm$(comma)script:src/test/resources/cg-intra.btm
 endif
 
-run: $(program)
+run: $(jar)
+> rm -f target/verify.log
+> rm -drf $(connection_graphs_dir)
+> mkdir -p target/connection-graphs/intra-procedure
+> $(java) \
+>  -Dorg.jboss.byteman.transform.all=true \
+>  -javaagent:$(byteman_jar)=boot:$(byteman_jar)$(byteman_scripts) \
+>  -classpath $(qbicc_cp_runtime) \
+>  org.qbicc.main.Main \
+>  --boot-module-path $(jar):/opt/qbicc-rt/qbicc-rt-java.base-11.0.1-SNAPSHOT.jar:$(qbicc_cp_boot) \
+>  --output-path $(qoccido_dir) \
+>  --gen-graph \
+>  $(main) \
+>  | tee target/console.log
 > $(program)
 > test -f target/verify.log && cat target/verify.log || true
 .PHONY: run
@@ -91,24 +104,6 @@ run-class: $(jar)
 > -XX:+PrintEliminateAllocations \
 > -cp target/ea-samples.jar \
 > org.example.ea.samples.$(CLASS)
-
-# TODO Temporarily removed --gen-graph due to
-#      https://github.com/qbicc/qbicc/issues/629
-#      Restore it when the issue is fixed.
-$(program): $(jar)
-> rm -f target/verify.log
-> rm -drf $(connection_graphs_dir)
-> mkdir -p target/connection-graphs/intra-procedure
-> mkdir -p target/connection-graphs/inter-procedure
-> $(java) \
->  -Dorg.jboss.byteman.transform.all=true \
->  -javaagent:$(byteman_jar)=boot:$(byteman_jar)$(byteman_scripts) \
->  -classpath $(qbicc_cp_runtime) \
->  org.qbicc.main.Main \
->  --boot-module-path $(jar):/opt/qbicc-rt/qbicc-rt-java.base-11.0.1-SNAPSHOT.jar:$(qbicc_cp_boot) \
->  --output-path $(qoccido_dir) \
->  $(main) \
->  | tee target/console.log
 
 $(jar): $(sources) $(qbicc_jar_runtime_api)
 > mvn package
