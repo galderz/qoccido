@@ -12,41 +12,35 @@ DO
     , "org/example/ea/samples/EASample_03_ParameterEscape$A@0"
   ));
   link("actual", "actual", new java.util.concurrent.ConcurrentHashMap());
-  # traceln(linked("expect", "expect"));
-  # traceln(linked("actual", "actual"));
-  # traceOpen("log", "target/verify.log");
-  # traceln("log", String.format("======== Stack allocations%n%n%-64s%-32s%n", new Object[]{"Method", "Type"}));
 ENDRULE
 
-#RULE record stack allocations
-#CLASS EscapeAnalysisOptimizeVisitor
-#METHOD stackAllocate
-#AT ENTRY
-#BIND
-#  aNew : org.qbicc.graph.New = $1;
-#  actual : java.util.Map = linked("actual", "actual");
-#IF
-#  $1.getClassObjectType().toString().contains("ea/samples")
-#DO
-#  actual.put(
-#    $2.getCurrentElement().toString()
-#    , aNew.getClassObjectType().definition.getInternalName() + "@" + aNew.getBytecodeIndex()
-#  );
-#  # link("actual", $2.getCurrentElement().toString(), aNew.getClassObjectType().definition.getInternalName() + "@" + aNew.getBytecodeIndex());
-#  # traceln("log", String.format("%-64s%-32s@%d", new Object[]{$2.getCurrentElement(), aNew.getClassObjectType().definition.getInternalName(), aNew.getBytecodeIndex()}));
-#ENDRULE
+RULE record stack allocations
+CLASS EscapeAnalysisOptimizeVisitor
+METHOD stackAllocate
+AT ENTRY
+BIND
+  aNew : org.qbicc.graph.New = $1;
+  actual : java.util.Map = linked("actual", "actual");
+IF
+  $1.getClassObjectType().toString().contains("ea/samples")
+DO
+  actual.put(
+    $2.getCurrentElement().toString()
+    , aNew.getClassObjectType().definition.getInternalName() + "@" + aNew.getBytecodeIndex()
+  );
+ENDRULE
 
 RULE main call success
 CLASS org.qbicc.main.Main
 METHOD call
 AT EXIT
 BIND
-  expect : java.util.Map = linked("expected", "expected");
+  expected : java.util.Map = linked("expected", "expected");
   actual : java.util.Map = linked("actual", "actual");
 IF
-  Objects.equals(expected, actual)
+  java.util.Objects.equals(expected, actual)
 DO
-  traceln("Success");
+  traceln(String.format("%nTest allocations:%nSuccess%n"));
 ENDRULE
 
 RULE main call failure
@@ -54,10 +48,10 @@ CLASS org.qbicc.main.Main
 METHOD call
 AT EXIT
 BIND
-  expect : java.util.Map = linked("expected", "expected");
+  expected : java.util.Map = linked("expected", "expected");
   actual : java.util.Map = linked("actual", "actual");
 IF
-  !Objects.equals(expected, actual)
+  !java.util.Objects.equals(expected, actual)
 DO
-  traceln(String.format("Failure. Expected %s, but got %s", new Object[]{expected, actual}));
+  traceln(String.format("%nTest allocations:%nFailure!%nExpected %s,%nbut got %s%n", new Object[]{expected, actual}));
 ENDRULE
