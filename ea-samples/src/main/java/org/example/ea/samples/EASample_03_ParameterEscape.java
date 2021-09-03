@@ -18,11 +18,16 @@ public class EASample_03_ParameterEscape
      *
      * The new A instance created in sample does not escape,
      * and hence can be optimized to be stack allocated.
+     *
+     * sampleViaAux tests a similar scenario,
+     * but the main difference is that sampleViaAux2 assigns the new instance to a temporary variable,
+     * and then this variable is assigned to the escaping object.
      */
 
     public static void main(String[] args)
     {
         Main.print(sample() == 20 ? '.' : 'F');
+        Main.print(sampleViaAux() == 40 ? '.' : 'F');
     }
 
     static int sample()
@@ -38,6 +43,23 @@ public class EASample_03_ParameterEscape
     {
         a.next = new A();
         a.next.aField = 20;
+        return a.next.aField;
+    }
+
+    static int sampleViaAux()
+    {
+        A a = new A();
+        a.aField = 30;
+
+        int result = sampleViaAux2(a);
+        return result;
+    }
+
+    static int sampleViaAux2(A a)
+    {
+        final A tmp = new A();
+        a.next = tmp;
+        a.next.aField = 40;
         return a.next.aField;
     }
 
