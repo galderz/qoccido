@@ -12,9 +12,7 @@ public class EASample_01_Basic
      *
      * Escape analysis should detect,
      * that and apply corresponding optimizations.
-     * E.g. stack allocate the object:
-     *
-     *   %L8 = alloca %T.org.example.ea.samples.EASample_01_Basic$A, i32 1, align 8
+     * E.g. stack allocate the object.
      */
 
     public static void main(String[] args)

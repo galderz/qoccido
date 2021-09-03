@@ -9,10 +9,7 @@ public class EASample_02_StaticAssignment
      *
      * Objects assigned to static variables are considered to escape.
      * Such objects don't get any optimizations applied.
-     * Hence they're allocated as usual in the heap:
-     *
-     *   %L4 = call i8 addrspace(1)* (i8 addrspace(1)*, i64, i32) @exact.org.qbicc.runtime.gc.nogc.NoGcHelpers.allocate.ref.1.class.java-lang-Object.2.s64.s32(i8 addrspace(1)* %thr0, i64 16, i32 8), !dbg !34 ; EASample_02_StaticAssignment.java:xx bci@0
-     *   %L5 = bitcast i8 addrspace(1)* %L4 to %T.org.example.ea.samples.EASample_02_StaticAssignment$A addrspace(1)*, !dbg !34 ; EASample_02_StaticAssignment.java:xx bci@0
+     * Hence they're allocated as usual in the heap.
      */
 
     static A sink;

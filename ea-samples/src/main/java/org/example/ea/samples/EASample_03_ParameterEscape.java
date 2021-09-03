@@ -11,22 +11,13 @@ public class EASample_03_ParameterEscape
      * which escapes as an argument.
      * Assigning a new object to one of its fields
      * means the object potentially escapes the method,
-     * hence it can't be optimized to stack allocation:
-     *
-     * define i32 @exact.org.example.ea.samples.EASample_03_ParameterEscape.sample2.s32.1.ref.1.class.org-example-ea-samples-EASample_03_ParameterEscape$A(i8 addrspace(1)* %thr0, i8 addrspace(1)* %p0) "frame-pointer"="non-leaf" uwtable gc "statepoint-example" !dbg !49 {
-     *     ...
-     *     %L4 = call i8 addrspace(1)* (i8 addrspace(1)*, i64, i32) @exact.org.qbicc.runtime.gc.nogc.NoGcHelpers.allocate.ref.1.class.java-lang-Object.2.s64.s32(i8 addrspace(1)* %thr0, i64 16, i32 8), !dbg !50 ; EASample_03_ParameterEscape.java:xx bci@1
-     *     %L5 = bitcast i8 addrspace(1)* %L4 to %T.org.example.ea.samples.EASample_03_ParameterEscape$A addrspace(1)*, !dbg !50 ; EASample_03_ParameterEscape.java:xx bci@1
+     * hence it can't be optimized to stack allocation.
      *
      * The A instance in sample2 method could still be allocated as thread local,
      * meaning that any potential synchronization could be skipped.
      *
      * The new A instance created in sample does not escape,
-     * and hence can be optimized to be stack allocated:
-     *
-     * define i32 @exact.org.example.ea.samples.EASample_03_ParameterEscape.sample.s32.0(i8 addrspace(1)* %thr0) "frame-pointer"="non-leaf" uwtable gc "statepoint-example" !dbg !33 {
-     *     ...
-     *     %L4 = alloca %T.org.example.ea.samples.EASample_03_ParameterEscape$A, i32 1, align 8
+     * and hence can be optimized to be stack allocated.
      */
 
     public static void main(String[] args)
