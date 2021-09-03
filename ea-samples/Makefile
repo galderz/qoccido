@@ -83,7 +83,6 @@ else
 endif
 
 run: $(jar)
-> rm -f target/verify.log
 > rm -drf $(connection_graphs_dir)
 > mkdir -p target/connection-graphs/intra-procedure
 > $(java) \
@@ -97,7 +96,6 @@ run: $(jar)
 >  $(main) \
 >  | tee target/console.log
 > $(program)
-> test -f target/verify.log && cat target/verify.log || true
 .PHONY: run
 
 run-jar: $(jar)
