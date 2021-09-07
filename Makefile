@@ -54,7 +54,7 @@ copy-dependencies:
 > cd $(QBICC_HOME)
 > mvn -pl main dependency:copy-dependencies -DoutputDirectory=\$${project.build.directory}/libs
 
-refresh: pull install-qbicc install-qbicc-class-library test-qbicc copy-dependencies
+refresh: pull install-qbicc install-qbicc-class-library copy-dependencies
 
 ea-examples += ea-01
 ea-examples += ea-02
