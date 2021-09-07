@@ -66,8 +66,9 @@ qbicc_graphs_dir := $(target_dir)/qbicc-graphs
 
 java += java
 java += -Xss16m # Big enough thread stack size to avoid https://github.com/quarkuscc/qcc/issues/262
-java_debug += $(java)
-java_debug += -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:4004
+ifdef DEBUG
+  java += -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:4004
+endif
 
 ifdef VERBOSE
   java += -Dorg.jboss.byteman.verbose=true
