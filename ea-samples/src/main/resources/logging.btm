@@ -138,3 +138,11 @@ AT ENTRY
 IF TRUE
 DO traceln("(" + Thread.currentThread().getName() + ")" + " EA: New " + $1.toString() + " on " + $2.getCurrentElement() + " does not escape, so stack allocate it")
 ENDRULE
+
+RULE process dependency
+CLASS ConnectionGraphDotVisitor
+METHOD processDependency
+AT ENTRY
+IF $this.connectionGraph.name.startsWith("org/example/ea/samples")
+DO traceln("(" + Thread.currentThread().getName() + ") (" + $this.connectionGraph.name + ") EA Graph: process dependency for " + $2.toString())
+ENDRULE
