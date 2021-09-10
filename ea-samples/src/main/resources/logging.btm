@@ -146,3 +146,19 @@ AT ENTRY
 IF $this.connectionGraph.name.startsWith("org/example/ea/samples")
 DO traceln("(" + Thread.currentThread().getName() + ") (" + $this.connectionGraph.name + ") EA Graph: process dependency for " + $2.toString())
 ENDRULE
+
+RULE visit
+CLASS ConnectionGraphDotVisitor
+METHOD visit
+AT ENTRY
+IF $this.connectionGraph.name.startsWith("org/example/ea/samples")
+DO traceln("(" + Thread.currentThread().getName() + ") (" + $this.connectionGraph.name + ") EA Graph: visit " + $2.toString())
+ENDRULE
+
+#RULE get deferred
+#CLASS ConnectionGraph
+#METHOD getDeferred
+#AT ENTRY
+#IF $this.name.startsWith("org/example/ea/samples")
+#DO traceln("(" + Thread.currentThread().getName() + ") (" + $this.name + ") EA Graph: get deferred for " + $1.toString() + ", contents= " + $this.deferredEdges)
+#ENDRULE
