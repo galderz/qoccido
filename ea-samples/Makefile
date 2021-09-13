@@ -56,8 +56,10 @@ main := org.example.ea.Main
 name := ea-samples
 qoccido_dir := /tmp/qoccido/$(notdir $(shell pwd))
 resources_dir := src/main/resources
-sources := $(shell find src -type f -name '*')
 target_dir := target
+
+sources := $(shell find src -type f -name '*')
+sources += pom.xml
 
 connection_graphs_dir := $(target_dir)/connection-graphs
 jar := $(target_dir)/$(name).jar
