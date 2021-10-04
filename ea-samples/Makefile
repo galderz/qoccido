@@ -142,4 +142,31 @@ qbicc-graphs:
 > find $(qbicc_graphs_dir) -iname '*.dot' -exec bash -c 'dot -Tsvg "{}" > "{}".svg' \;
 .PHONY: qbicc-graphs
 
+open_graphs_dir := /opt/qbicc-graphs
+
+open-graphs:
+> open $(open_graphs_dir)/EASample_01_Basic/methods/sample.id2/ea-intra.dot.svg
+> open $(open_graphs_dir)/EASample_01_Basic/methods/sample.id2/ea-inter.dot.svg
+> open $(open_graphs_dir)/EASample_02_StaticAssignment/methods/sample.id2/ea-intra.dot.svg
+> open $(open_graphs_dir)/EASample_02_StaticAssignment/methods/sample.id2/ea-inter.dot.svg
+> open $(open_graphs_dir)/EASample_03_ParameterEscape/methods/sample.id2/ea-intra.dot.svg
+> open $(open_graphs_dir)/EASample_03_ParameterEscape/methods/sample.id2/ea-inter.dot.svg
+> open $(open_graphs_dir)/EASample_03_ParameterEscape/methods/sample2.id3/ea-intra.dot.svg
+> open $(open_graphs_dir)/EASample_03_ParameterEscape/methods/sample2.id3/ea-inter.dot.svg
+> open $(open_graphs_dir)/EASample_03_ParameterEscape/methods/sampleViaAux.id4/ea-intra.dot.svg
+> open $(open_graphs_dir)/EASample_03_ParameterEscape/methods/sampleViaAux.id4/ea-inter.dot.svg
+> open $(open_graphs_dir)/EASample_03_ParameterEscape/methods/sampleViaAux2.id5/ea-intra.dot.svg
+> open $(open_graphs_dir)/EASample_03_ParameterEscape/methods/sampleViaAux2.id5/ea-inter.dot.svg
+> open $(open_graphs_dir)/EASample_04_ReturnEscape/methods/sample.id2/ea-intra.dot.svg
+> open $(open_graphs_dir)/EASample_04_ReturnEscape/methods/sample.id2/ea-inter.dot.svg
+> open $(open_graphs_dir)/EASample_04_ReturnEscape/methods/sample2.id3/ea-intra.dot.svg
+> open $(open_graphs_dir)/EASample_04_ReturnEscape/methods/sample2.id3/ea-inter.dot.svg
+> open $(open_graphs_dir)/EASample_05_Throw/methods/sampleThrow.id5/ea-intra.dot.svg
+> open $(open_graphs_dir)/EASample_05_Throw/methods/sampleThrow.id5/ea-inter.dot.svg
+> open $(open_graphs_dir)/EASample_06_ParameterToStatic/methods/sample.id2/ea-intra.dot.svg
+> open $(open_graphs_dir)/EASample_06_ParameterToStatic/methods/sample.id2/ea-inter.dot.svg
+> open $(open_graphs_dir)/EASample_06_ParameterToStatic/methods/sample2.id3/ea-intra.dot.svg
+> open $(open_graphs_dir)/EASample_06_ParameterToStatic/methods/sample2.id3/ea-inter.dot.svg
+.PHONY: open-graphs
+
 # TODO add a target to run one of ea examples with java with options such as: -XX:+UnlockDiagnosticVMOptions -XX:+PrintEscapeAnalysis -XX:+PrintEliminateAllocations
