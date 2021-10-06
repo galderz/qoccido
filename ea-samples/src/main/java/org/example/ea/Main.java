@@ -5,6 +5,7 @@ import org.example.ea.samples.EASample_02_StaticAssignment;
 import org.example.ea.samples.EASample_03_ParameterEscape;
 import org.example.ea.samples.EASample_04_ReturnEscape;
 import org.example.ea.samples.EASample_05_Throw;
+import org.example.ea.samples.EASample_06_ParameterToStatic;
 
 import static org.qbicc.runtime.CNative.*;
 
@@ -17,6 +18,7 @@ public class Main
         EASample_03_ParameterEscape.main(args);
         EASample_04_ReturnEscape.main(args);
         EASample_05_Throw.main(args);
+        EASample_06_ParameterToStatic.main(args);
         print('\n');
     }
 
