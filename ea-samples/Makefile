@@ -118,8 +118,10 @@ run-class: $(jar)
 > -cp target/ea-samples.jar \
 > org.example.ea.samples.$(CLASS)
 
+EA ?= true
+
 $(jar): $(sources) $(qbicc_jar_runtime_api)
-> mvn package
+> mvn package -Dea=$(EA)
 > touch $(jar)
 
 clean:
@@ -187,4 +189,7 @@ open-graphs-6:
 > open $(open_graphs_dir)/EASample_06_ParameterToStatic/methods/sample2.id3/ea-inter.dot.svg
 .PHONY: open-graphs-6
 
-# TODO add a target to run one of ea examples with java with options such as: -XX:+UnlockDiagnosticVMOptions -XX:+PrintEscapeAnalysis -XX:+PrintEliminateAllocations
+open-graphs-main:
+> open $(open_graphs_dir)/Main/functions/main/ea-intra.dot.svg
+> open $(open_graphs_dir)/Main/functions/main/ea-inter.dot.svg
+.PHONY: open-graphs-main
