@@ -4,7 +4,6 @@ METHOD <init>
 AT EXIT
 IF TRUE
 DO
-  traceln("org.qbicc.main.Main.<init>");
   link("expected", "expected", java.util.Map.of(
     "org/example/ea/samples.EASample_01_Basic.sample(I)I"
     , "org/example/ea/samples/EASample_01_Basic$A@0"

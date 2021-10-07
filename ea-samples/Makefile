@@ -61,10 +61,9 @@ target_dir := target
 sources := $(shell find src -type f -name '*')
 sources += pom.xml
 
-connection_graphs_dir := $(target_dir)/connection-graphs
 jar := $(target_dir)/$(name).jar
 program := $(qoccido_dir)/a.out
-qbicc_graphs_dir := $(target_dir)/qbicc-graphs
+graphs_dir := $(target_dir)/graphs
 
 java += java
 java += -Xss16m # Big enough thread stack size to avoid https://github.com/quarkuscc/qcc/issues/262
@@ -82,14 +81,11 @@ comma := ,
 ifdef VERIFY
   byteman_scripts := $(comma)script:$(resources_dir)/verify.btm
 else
-  byteman_scripts := $(comma)script:$(resources_dir)/nodes.btm$(comma)script:$(resources_dir)/logging.btm$(comma)script:$(resources_dir)/cg-intra.btm
+  byteman_scripts := $(comma)script:$(resources_dir)/logging.btm
 endif
 
 run: $(jar)
-> rm -drf $(connection_graphs_dir)
-> mkdir -p target/connection-graphs/intra-procedure
 > $(java) \
->  -Dorg.jboss.byteman.transform.all=true \
 >  -javaagent:$(byteman_jar)=boot:$(byteman_jar)$(byteman_scripts) \
 >  -classpath $(qbicc_cp_runtime) \
 >  org.qbicc.main.Main \
@@ -128,21 +124,14 @@ clean:
 > rm -drf $(target_dir)
 .PHONY: clean
 
-graphs: qbicc-graphs connection-graphs
+graphs:
+> rm -drf $(graphs_dir)
+> mkdir -p $(graphs_dir)
+> cp -r $(qoccido_dir)/org/example/ea/samples/EASample* $(graphs_dir)
+> cp -r $(qoccido_dir)/org/qbicc/runtime/main/Main* $(graphs_dir)
+> find $(graphs_dir) -depth -name '*$$*' -execdir bash -c 'mv -- "$$1" "$${1//\$$/_}"' bash {} \;
+> find $(graphs_dir) -iname '*.dot' -exec bash -c 'dot -Tsvg "{}" > "{}".svg' \;
 .PHONY: graphs
-
-connection-graphs:
-> find $(connection_graphs_dir) -iname '*.dot' -exec bash -c 'dot -Tsvg "{}" > "{}".svg' \;
-.PHONY: connection-graphs
-
-qbicc-graphs:
-> rm -drf $(qbicc_graphs_dir)
-> mkdir -p $(qbicc_graphs_dir)
-> cp -r $(qoccido_dir)/org/example/ea/samples/EASample* $(qbicc_graphs_dir)
-> cp -r $(qoccido_dir)/org/qbicc/runtime/main/Main* $(qbicc_graphs_dir)
-> find $(qbicc_graphs_dir) -depth -name '*$$*' -execdir bash -c 'mv -- "$$1" "$${1//\$$/_}"' bash {} \;
-> find $(qbicc_graphs_dir) -iname '*.dot' -exec bash -c 'dot -Tsvg "{}" > "{}".svg' \;
-.PHONY: qbicc-graphs
 
 open_graphs_dir := /opt/qbicc-graphs
 
