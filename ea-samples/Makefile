@@ -182,3 +182,8 @@ open-graphs-main:
 > open $(open_graphs_dir)/Main/functions/main/ea-intra.dot.svg
 > open $(open_graphs_dir)/Main/functions/main/ea-inter.dot.svg
 .PHONY: open-graphs-main
+
+view-sample-graphs:
+> open $(open_graphs_dir)/EASample_0$(SAMPLE)*/methods/sample1.id1/ea-intra.dot.svg
+> open $(open_graphs_dir)/EASample_0$(SAMPLE)*/methods/sample1.id1/ea-inter.dot.svg
+.PHONY: view-graphs
