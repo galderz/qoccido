@@ -54,5 +54,13 @@ BIND
 IF
   !java.util.Objects.equals(expected, actual)
 DO
-  traceln(String.format("%nTest allocations:%nFailure!%nExpected %s,%nbut got %s%n", new Object[]{expected, actual}));
+  traceln(String.format(
+    "%nTest allocations:%nFailure!%nExpected (%d):%n%s,%nbut got (%d):%n%s%n"
+    , new Object[]{
+      expected.size()
+      , new java.util.TreeMap(expected)
+      , actual.size()
+      , new java.util.TreeMap(actual)
+    }
+  ));
 ENDRULE
