@@ -152,7 +152,7 @@ CLASS EscapeAnalysisOptimizeVisitor
 METHOD stackAllocate
 AT ENTRY
 IF TRUE
-DO traceln("(" + Thread.currentThread().getName() + ")" + " EA: New " + $1.toString() + " on " + $2.getCurrentElement() + " does not escape, so stack allocate it")
+DO traceln("(" + Thread.currentThread().getName() + ")" + " EA: New " + $1.type.toString() + " on " + $2.getCurrentElement() + " does not escape, so stack allocate it")
 ENDRULE
 
 RULE process dependency
