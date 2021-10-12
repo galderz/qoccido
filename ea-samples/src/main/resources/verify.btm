@@ -4,15 +4,12 @@ METHOD <init>
 AT EXIT
 IF TRUE
 DO
-  link("expected", "expected", java.util.Map.of(
-    "org/example/ea/samples.EASample_01_Basic.sample1(I)I"
-    , "org/example/ea/samples/EASample_01_Basic$A@0"
-    , "org/example/ea/samples.EASample_03_ParameterEscape.sample1()I"
-    , "org/example/ea/samples/EASample_03_ParameterEscape$A@0"
-    , "org/example/ea/samples.EASample_08_CallTwice.sample1(I)I"
-    , "org/example/ea/samples/EASample_08_CallTwice$A@0"
+  link("expected", "expected", java.util.List.of(
+    "org/example/ea/samples.EASample_01_Basic.sample1(I)I -> org/example/ea/samples/EASample_01_Basic$A@0"
+    , "org/example/ea/samples.EASample_03_ParameterEscape.sample1()I -> org/example/ea/samples/EASample_03_ParameterEscape$A@0"
+    , "org/example/ea/samples.EASample_08_CallTwice.sample1(I)I -> org/example/ea/samples/EASample_08_CallTwice$A@0"
   ));
-  link("actual", "actual", new java.util.concurrent.ConcurrentHashMap());
+  link("actual", "actual", new java.util.concurrent.CopyOnWriteArrayList());
 ENDRULE
 
 RULE record stack allocations
@@ -21,14 +18,18 @@ METHOD stackAllocate
 AT ENTRY
 BIND
   aNew : org.qbicc.graph.New = $1;
-  actual : java.util.Map = linked("actual", "actual");
+  actual : java.util.List = linked("actual", "actual");
 IF
   $1.getClassObjectType().toString().contains("ea/samples")
 DO
-  actual.put(
-    $2.getCurrentElement().toString()
-    , aNew.getClassObjectType().definition.getInternalName() + "@" + aNew.getBytecodeIndex()
-  );
+  actual.add(String.format(
+    "%s -> %s@%s"
+    , new Object[]{
+      $2.getCurrentElement().toString()
+      , aNew.getClassObjectType().definition.getInternalName()
+      , aNew.getBytecodeIndex()
+    }
+  ));
 ENDRULE
 
 RULE main call success
@@ -36,8 +37,10 @@ CLASS org.qbicc.main.Main
 METHOD call
 AT EXIT
 BIND
-  expected : java.util.Map = linked("expected", "expected");
-  actual : java.util.Map = linked("actual", "actual");
+  expectedList : java.util.List = linked("expected", "expected");
+  actualList : java.util.List = linked("actual", "actual");
+  expected : java.util.List = expectedList.stream().sorted().collect(java.util.stream.Collectors.toList());
+  actual : java.util.List = actualList.stream().sorted().collect(java.util.stream.Collectors.toList());
 IF
   java.util.Objects.equals(expected, actual)
 DO
@@ -49,18 +52,20 @@ CLASS org.qbicc.main.Main
 METHOD call
 AT EXIT
 BIND
-  expected : java.util.Map = linked("expected", "expected");
-  actual : java.util.Map = linked("actual", "actual");
+  expectedList : java.util.List = linked("expected", "expected");
+  actualList : java.util.List = linked("actual", "actual");
+  expected : java.util.List = expectedList.stream().sorted().collect(java.util.stream.Collectors.toList());
+  actual : java.util.List = actualList.stream().sorted().collect(java.util.stream.Collectors.toList());
 IF
   !java.util.Objects.equals(expected, actual)
 DO
   traceln(String.format(
-    "%nTest allocations:%nFailure!%nExpected (%d):%n%s,%nbut got (%d):%n%s%n"
+    "%nTest allocations:%nFailure!%nExpected (%d):%n%s%n,but got (%d):%n%s%n"
     , new Object[]{
       expected.size()
-      , new java.util.TreeMap(expected)
+      , String.join("\n", expected)
       , actual.size()
-      , new java.util.TreeMap(actual)
+      , String.join("\n", actual)
     }
   ));
 ENDRULE
