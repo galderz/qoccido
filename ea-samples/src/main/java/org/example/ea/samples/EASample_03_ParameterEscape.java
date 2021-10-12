@@ -4,7 +4,7 @@ import org.example.ea.Main;
 
 public class EASample_03_ParameterEscape
 {
-    /**
+    /*
      * This sample showcases the effects of new objects that escape via parameter arguments.
      *
      * The below sample2 method receives an input parameter of type A,
@@ -24,13 +24,7 @@ public class EASample_03_ParameterEscape
      * and then this variable is assigned to the escaping object.
      */
 
-    public static void main(String[] args)
-    {
-        Main.print(sample() == 20 ? '.' : 'F');
-        Main.print(sampleViaAux() == 40 ? '.' : 'F');
-    }
-
-    static int sample()
+    static int sample1()
     {
         A a = new A();
         a.aField = 10;
@@ -46,21 +40,9 @@ public class EASample_03_ParameterEscape
         return a.next.aField;
     }
 
-    static int sampleViaAux()
+    public static void main(String[] args)
     {
-        A a = new A();
-        a.aField = 30;
-
-        int result = sampleViaAux2(a);
-        return result;
-    }
-
-    static int sampleViaAux2(A a)
-    {
-        final A tmp = new A();
-        a.next = tmp;
-        a.next.aField = 40;
-        return a.next.aField;
+        Main.print(sample1() == 20 ? '.' : 'F');
     }
 
     public static class A

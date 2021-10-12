@@ -4,27 +4,22 @@ import org.example.ea.Main;
 
 public class EASample_05_Throw
 {
-    /**
+    /*
      * This samples showcases the effects of throwing new exceptions.
      * Such new instances that propagated methods are marked as argument escaping,
      * hence they should be allocated in the heap.
      */
 
-    public static void main(String[] args)
+    static int sample1(int data)
     {
-        Main.print(sample(10) == 10 ? '.' : 'F');
+        return sample2(data);
     }
 
-    static int sample(int data)
-    {
-        return sampleCatchAll(data);
-    }
-
-    static int sampleCatchAll(int data)
+    static int sample2(int data)
     {
         try
         {
-            return sampleCatchNull();
+            return sample3();
         }
         catch (Exception e)
         {
@@ -32,11 +27,11 @@ public class EASample_05_Throw
         }
     }
 
-    public static int sampleCatchNull()
+    public static int sample3()
     {
         try
         {
-            sampleThrow();
+            sample4();
             return 30;
         }
         catch (NullPointerException e)
@@ -45,8 +40,13 @@ public class EASample_05_Throw
         }
     }
 
-    public static void sampleThrow()
+    public static void sample4()
     {
         throw new ArithmeticException();
+    }
+
+    public static void main(String[] args)
+    {
+        Main.print(sample1(10) == 10 ? '.' : 'F');
     }
 }

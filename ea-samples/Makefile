@@ -184,6 +184,6 @@ open-graphs-main:
 .PHONY: open-graphs-main
 
 graphs-sample:
-> open $(open_graphs_dir)/EASample_0$(SAMPLE)*/methods/sample1.id1/ea-intra.dot.svg
-> open $(open_graphs_dir)/EASample_0$(SAMPLE)*/methods/sample1.id1/ea-inter.dot.svg
+> open $(open_graphs_dir)/EASample_$(SAMPLE)*/methods/sample1.id1/ea-intra.dot.svg
+> open $(open_graphs_dir)/EASample_$(SAMPLE)*/methods/sample1.id1/ea-inter.dot.svg
 .PHONY: graphs-sample

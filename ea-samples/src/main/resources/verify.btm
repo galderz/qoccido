@@ -5,11 +5,9 @@ AT EXIT
 IF TRUE
 DO
   link("expected", "expected", java.util.Map.of(
-    "org/example/ea/samples.EASample_01_Basic.sample(I)I"
+    "org/example/ea/samples.EASample_01_Basic.sample1(I)I"
     , "org/example/ea/samples/EASample_01_Basic$A@0"
-    , "org/example/ea/samples.EASample_03_ParameterEscape.sample()I"
-    , "org/example/ea/samples/EASample_03_ParameterEscape$A@0"
-    , "org/example/ea/samples.EASample_03_ParameterEscape.sampleViaAux()I"
+    , "org/example/ea/samples.EASample_03_ParameterEscape.sample1()I"
     , "org/example/ea/samples/EASample_03_ParameterEscape$A@0"
     , "org/example/ea/samples.EASample_08_CallTwice.sample1(I)I"
     , "org/example/ea/samples/EASample_08_CallTwice$A@0"

@@ -4,18 +4,13 @@ import org.example.ea.Main;
 
 public class EASample_06_ParameterToStatic
 {
-    /**
+    /*
      * This sample showcases the effects of assigning a parameter object into a static field.
      */
 
     static A sink;
 
-    public static void main(String[] args)
-    {
-        Main.print(sample() == 20 ? '.' : 'F');
-    }
-
-    static int sample()
+    static int sample1()
     {
         // New instance of A assigned to variable `a`.
         A a = new A();
@@ -38,6 +33,11 @@ public class EASample_06_ParameterToStatic
         // Static assignment, so `a` goes from argument escape to global escape.
         // In turn, the A instance assigned to `a.next` goes from not escape to global escape.
         sink = a;
+    }
+
+    public static void main(String[] args)
+    {
+        Main.print(sample1() == 20 ? '.' : 'F');
     }
 
     public static class A

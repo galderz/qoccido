@@ -15,16 +15,16 @@ public class EASample_01_Basic
      * E.g. stack allocate the object.
      */
 
-    public static void main(String[] args)
-    {
-        Main.print(sample(10) == 10 ? '.' : 'F');
-    }
-
-    static int sample(int data)
+    static int sample1(int data)
     {
         A a = new A();
         a.aField = data;
         return a.aField;
+    }
+
+    public static void main(String[] args)
+    {
+        Main.print(sample1(10) == 10 ? '.' : 'F');
     }
 
     public static class A

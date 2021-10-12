@@ -4,7 +4,7 @@ import org.example.ea.Main;
 
 public class EASample_04_ReturnEscape
 {
-    /**
+    /*
      * This sample showcases the effects of new objects that escape via objects returned by methods.
      * 
      * The below sample2 method instantiates an A instance,
@@ -12,12 +12,7 @@ public class EASample_04_ReturnEscape
      * so it can't be stack allocated.
      */
 
-    public static void main(String[] args)
-    {
-        Main.print(sample() == 10 ? '.' : 'F');
-    }
-
-    static int sample()
+    static int sample1()
     {
         A result = sample2();
         return result.aField;
@@ -28,6 +23,11 @@ public class EASample_04_ReturnEscape
         A a = new A();
         a.aField = 10;
         return a;
+    }
+
+    public static void main(String[] args)
+    {
+        Main.print(sample1() == 10 ? '.' : 'F');
     }
 
     public static class A
