@@ -11,6 +11,8 @@ DO
     , "org/example/ea/samples/EASample_03_ParameterEscape$A@0"
     , "org/example/ea/samples.EASample_03_ParameterEscape.sampleViaAux()I"
     , "org/example/ea/samples/EASample_03_ParameterEscape$A@0"
+    , "org/example/ea/samples.EASample_08_CallTwice.sample1(I)I"
+    , "org/example/ea/samples/EASample_08_CallTwice$A@0"
   ));
   link("actual", "actual", new java.util.concurrent.ConcurrentHashMap());
 ENDRULE
