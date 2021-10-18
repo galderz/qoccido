@@ -122,6 +122,7 @@ $(jar): $(sources) $(qbicc_jar_runtime_api)
 
 clean:
 > rm -drf $(target_dir)
+> rm -drf $(qoccido_dir)
 .PHONY: clean
 
 graphs:
