@@ -7,7 +7,7 @@ BIND
   element = $2.getCurrentElement();
   prefix = "(" + th.getName() + ") ";
 IF
-  element.toString().contains(".sample")
+  element.toString().contains("EASample")
   OR
   element.toString().contains("function main")
 DO
@@ -153,20 +153,4 @@ METHOD stackAllocate
 AT ENTRY
 IF TRUE
 DO traceln("(" + Thread.currentThread().getName() + ")" + " EA: New " + $1.type.toString() + " on " + $2.getCurrentElement() + " does not escape, so stack allocate it")
-ENDRULE
-
-RULE process dependency
-CLASS ConnectionGraphDotVisitor
-METHOD processDependency
-AT ENTRY
-IF $this.connectionGraph.name.startsWith("org/example/ea/samples")
-DO traceln("(" + Thread.currentThread().getName() + ") (" + $this.connectionGraph.name + ") EA Graph: process dependency for " + $2.toString())
-ENDRULE
-
-RULE visit cg dot visitor
-CLASS ConnectionGraphDotVisitor
-METHOD visit
-AT ENTRY
-IF $this.connectionGraph.name.startsWith("org/example/ea/samples")
-DO traceln("(" + Thread.currentThread().getName() + ") (" + $this.connectionGraph.name + ") EA Graph: visit " + $2.toString())
 ENDRULE

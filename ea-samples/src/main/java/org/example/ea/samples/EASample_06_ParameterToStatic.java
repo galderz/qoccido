@@ -8,36 +8,55 @@ public class EASample_06_ParameterToStatic
      * This sample showcases the effects of assigning a parameter object into a static field.
      */
 
-    static A sink;
+    static A misc;
+    static A only;
 
-    static int sample1()
+    static int setAndWrite_0()
     {
         // New instance of A assigned to variable `a`.
-        A a = new A();
+        final A a = new A();
         a.aField = 10;
-
-        // `a` variable passed as parameter to sample2.
-        sample2(a);
-        // When sample2() returns, `a` can no longer be considered not escape,
-        // because within sample2() it was assigned to a static variable,
+        // `a` variable passed as parameter.
+        return setAndWrite_1(a);
+        // When the method returns, `a` can no longer be considered not escape,
+        // because within the method it was assigned to a static variable,
         // and hence it's now considered to global escape.
-        return sink.next.aField;
     }
 
-    static void sample2(A a)
+    static int setAndWrite_1(A a)
     {
-        // New instance of A assigned to `a.next`.
         a.next = new A();
-        a.next.aField = 20;
+        a.next.aField = 11;
 
         // Static assignment, so `a` goes from argument escape to global escape.
         // In turn, the A instance assigned to `a.next` goes from not escape to global escape.
-        sink = a;
+        misc = a;
+
+        return a.next.aField;
+    }
+
+    static int setOnly_0()
+    {
+        // New instance of A assigned to variable `a`.
+        final A a = new A();
+        // `a` variable passed as parameter.
+        return setOnly_1(a);
+        // When the method returns, `a` can no longer be considered not escape,
+        // because within the method it was assigned to a static variable,
+        // and hence it's now considered to global escape.
+    }
+
+    static int setOnly_1(A a)
+    {
+        // Static assignment, so `a` goes from argument escape to global escape.
+        only = a;
+        return a.aField;
     }
 
     public static void main(String[] args)
     {
-        Main.print(sample1() == 20 ? '.' : 'F');
+        Main.print(setAndWrite_0() == 11 ? '.' : 'F');
+        Main.print(setOnly_0() == 0 ? '.' : 'F');
     }
 
     public static class A
