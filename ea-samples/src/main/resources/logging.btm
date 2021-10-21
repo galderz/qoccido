@@ -119,8 +119,16 @@ RULE call graph calls
 CLASS EscapeAnalysisState
 METHOD trackCall
 AT ENTRY
-IF $1.toString().startsWith("org.example.ea.samples")
+IF $1.toString().startsWith("org/example/ea/samples")
 DO traceln("(" + Thread.currentThread().getName() + ") EA: track " + $1.toString() + " to " + $2.getValueHandle().toString())
+ENDRULE
+
+RULE update connection graph
+CLASS EscapeAnalysisInterMethodAnalysis
+METHOD updateConnectionGraph
+AT ENTRY
+IF $1.toString().startsWith("org/example/ea/samples")
+DO traceln("(" + Thread.currentThread().getName() + ") EA: update connection graph for " + $1.toString())
 ENDRULE
 
 RULE update at method entry
