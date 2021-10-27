@@ -8,7 +8,7 @@ import org.example.ea.samples.EASample_05_Throw;
 import org.example.ea.samples.EASample_06_ParameterToStatic;
 import org.example.ea.samples.EASample_07_Runnable;
 import org.example.ea.samples.EASample_08_CallTwice;
-import org.example.ea.samples.EASample_09_VirtualEscape;
+import org.example.ea.samples.EASample_09_Interface;
 
 import static org.qbicc.runtime.CNative.*;
 
@@ -24,7 +24,7 @@ public class Main
         EASample_06_ParameterToStatic.main(args);
         EASample_07_Runnable.main(args);
         EASample_08_CallTwice.main(args);
-        EASample_09_VirtualEscape.main(args);
+        EASample_09_Interface.main(args);
         print('\n');
     }
 
