@@ -6,10 +6,7 @@ BIND
   th = Thread.currentThread();
   element = $2.getCurrentElement();
   prefix = "(" + th.getName() + ") ";
-IF
-  element.toString().contains("EASample")
-  OR
-  element.toString().contains("function main")
+IF TRUE
 DO
   link(th, "logging.cg", $this.connectionGraph);
   link(th, "logging.name", element.toString());
@@ -119,23 +116,49 @@ RULE call graph calls
 CLASS EscapeAnalysisState
 METHOD trackCall
 AT ENTRY
-IF $1.toString().startsWith("org/example/ea/samples")
-DO traceln("(" + Thread.currentThread().getName() + ") EA: track " + $1.toString() + " to " + $2.getValueHandle().toString())
+BIND
+  executable : org.qbicc.graph.Executable = $2.getValueHandle();
+IF TRUE
+DO traceln("(" + Thread.currentThread().getName() + ") EA: track call " + $1.toString() + " to " + executable.getExecutable().toString())
 ENDRULE
 
 RULE update connection graph
 CLASS EscapeAnalysisInterMethodAnalysis
 METHOD updateConnectionGraph
 AT ENTRY
-IF $1.toString().startsWith("org/example/ea/samples")
+IF TRUE
 DO traceln("(" + Thread.currentThread().getName() + ") EA: update connection graph for " + $1.toString())
+ENDRULE
+
+RULE find interface connection graph
+CLASS EscapeAnalysisInterMethodAnalysis
+METHOD findInterfaceConnectionGraph
+AT ENTRY
+IF TRUE
+DO traceln("(" + Thread.currentThread().getName() + ") EA: find interface connection graph for " + $1.toString())
+ENDRULE
+
+RULE find interface implementors in type
+CLASS EscapeAnalysisInterMethodAnalysis
+METHOD findInterfaceImplementorsInType
+AT ENTRY
+IF TRUE
+DO traceln("(" + Thread.currentThread().getName() + ") EA: find in type " + $2.getInternalName())
+ENDRULE
+
+RULE find interface implementors
+CLASS EscapeAnalysisInterMethodAnalysis
+METHOD findInterfaceImplementors
+AT EXIT
+IF TRUE
+DO traceln("(" + Thread.currentThread().getName() + ") EA: implementors of interface method " + $1.toString() + " are: " + $!.toString())
 ENDRULE
 
 RULE update at method entry
 CLASS ConnectionGraph
 METHOD updateAtMethodEntry
 AT ENTRY
-IF $this.name.startsWith("org/example/ea/samples")
+IF TRUE
 DO traceln("(" + Thread.currentThread().getName() + ") EA: update at method entry " + $this.toString())
 ENDRULE
 
@@ -143,7 +166,7 @@ RULE update after invoking method
 CLASS ConnectionGraph
 METHOD updateAfterInvokingMethod
 AT ENTRY
-IF $this.name.startsWith("org/example/ea/samples")
+IF TRUE
 DO traceln("(" + Thread.currentThread().getName() + ") EA: update " + $this.toString() + " after invoking " + $2.name)
 ENDRULE
 
@@ -151,8 +174,16 @@ RULE update at method exit
 CLASS ConnectionGraph
 METHOD updateAtMethodExit
 AT ENTRY
-IF $this.name.startsWith("org/example/ea/samples")
+IF TRUE
 DO traceln("(" + Thread.currentThread().getName() + ") EA: update at method exit " + $this.toString())
+ENDRULE
+
+RULE merge escape values
+CLASS ConnectionGraph
+METHOD mergeEscapeValues
+AT EXIT
+IF TRUE
+DO traceln("(" + Thread.currentThread().getName() + ") EA: merge escape values of " + $this.escapeValues.toString() + " with " + $1.escapeValues.toString() + " returns " + $!.toString())
 ENDRULE
 
 RULE stack allocate
