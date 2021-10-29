@@ -17,63 +17,66 @@ public class EASample_09_Interfaces
          * one of which causes the argument to the interface method to global escape.
          * As a result, calling that interface should pessimistically assume that the argument is always global escape.
          */
-        monomorphicEscape();
+        Monomorphic.monoEscape();
 
         // TODO polymorphic
 
         // TODO no escape
     }
 
-    static boolean isInfinite(int x, int y)
+    static class Monomorphic
     {
-        final Point point = new Point(x, y);
-        final IsInfinite isInfinite = new IsInfinite();
-        return testPoint(point, isInfinite);
-    }
-
-    static boolean isZero(int x, int y)
-    {
-        final Point point = new Point(x, y);
-        final IsZero isZero = new IsZero();
-        return testPoint(point, isZero);
-    }
-
-    static boolean testPoint(Point p, PointPredicate predicate)
-    {
-        return predicate.test1(p);
-    }
-
-    private static void monomorphicEscape()
-    {
-        Main.print(!isInfinite(0, 0) ? '.' : 'F');
-        Main.print(isInfinite(Integer.MAX_VALUE, Integer.MAX_VALUE) ? '.' : 'F');
-        Main.print(!isZero(Integer.MAX_VALUE, Integer.MAX_VALUE) ? '.' : 'F');
-        Main.print(isZero(0, 0) ? '.' : 'F');
-    }
-
-    interface PointPredicate
-    {
-        Boolean test1(Point t1);
-    }
-
-    static final class IsInfinite implements PointPredicate
-    {
-        @Override
-        public Boolean test1(Point p)
+        private static void monoEscape()
         {
-            return p.x == Integer.MAX_VALUE && p.y == Integer.MAX_VALUE;
+            Main.print(!isInfinite(0, 0) ? '.' : 'F');
+            Main.print(isInfinite(Integer.MAX_VALUE, Integer.MAX_VALUE) ? '.' : 'F');
+            Main.print(!isZero(Integer.MAX_VALUE, Integer.MAX_VALUE) ? '.' : 'F');
+            Main.print(isZero(0, 0) ? '.' : 'F');
         }
-    }
 
-    static final class IsZero implements PointPredicate
-    {
-        static Point point;
-
-        @Override
-        public Boolean test1(Point p)
+        static boolean isInfinite(int x, int y)
         {
-            point = p;
-            return point.x == 0 && point.y == 0;
+            final Point point = new Point(x, y);
+            final IsInfinite isInfinite = new IsInfinite();
+            return testPoint(point, isInfinite);
+        }
+
+        static boolean isZero(int x, int y)
+        {
+            final Point point = new Point(x, y);
+            final IsZero isZero = new IsZero();
+            return testPoint(point, isZero);
+        }
+
+        static boolean testPoint(Point p, PointPredicate predicate)
+        {
+            return predicate.test1(p);
+        }
+
+        interface PointPredicate
+        {
+            Boolean test1(Point t1);
+        }
+
+        static final class IsInfinite implements PointPredicate
+        {
+            @Override
+            public Boolean test1(Point p)
+            {
+                return p.x == Integer.MAX_VALUE && p.y == Integer.MAX_VALUE;
+            }
+        }
+
+        static final class IsZero implements PointPredicate
+        {
+            static Point point;
+
+            @Override
+            public Boolean test1(Point p)
+            {
+                point = p;
+                return point.x == 0 && point.y == 0;
+            }
         }
     }
 
