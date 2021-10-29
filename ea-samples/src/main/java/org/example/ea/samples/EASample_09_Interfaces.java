@@ -19,7 +19,10 @@ public class EASample_09_Interfaces
          */
         Monomorphic.monoEscape();
 
-        // TODO polymorphic
+        /*
+         * In the polymorphic interface sample, ...
+         */
+        Polymorphic.polyEscape();
 
         // TODO no escape
     }
@@ -76,6 +79,62 @@ public class EASample_09_Interfaces
             {
                 point = p;
                 return point.x == 0 && point.y == 0;
+            }
+        }
+    }
+
+    static class Polymorphic
+    {
+        static void polyEscape()
+        {
+            Main.print(inverse(1, 1).x == -1 ? '.' : 'F');
+            Main.print(inverse(1, 1).y == -1 ? '.' : 'F');
+            Main.print(identity(2, 2).x == 2 ? '.' : 'F');
+            Main.print(identity(2, 2).y == 2 ? '.' : 'F');
+        }
+
+        static Point inverse(int x, int y)
+        {
+            final Point point = new Point(x, y);
+            final Inverse inverse = new Inverse();
+            return applyPoint(point, inverse);
+        }
+
+        static Point identity(int x, int y)
+        {
+            final Point point = new Point(x, y);
+            final Identity identity = new Identity();
+            return applyPoint(point, identity);
+        }
+
+        private static Point applyPoint(Point point, Function1<Point, Point> f)
+        {
+            return f.apply1(point);
+        }
+
+        interface Function1<T1, R>
+        {
+            R apply1(T1 t);
+        }
+
+        static final class Inverse implements Function1<Point, Point>
+        {
+            @Override
+            public Point apply1(Point p)
+            {
+                return new Point(-p.x, -p.y);
+            }
+        }
+
+        static final class Identity implements Function1<Point, Point>
+        {
+            static Point point;
+
+            @Override
+            public Point apply1(Point p)
+            {
+                point = p;
+                return p;
             }
         }
     }
