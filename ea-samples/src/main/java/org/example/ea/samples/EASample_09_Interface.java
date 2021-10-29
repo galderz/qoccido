@@ -25,19 +25,19 @@ public class EASample_09_Interface
     {
         final Point point = new Point(x, y);
         final IsInfinite isInfinite = new IsInfinite();
-        return test(point, isInfinite);
+        return test1(point, isInfinite);
     }
 
     static boolean isZero(int x, int y)
     {
         final Point point = new Point(x, y);
         final IsZero isZero = new IsZero();
-        return test(point, isZero);
+        return test1(point, isZero);
     }
 
-    static boolean test(Point p, Function1<Point, Boolean> predicate)
+    static boolean test1(Point p, Function1<Point, Boolean> predicate)
     {
-        return predicate.apply(p);
+        return predicate.apply1(p);
     }
 
     private static void globalEscape()
@@ -51,7 +51,7 @@ public class EASample_09_Interface
     static final class IsInfinite implements Function1<Point, Boolean>
     {
         @Override
-        public Boolean apply(Point p)
+        public Boolean apply1(Point p)
         {
             return p.x == Integer.MAX_VALUE && p.y == Integer.MAX_VALUE;
         }
@@ -62,7 +62,7 @@ public class EASample_09_Interface
         static Point point;
 
         @Override
-        public Boolean apply(Point p)
+        public Boolean apply1(Point p)
         {
             point = p;
             return point.x == 0 && point.y == 0;
@@ -83,6 +83,6 @@ public class EASample_09_Interface
     @FunctionalInterface
     interface Function1<T1, R>
     {
-        R apply(T1 t1);
+        R apply1(T1 t1);
     }
 }
