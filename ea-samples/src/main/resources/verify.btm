@@ -8,10 +8,10 @@ DO
     "org/example/ea/samples.EASample_01_Basic.sample1(I)I -> org/example/ea/samples/EASample_01_Basic$A@0"
     , "org/example/ea/samples.EASample_03_ParameterEscape.sample1()I -> org/example/ea/samples/EASample_03_ParameterEscape$A@0"
     , "org/example/ea/samples.EASample_08_CallTwice.sample1(I)I -> org/example/ea/samples/EASample_08_CallTwice$A@0"
-    , "org/example/ea/samples.EASample_09_Interfaces$Monomorphic.isInfinite(II)Z -> org/example/ea/samples/EASample_09_Interfaces$Monomorphic$IsInfinite@10"
-    , "org/example/ea/samples.EASample_09_Interfaces$Monomorphic.isZero(II)Z -> org/example/ea/samples/EASample_09_Interfaces$Monomorphic$IsZero@10"
-    , "org/example/ea/samples.EASample_09_Interfaces$Polymorphic.identity(II)Lorg/example/ea/samples/EASample_09_Interfaces$Point; -> org/example/ea/samples/EASample_09_Interfaces$Polymorphic$Identity@10"
-    , "org/example/ea/samples.EASample_09_Interfaces$Polymorphic.inverse(II)Lorg/example/ea/samples/EASample_09_Interfaces$Point; -> org/example/ea/samples/EASample_09_Interfaces$Polymorphic$Inverse@10"
+    , "org/example/ea/samples.EASample_09_Interfaces$Generic.identity(II)Lorg/example/ea/samples/EASample_09_Interfaces$Point; -> org/example/ea/samples/EASample_09_Interfaces$Generic$Identity@10"
+    , "org/example/ea/samples.EASample_09_Interfaces$Generic.inverse(II)Lorg/example/ea/samples/EASample_09_Interfaces$Point; -> org/example/ea/samples/EASample_09_Interfaces$Generic$Inverse@10"
+    , "org/example/ea/samples.EASample_09_Interfaces$NonGeneric.isInfinite(II)Z -> org/example/ea/samples/EASample_09_Interfaces$NonGeneric$IsInfinite@10"
+    , "org/example/ea/samples.EASample_09_Interfaces$NonGeneric.isZero(II)Z -> org/example/ea/samples/EASample_09_Interfaces$NonGeneric$IsZero@10"
   ));
   link("actual", "actual", new java.util.concurrent.CopyOnWriteArrayList());
 ENDRULE
