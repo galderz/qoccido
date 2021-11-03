@@ -87,10 +87,10 @@ public class EASample_09_Interfaces
     {
         static void polyEscape()
         {
-            Main.print(inverse(1, 1).x == -1 ? '.' : 'F');
-            Main.print(inverse(1, 1).y == -1 ? '.' : 'F');
-            Main.print(identity(2, 2).x == 2 ? '.' : 'F');
-            Main.print(identity(2, 2).y == 2 ? '.' : 'F');
+            Main.print(inverse(10, 20).x == -10 ? '.' : 'F');
+            Main.print(inverse(30, 40).y == -40 ? '.' : 'F');
+            Main.print(identity(50, 60).x == 50 ? '.' : 'F');
+            Main.print(identity(70, 80).y == 80 ? '.' : 'F');
         }
 
         static Point inverse(int x, int y)
