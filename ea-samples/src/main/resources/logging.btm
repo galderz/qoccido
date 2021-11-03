@@ -193,3 +193,11 @@ AT ENTRY
 IF TRUE
 DO traceln("(" + Thread.currentThread().getName() + ")" + " EA: New " + $1.type.toString() + " on " + $2.getCurrentElement() + " does not escape, so stack allocate it")
 ENDRULE
+
+#RULE register node
+#CLASS ConnectionGraphDotVisitor
+#METHOD register
+#AT EXIT
+#IF TRUE
+#DO traceln("(" + Thread.currentThread().getName() + ") (" + $this.connectionGraph.name + ") register node " + $1.toString() + " returns " + $!)
+#ENDRULE
