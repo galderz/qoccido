@@ -12,6 +12,7 @@ public class EASample_06_ParameterToStatic
     {
         AssignWrite.main();
         AssignOnly.main();
+        Casting.main();
     }
 
     static class AssignWrite
@@ -72,6 +73,35 @@ public class EASample_06_ParameterToStatic
         {
             // Static assignment, so `a` goes from argument escape to global escape.
             ao = a;
+            return a.aField;
+        }
+    }
+
+    static class Casting
+    {
+        static A ac;
+
+        public static void main()
+        {
+            Main.print(casting() == 20 ? '.' : 'F');
+        }
+
+        static int casting()
+        {
+            final A a = new A();
+            a.aField = 20;
+            return generic(a);
+        }
+
+        static int generic(Object obj)
+        {
+            A a = (A) obj;
+            return concrete(a);
+        }
+
+        static int concrete(A a)
+        {
+            ac = a;
             return a.aField;
         }
     }
