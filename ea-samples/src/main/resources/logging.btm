@@ -123,7 +123,7 @@ DO traceln("(" + Thread.currentThread().getName() + ") EA: track call " + $1.toS
 ENDRULE
 
 RULE update connection graph
-CLASS EscapeAnalysisInterMethodAnalysis
+CLASS EscapeAnalysisInterMethodAnalysis$ConnectionGraphUpdater
 METHOD updateConnectionGraph
 AT ENTRY
 IF TRUE
@@ -131,7 +131,7 @@ DO traceln("(" + Thread.currentThread().getName() + ") EA: update connection gra
 ENDRULE
 
 RULE find interface connection graph
-CLASS EscapeAnalysisInterMethodAnalysis
+CLASS EscapeAnalysisInterMethodAnalysis$ConnectionGraphUpdater
 METHOD findInterfaceConnectionGraph
 AT ENTRY
 IF TRUE
@@ -147,7 +147,7 @@ DO traceln("(" + Thread.currentThread().getName() + ") EA: find in type " + $2.g
 ENDRULE
 
 RULE find interface implementors
-CLASS EscapeAnalysisInterMethodAnalysis
+CLASS EscapeAnalysisInterMethodAnalysis$ConnectionGraphUpdater
 METHOD findInterfaceImplementors
 AT EXIT
 IF TRUE

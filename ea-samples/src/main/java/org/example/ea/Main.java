@@ -9,6 +9,7 @@ import org.example.ea.samples.EASample_06_ParameterToStatic;
 import org.example.ea.samples.EASample_07_Runnable;
 import org.example.ea.samples.EASample_08_CallTwice;
 import org.example.ea.samples.EASample_09_Interfaces;
+import org.example.ea.samples.EASample_10_Subclasses;
 
 import static org.qbicc.runtime.CNative.*;
 
@@ -25,6 +26,7 @@ public class Main
         EASample_07_Runnable.main(args);
         EASample_08_CallTwice.main(args);
         EASample_09_Interfaces.main(args);
+        EASample_10_Subclasses.main(args);
         print('\n');
     }
 

@@ -12,6 +12,8 @@ DO
     , "org/example/ea/samples.EASample_09_Interfaces$Generic.inverse(II)Lorg/example/ea/samples/EASample_09_Interfaces$Point; -> org/example/ea/samples/EASample_09_Interfaces$Generic$Inverse@10"
     , "org/example/ea/samples.EASample_09_Interfaces$NonGeneric.isInfinite(II)Z -> org/example/ea/samples/EASample_09_Interfaces$NonGeneric$IsInfinite@10"
     , "org/example/ea/samples.EASample_09_Interfaces$NonGeneric.isZero(II)Z -> org/example/ea/samples/EASample_09_Interfaces$NonGeneric$IsZero@10"
+    , "org/example/ea/samples.EASample_10_Subclasses.weightInJupiter(D)D -> org/example/ea/samples/EASample_10_Subclasses$Jupiter@9"
+    , "org/example/ea/samples.EASample_10_Subclasses.weightInMars(D)D -> org/example/ea/samples/EASample_10_Subclasses$Mars@9"
   ));
   link("actual", "actual", new java.util.concurrent.CopyOnWriteArrayList());
 ENDRULE
