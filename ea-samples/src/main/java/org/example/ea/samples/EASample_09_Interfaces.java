@@ -101,17 +101,17 @@ public class EASample_09_Interfaces
         {
             final Point point = new Point(x, y);
             final Inverse inverse = new Inverse();
-            return applyPoint(point, inverse);
+            return apply1Point(point, inverse);
         }
 
         static Point identity(int x, int y)
         {
             final Point point = new Point(x, y);
             final Identity identity = new Identity();
-            return applyPoint(point, identity);
+            return apply1Point(point, identity);
         }
 
-        private static Point applyPoint(Point point, Function1<Point, Point> f)
+        private static Point apply1Point(Point point, Function1<Point, Point> f)
         {
             return f.apply1(point);
         }
