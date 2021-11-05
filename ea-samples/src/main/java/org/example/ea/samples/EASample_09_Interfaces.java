@@ -28,7 +28,7 @@ public class EASample_09_Interfaces
          * Generic methods start with a generic method that acts as a bridge,
          * and then delegates to the concrete method.
          */
-        Generic.polyEscape();
+        Generic.main();
     }
 
     static class NonGeneric
@@ -89,7 +89,7 @@ public class EASample_09_Interfaces
 
     static class Generic
     {
-        static void polyEscape()
+        static void main()
         {
             Main.print(inverse(10, 20).x == -10 ? '.' : 'F');
             Main.print(inverse(30, 40).y == -40 ? '.' : 'F');
@@ -146,7 +146,6 @@ public class EASample_09_Interfaces
     static final class Point
     {
         final int x;
-
         final int y;
 
         Point(int x, int y) {
