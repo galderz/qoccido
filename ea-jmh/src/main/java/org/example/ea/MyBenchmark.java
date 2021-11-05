@@ -29,16 +29,16 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.sample.ea;
+package org.example.ea;
 
 import org.openjdk.jmh.annotations.Benchmark;
 
-public class MyBenchmark {
-
+public class MyBenchmark
+{
     @Benchmark
-    public void testMethod() {
+    public void testMethod()
+    {
         // This is a demo/sample template for building your JMH benchmarks. Edit as needed.
         // Put your benchmark code here.
     }
-
 }
