@@ -138,12 +138,12 @@ IF TRUE
 DO traceln("(" + Thread.currentThread().getName() + ") EA: find interface connection graph for " + $1.toString())
 ENDRULE
 
-RULE find interface implementors in type
-CLASS EscapeAnalysisInterMethodAnalysis
-METHOD findInterfaceImplementorsInType
+RULE find reachable methods in type
+CLASS EscapeAnalysisInterMethodAnalysis$ConnectionGraphUpdater
+METHOD findReachableMethods
 AT ENTRY
 IF TRUE
-DO traceln("(" + Thread.currentThread().getName() + ") EA: find in type " + $2.getInternalName())
+DO traceln("(" + Thread.currentThread().getName() + ") EA: find reachable methods in type " + $2.getInternalName())
 ENDRULE
 
 RULE find interface implementors
@@ -153,6 +153,14 @@ AT EXIT
 IF TRUE
 DO traceln("(" + Thread.currentThread().getName() + ") EA: implementors of interface method " + $1.toString() + " are: " + $!.toString())
 ENDRULE
+
+#RULE find abstract connection graph
+#CLASS EscapeAnalysisInterMethodAnalysis$ConnectionGraphUpdater
+#METHOD findAbstractConnectionGraph
+#AT ENTRY
+#IF TRUE
+#DO traceln("(" + Thread.currentThread().getName() + ") EA: find abstract connection graph for " + $1.toString())
+#ENDRULE
 
 RULE update at method entry
 CLASS ConnectionGraph
