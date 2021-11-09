@@ -87,6 +87,18 @@ IF $this.connectionGraph == cg
 DO traceln(prefix.toString() + "EA: return_ " + $1.toString() + " from " + $this.getCurrentElement().toString())
 ENDRULE
 
+RULE throw_
+CLASS EscapeAnalysisIntraMethodBuilder
+METHOD throw_
+AT ENTRY
+BIND
+  th = Thread.currentThread();
+  cg = linked(th, "logging.cg");
+  prefix = linked(th, "logging.prefix");
+IF $this.connectionGraph == cg
+DO traceln(prefix.toString() + "EA: throw_ " + $1.toString() + " from " + $this.getCurrentElement().toString())
+ENDRULE
+
 RULE finish
 CLASS EscapeAnalysisIntraMethodBuilder
 METHOD finish
@@ -109,7 +121,7 @@ BIND
   name = linked(th, "logging.name");
   prefix = linked(th, "logging.prefix");
 IF $this == cg
-DO traceln(prefix.toString() + "EA: set escape value for " + $1.toString() + " in " + name + " to " + $2.toString())
+DO traceln(prefix.toString() + "EA: set escape value for " + $1.toString() + "@" + Integer.toHexString(System.identityHashCode($1)) + " in " + name + " to " + $2.toString())
 ENDRULE
 
 RULE call graph calls
@@ -199,7 +211,15 @@ CLASS EscapeAnalysisOptimizeVisitor
 METHOD stackAllocate
 AT ENTRY
 IF TRUE
-DO traceln("(" + Thread.currentThread().getName() + ")" + " EA: New " + $1.type.toString() + " on " + $2.getCurrentElement() + " does not escape, so stack allocate it")
+DO traceln("(" + Thread.currentThread().getName() + ")" + " EA: stack allocate " + $1.toString() + "@" + Integer.toHexString(System.identityHashCode($1)) + " on " + $2.getCurrentElement() + " (it does not escape)")
+ENDRULE
+
+RULE path for method
+CLASS org.qbicc.driver.CompilationContextImpl
+METHOD getOutputDirectory(MemberElement)
+AT EXIT
+IF TRUE
+DO traceln("(" + Thread.currentThread().getName() + ") Method " + $1.toString() + " assigned output path: " + $!.toString())
 ENDRULE
 
 #RULE register node
@@ -207,5 +227,5 @@ ENDRULE
 #METHOD register
 #AT EXIT
 #IF TRUE
-#DO traceln("(" + Thread.currentThread().getName() + ") (" + $this.connectionGraph.name + ") register node " + $1.toString() + " returns " + $!)
+#DO traceln("(" + Thread.currentThread().getName() + ") (" + $this.connectionGraph.name + ") register node " + $1.toString() + " returns " + $!.toString())
 #ENDRULE

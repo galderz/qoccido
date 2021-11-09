@@ -25,6 +25,8 @@ qbicc_jar_runtime_gc_nogc := $(QBICC_HOME)/runtime/gc/nogc/target/qbicc-runtime-
 qbicc_jar_runtime_posix := $(QBICC_HOME)/runtime/posix/target/qbicc-runtime-posix-$(QBICC_VERSION).jar
 qbicc_sources := $(shell find $(QBICC_HOME)/ -type f -name '*.java')
 
+qbicc_cl_home = /opt/qbicc-class-library
+
 noop=
 space = $(noop) $(noop)
 
@@ -42,9 +44,18 @@ $(qbicc_jar_runtime_api): $(qbicc_sources)
 > cd $(QBICC_HOME)
 > mvn -DskipTests=true install
 > mvn dependency:copy-dependencies -DoutputDirectory=target/libs
+> touch $@
+
+qbicc-rt-jar:
+> cd $(qbicc_cl_home)
+> mvn install
+> touch $@
+.PHONY: qbicc-rt-jar
 
 clean-qbicc:
 > cd $(QBICC_HOME)
+> mvn clean
+> cd $(qbicc_cl_home)
 > mvn clean
 .PHONY: clean-qbicc
 
@@ -84,18 +95,21 @@ else
   byteman_scripts := $(comma)script:$(resources_dir)/logging.btm
 endif
 
-run: $(jar)
+run: $(qoccido_dir) $(jar)
 > $(java) \
 >  -javaagent:$(byteman_jar)=boot:$(byteman_jar)$(byteman_scripts) \
 >  -classpath $(qbicc_cp_runtime) \
 >  org.qbicc.main.Main \
->  --boot-module-path $(jar):/opt/qbicc-rt/qbicc-rt-java.base-11.0.1-SNAPSHOT.jar:$(qbicc_cp_boot) \
+>  --boot-path-append-file $(jar) \
 >  --output-path $(qoccido_dir) \
 >  --gen-graph \
 >  $(main) \
 >  | tee target/console.log
 > $(program)
 .PHONY: run
+
+$(qoccido_dir):
+> mkdir -p $@
 
 run-jar: $(jar)
 > java -jar $(jar)
