@@ -38,6 +38,11 @@
             <artifactId>qbicc-main</artifactId>
             <version>0.1.0-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>org.qbicc</groupId>
+            <artifactId>qbicc-plugin-dot</artifactId>
+            <version>0.1.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -60,11 +65,11 @@
 
     <profiles>
         <profile>
-            <id>byteman-checks</id>
+            <id>byteman-ea-checks</id>
             <activation>
                 <property>
                     <name>ea</name>
-                    <value>!false</value>
+                    <value>true</value>
                 </property>
             </activation>
             <build>
@@ -82,7 +87,44 @@
                                 </goals>
                                 <configuration>
                                     <includes>
-                                        <include>**/*.btm</include>
+                                        <include>**/ea/*.btm</include>
+                                    </includes>
+                                    <packages>
+                                        <package>org.qbicc.plugin.opt.ea</package>
+                                    </packages>
+                                    <scriptDir>${project.build.outputDirectory}</scriptDir>
+                                    <verbose>true</verbose>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>byteman-main-checks</id>
+            <activation>
+                <property>
+                    <name>ea</name>
+                    <value>false</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jboss.byteman</groupId>
+                        <artifactId>byteman-rulecheck-maven-plugin</artifactId>
+                        <version>4.0.16</version>
+                        <executions>
+                            <execution>
+                                <id>rulecheck</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>rulecheck</goal>
+                                </goals>
+                                <configuration>
+                                    <includes>
+                                        <include>**/main/*.btm</include>
                                     </includes>
                                     <packages>
                                         <package>org.qbicc.plugin.opt.ea</package>

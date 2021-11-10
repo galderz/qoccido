@@ -1,0 +1,15 @@
+#RULE path for method
+#CLASS org.qbicc.driver.CompilationContextImpl
+#METHOD getOutputDirectory(MemberElement)
+#AT EXIT
+#IF TRUE
+#DO traceln("(" + Thread.currentThread().getName() + ") Method " + $1.toString() + " assigned output path: " + $!.toString())
+#ENDRULE
+#
+#RULE register node
+#CLASS org.qbicc.plugin.dot.DotNodeVisitor
+#METHOD register
+#AT EXIT
+#IF TRUE
+#DO traceln("(" + Thread.currentThread().getName() + ") register node " + $1.toString() + " returns " + $!.toString())
+#ENDRULE

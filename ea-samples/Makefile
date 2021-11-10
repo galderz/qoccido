@@ -89,10 +89,16 @@ endif
 print = echo '$(1)'
 comma := ,
 
-ifdef VERIFY
-  byteman_scripts := $(comma)script:$(resources_dir)/verify.btm
+EA ?= true
+
+ifeq ($(EA),true)
+  ifdef VERIFY
+    byteman_scripts := $(comma)script:$(resources_dir)/ea/verify.btm
+  else
+    byteman_scripts := $(comma)script:$(resources_dir)/ea/logging.btm
+  endif
 else
-  byteman_scripts := $(comma)script:$(resources_dir)/logging.btm
+  byteman_scripts := $(comma)script:$(resources_dir)/main/logging.btm
 endif
 
 run: $(qoccido_dir) $(jar)
@@ -127,8 +133,6 @@ run-class: $(jar)
 > -XX:+PrintEliminateAllocations \
 > -cp target/ea-samples.jar \
 > org.example.ea.samples.$(CLASS)
-
-EA ?= true
 
 $(jar): $(sources) $(qbicc_jar_runtime_api)
 > mvn package -Dea=$(EA)
