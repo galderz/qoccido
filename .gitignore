@@ -10,3 +10,8 @@ target
 out
 *.log
 *.svg
+.classpath
+.factorypath
+.project
+.settings
+.vscode
