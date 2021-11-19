@@ -49,13 +49,10 @@ $(qbicc_jar_runtime_api): $(qbicc_sources)
 qbicc-rt-jar:
 > cd $(qbicc_cl_home)
 > mvn install
-> touch $@
 .PHONY: qbicc-rt-jar
 
 clean-qbicc:
 > cd $(QBICC_HOME)
-> mvn clean
-> cd $(qbicc_cl_home)
 > mvn clean
 .PHONY: clean-qbicc
 
