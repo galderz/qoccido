@@ -151,54 +151,6 @@ graphs:
 
 open_graphs_dir := /opt/qbicc-graphs
 
-open-graphs-all: open-graphs-1 open-graphs-2 open-graphs-3 open-graphs-4 open-graphs-5 open-graphs-6
-.PHONY: open-graphs-all
-
-open-graphs-1:
-> open $(open_graphs_dir)/EASample_01_Basic/methods/sample.id2/ea-intra.dot.svg
-> open $(open_graphs_dir)/EASample_01_Basic/methods/sample.id2/ea-inter.dot.svg
-.PHONY: open-graphs-1
-
-open-graphs-2:
-> open $(open_graphs_dir)/EASample_02_StaticAssignment/methods/sample.id2/ea-intra.dot.svg
-> open $(open_graphs_dir)/EASample_02_StaticAssignment/methods/sample.id2/ea-inter.dot.svg
-.PHONY: open-graphs
-
-open-graphs-3:
-> open $(open_graphs_dir)/EASample_03_ParameterEscape/methods/sample.id2/ea-intra.dot.svg
-> open $(open_graphs_dir)/EASample_03_ParameterEscape/methods/sample.id2/ea-inter.dot.svg
-> open $(open_graphs_dir)/EASample_03_ParameterEscape/methods/sample2.id3/ea-intra.dot.svg
-> open $(open_graphs_dir)/EASample_03_ParameterEscape/methods/sample2.id3/ea-inter.dot.svg
-> open $(open_graphs_dir)/EASample_03_ParameterEscape/methods/sampleViaAux.id4/ea-intra.dot.svg
-> open $(open_graphs_dir)/EASample_03_ParameterEscape/methods/sampleViaAux.id4/ea-inter.dot.svg
-> open $(open_graphs_dir)/EASample_03_ParameterEscape/methods/sampleViaAux2.id5/ea-intra.dot.svg
-> open $(open_graphs_dir)/EASample_03_ParameterEscape/methods/sampleViaAux2.id5/ea-inter.dot.svg
-.PHONY: open-graphs-3
-
-open-graphs-4:
-> open $(open_graphs_dir)/EASample_04_ReturnEscape/methods/sample.id2/ea-intra.dot.svg
-> open $(open_graphs_dir)/EASample_04_ReturnEscape/methods/sample.id2/ea-inter.dot.svg
-> open $(open_graphs_dir)/EASample_04_ReturnEscape/methods/sample2.id3/ea-intra.dot.svg
-> open $(open_graphs_dir)/EASample_04_ReturnEscape/methods/sample2.id3/ea-inter.dot.svg
-.PHONY: open-graphs-4
-
-open-graphs-5:
-> open $(open_graphs_dir)/EASample_05_Throw/methods/sampleThrow.id5/ea-intra.dot.svg
-> open $(open_graphs_dir)/EASample_05_Throw/methods/sampleThrow.id5/ea-inter.dot.svg
-.PHONY: open-graphs-5
-
-open-graphs-6:
-> open $(open_graphs_dir)/EASample_06_ParameterToStatic/methods/sample.id2/ea-intra.dot.svg
-> open $(open_graphs_dir)/EASample_06_ParameterToStatic/methods/sample.id2/ea-inter.dot.svg
-> open $(open_graphs_dir)/EASample_06_ParameterToStatic/methods/sample2.id3/ea-intra.dot.svg
-> open $(open_graphs_dir)/EASample_06_ParameterToStatic/methods/sample2.id3/ea-inter.dot.svg
-.PHONY: open-graphs-6
-
-open-graphs-main:
-> open $(open_graphs_dir)/Main/functions/main/ea-intra.dot.svg
-> open $(open_graphs_dir)/Main/functions/main/ea-inter.dot.svg
-.PHONY: open-graphs-main
-
-graphs-sample:
+open:
 > open $(open_graphs_dir)/EASample_$(SAMPLE)*/methods/*/ea-*.dot.svg
-.PHONY: graphs-sample
+.PHONY: open
