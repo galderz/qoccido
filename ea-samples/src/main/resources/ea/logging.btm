@@ -19,7 +19,7 @@ BIND
   th = Thread.currentThread();
   prefix = "(" + th.getName() + ") ";
 IF
-  name.toString().contains("java/util.Formatter$FormatSpecifier.print(Ljava/lang/StringBuilder;D")
+  name.toString().contains("org/example/ea/samples.EASample_06_ParameterToStatic$AssignWrite.doAssignWrite")
 DO
   link("name", name);
   traceln(prefix.toString() + "Method " + $1.toString() + " assigned output path: " + $!.toString());
