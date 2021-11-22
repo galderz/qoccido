@@ -10,21 +10,32 @@ DO
   $! = sb.append("@").append(Integer.toHexString(System.identityHashCode($this)).toCharArray());
 ENDRULE
 
+RULE path for method
+CLASS org.qbicc.driver.CompilationContextImpl
+METHOD getOutputDirectory(MemberElement)
+AT EXIT
+BIND
+  name = $1.toString();
+  th = Thread.currentThread();
+  prefix = "(" + th.getName() + ") ";
+IF
+  name.toString().contains("java/util.Formatter$FormatSpecifier.print(Ljava/lang/StringBuilder;D")
+DO
+  link("name", name);
+  traceln(prefix.toString() + "Method " + $1.toString() + " assigned output path: " + $!.toString());
+ENDRULE
+
 RULE set up ea bbb
 CLASS EscapeAnalysisIntraMethodBuilder
 METHOD <init>
 AT EXIT
 BIND
+  name = linked("name");
   th = Thread.currentThread();
-  element = $2.getCurrentElement();
   prefix = "(" + th.getName() + ") ";
 IF
-  element.toString().contains("java/util.Formatter$FormatSpecifier.print(Ljava/lang/StringBuilder;D")
-DO
-  link(th, "logging.cg", $this.connectionGraph);
-  link(th, "logging.name", element);
-  link(th, "logging.prefix", prefix);
-  traceln(prefix + "EA: construct intra method analysis for " + element.toString());
+  $2.getCurrentElement().toString().contains(name.toString())
+DO traceln(prefix.toString() + "EA: construct intra method analysis for " + name);
 ENDRULE
 
 RULE instance field of
@@ -32,12 +43,12 @@ CLASS EscapeAnalysisIntraMethodBuilder
 METHOD instanceFieldOf
 AT ENTRY
 BIND
+  name = linked("name");
   th = Thread.currentThread();
-  cg = linked(th, "logging.cg");
-  prefix = linked(th, "logging.prefix");
+  prefix = "(" + th.getName() + ") ";
 IF
-  $this.connectionGraph == cg
-DO traceln(prefix.toString() + "EA: instanceFieldOf " + $1.toString())
+  $this.connectionGraph.name.contains(name.toString())
+DO traceln(prefix.toString() + "EA: in.toString()stanceFieldOf " + $1.toString())
 ENDRULE
 
 RULE handle reference
@@ -45,10 +56,11 @@ CLASS EscapeAnalysisIntraMethodBuilder
 METHOD handleInstanceFieldOf
 AT ENTRY
 BIND
+  name = linked("name");
   th = Thread.currentThread();
-  cg = linked(th, "logging.cg");
-  prefix = linked(th, "logging.prefix");
-IF $this.connectionGraph == cg
+  prefix = "(" + th.getName() + ") ";
+IF
+  $this.connectionGraph.name.contains(name.toString())
 DO traceln(prefix.toString() + "EA: handleInstanceFieldOf " + $1.toString() + " with target " + $3.toString())
 ENDRULE
 
@@ -57,10 +69,11 @@ CLASS EscapeAnalysisIntraMethodBuilder
 METHOD store
 AT ENTRY
 BIND
+  name = linked("name");
   th = Thread.currentThread();
-  cg = linked(th, "logging.cg");
-  prefix = linked(th, "logging.prefix");
-IF $this.connectionGraph == cg
+  prefix = "(" + th.getName() + ") ";
+IF
+  $this.connectionGraph.name.contains(name.toString())
 DO traceln(prefix.toString() + "EA: store " + $2.toString() + " into " + $1.toString())
 ENDRULE
 
@@ -69,10 +82,11 @@ CLASS EscapeAnalysisIntraMethodBuilder
 METHOD call
 AT EXIT
 BIND
+  name = linked("name");
   th = Thread.currentThread();
-  cg = linked(th, "logging.cg");
-  prefix = linked(th, "logging.prefix");
-IF $this.connectionGraph == cg
+  prefix = "(" + th.getName() + ") ";
+IF
+  $this.connectionGraph.name.contains(name.toString())
 DO traceln(prefix.toString() + "EA: call " + $1.toString() + " with " + $2.toString() + " returns " + $!)
 ENDRULE
 
@@ -82,9 +96,10 @@ METHOD startMethod
 AT ENTRY
 BIND
   th = Thread.currentThread();
-  cg = linked(th, "logging.cg");
-  prefix = linked(th, "logging.prefix");
-IF $this.connectionGraph == cg
+  name = linked("name");
+  prefix = "(" + th.getName() + ") ";
+IF
+  $this.connectionGraph.name.contains(name.toString())
 DO traceln(prefix.toString() + "EA: start method " + $this.getCurrentElement().toString() + " with " + $1.toString())
 ENDRULE
 
@@ -93,10 +108,11 @@ CLASS EscapeAnalysisIntraMethodBuilder
 METHOD return_
 AT ENTRY
 BIND
+  name = linked("name");
   th = Thread.currentThread();
-  cg = linked(th, "logging.cg");
-  prefix = linked(th, "logging.prefix");
-IF $this.connectionGraph == cg
+  prefix = "(" + th.getName() + ") ";
+IF
+  $this.connectionGraph.name.contains(name.toString())
 DO traceln(prefix.toString() + "EA: return_ " + $1.toString() + " from " + $this.getCurrentElement().toString())
 ENDRULE
 
@@ -105,10 +121,11 @@ CLASS EscapeAnalysisIntraMethodBuilder
 METHOD throw_
 AT ENTRY
 BIND
+  name = linked("name");
   th = Thread.currentThread();
-  cg = linked(th, "logging.cg");
-  prefix = linked(th, "logging.prefix");
-IF $this.connectionGraph == cg
+  prefix = "(" + th.getName() + ") ";
+IF
+  $this.connectionGraph.name.contains(name.toString())
 DO traceln(prefix.toString() + "EA: throw_ " + $1.toString() + " from " + $this.getCurrentElement().toString())
 ENDRULE
 
@@ -117,10 +134,11 @@ CLASS EscapeAnalysisIntraMethodBuilder
 METHOD finish
 AT ENTRY
 BIND
+  name = linked("name");
   th = Thread.currentThread();
-  cg = linked(th, "logging.cg");
-  prefix = linked(th, "logging.prefix");
-IF $this.connectionGraph == cg
+  prefix = "(" + th.getName() + ") ";
+IF
+  $this.connectionGraph.name.contains(name.toString())
 DO traceln(prefix.toString() + "EA: finish " + $this.getCurrentElement().toString())
 ENDRULE
 
@@ -129,10 +147,11 @@ CLASS ConnectionGraph
 METHOD setEscapeValue
 AT ENTRY
 BIND
+  name = linked("name");
   th = Thread.currentThread();
-  cg = linked(th, "logging.cg");
-  prefix = linked(th, "logging.prefix");
-IF $this == cg
+  prefix = "(" + th.getName() + ") ";
+IF
+  $this.name.contains(name.toString())
 DO traceln(prefix.toString() + "EA: set escape value for " + $1.toString() + " in " + $this.name + " to " + $2.toString())
 ENDRULE
 
@@ -141,12 +160,12 @@ CLASS EscapeAnalysisState
 METHOD trackCall
 AT ENTRY
 BIND
-  th = Thread.currentThread();
-  name = linked(th, "logging.name");
-  prefix = linked(th, "logging.prefix");
   executable : org.qbicc.graph.Executable = $2.getValueHandle();
+  name = linked("name");
+  th = Thread.currentThread();
+  prefix = "(" + th.getName() + ") ";
 IF
-  $1.toString().equals(name)
+  $1.toString().contains(name.toString())
 DO traceln(prefix.toString() + "EA: track call " + $1.toString() + " to " + executable.getExecutable().toString())
 ENDRULE
 
@@ -155,14 +174,13 @@ CLASS EscapeAnalysisInterMethodAnalysis$ConnectionGraphUpdater
 METHOD updateConnectionGraph
 AT ENTRY
 BIND
-  th = Thread.currentThread();
   element = $1;
+  name = linked("name");
+  th = Thread.currentThread();
   prefix = "(" + th.getName() + ") ";
 IF
-  element.toString().contains("java/util.Formatter$FormatSpecifier.print(Ljava/lang/StringBuilder;D")
+  element.toString().contains(name.toString())
 DO
-  link(th, "logging.name", element.toString());
-  link(th, "logging.prefix", prefix);
   traceln(prefix.toString() + "EA: update connection graph for " + $1.toString())
 ENDRULE
 
@@ -171,11 +189,11 @@ CLASS EscapeAnalysisInterMethodAnalysis$ConnectionGraphUpdater
 METHOD findInterfaceConnectionGraph
 AT ENTRY
 BIND
+  name = linked("name");
   th = Thread.currentThread();
-  name = linked(th, "logging.name");
-  prefix = linked(th, "logging.prefix");
+  prefix = "(" + th.getName() + ") ";
 IF
-  $1.toString().equals(name)
+  $1.toString().contains(name.toString())
 DO traceln(prefix.toString() + "EA: find interface connection graph for " + $1.toString())
 ENDRULE
 
@@ -184,11 +202,11 @@ CLASS EscapeAnalysisInterMethodAnalysis$ConnectionGraphUpdater
 METHOD findReachableMethods
 AT ENTRY
 BIND
+  name = linked("name");
   th = Thread.currentThread();
-  name = linked(th, "logging.name");
-  prefix = linked(th, "logging.prefix");
+  prefix = "(" + th.getName() + ") ";
 IF
-  $1.toString().equals(name)
+  $1.toString().contains(name.toString())
 DO traceln(prefix.toString() + "EA: find reachable methods in type " + $2.getInternalName())
 ENDRULE
 
@@ -197,11 +215,11 @@ CLASS EscapeAnalysisInterMethodAnalysis$ConnectionGraphUpdater
 METHOD findInterfaceImplementors
 AT EXIT
 BIND
+  name = linked("name");
   th = Thread.currentThread();
-  name = linked(th, "logging.name");
-  prefix = linked(th, "logging.prefix");
+  prefix = "(" + th.getName() + ") ";
 IF
-  $1.toString().equals(name)
+  $1.toString().contains(name.toString())
 DO traceln(prefix.toString() + "EA: implementors of interface method " + $1.toString() + " are: " + $!.toString())
 ENDRULE
 
@@ -218,11 +236,11 @@ CLASS ConnectionGraph
 METHOD updateAtMethodEntry
 AT ENTRY
 BIND
+  name = linked("name");
   th = Thread.currentThread();
-  name = linked(th, "logging.name");
-  prefix = linked(th, "logging.prefix");
+  prefix = "(" + th.getName() + ") ";
 IF
-  $this.name.equals(name)
+  $this.name.contains(name.toString())
 DO traceln(prefix.toString() + "EA: update at method entry " + $this.toString())
 ENDRULE
 
@@ -231,11 +249,11 @@ CLASS ConnectionGraph
 METHOD updateAfterInvokingMethod
 AT ENTRY
 BIND
+  name = linked("name");
   th = Thread.currentThread();
-  name = linked(th, "logging.name");
-  prefix = linked(th, "logging.prefix");
+  prefix = "(" + th.getName() + ") ";
 IF
-  $this.name.equals(name)
+  $this.name.contains(name.toString())
 DO traceln(prefix.toString() + "EA: update " + $this.toString() + " after invoking " + $2.name)
 ENDRULE
 
@@ -244,11 +262,11 @@ CLASS ConnectionGraph
 METHOD updateAtMethodExit
 AT ENTRY
 BIND
+  name = linked("name");
   th = Thread.currentThread();
-  name = linked(th, "logging.name");
-  prefix = linked(th, "logging.prefix");
+  prefix = "(" + th.getName() + ") ";
 IF
-  $this.name.equals(name)
+  $this.name.contains(name.toString())
 DO traceln(prefix.toString() + "EA: update at method exit " + $this.toString())
 ENDRULE
 
@@ -257,11 +275,11 @@ CLASS ConnectionGraph
 METHOD mergeEscapeValues
 AT EXIT
 BIND
+  name = linked("name");
   th = Thread.currentThread();
-  name = linked(th, "logging.name");
-  prefix = linked(th, "logging.prefix");
+  prefix = "(" + th.getName() + ") ";
 IF
-  $this.name.equals(name)
+  $this.name.contains(name.toString())
 DO traceln(prefix.toString() + "EA: merge escape values of " + $this.escapeValues.toString() + " with " + $1.escapeValues.toString() + " returns " + $!.toString())
 ENDRULE
 
@@ -269,27 +287,26 @@ RULE stack allocate
 CLASS EscapeAnalysisOptimizeVisitor
 METHOD stackAllocate
 AT ENTRY
+BIND
+  name = linked("name");
+  th = Thread.currentThread();
+  prefix = "(" + th.getName() + ") ";
 IF
-  $2.getCurrentElement().toString().contains("java/util.Formatter$FormatSpecifier.print(Ljava/lang/StringBuilder;D")
-DO traceln("(" + Thread.currentThread().getName() + ") EA: stack allocate " + $1.toString() + " on " + $2.getCurrentElement() + " (it does not escape)")
-ENDRULE
-
-RULE path for method
-CLASS org.qbicc.driver.CompilationContextImpl
-METHOD getOutputDirectory(MemberElement)
-AT EXIT
-IF
-  $1.toString().contains("java/util.Formatter$FormatSpecifier.print(Ljava/lang/StringBuilder;D")
-DO traceln("(" + Thread.currentThread().getName() + ") Method " + $1.toString() + " assigned output path: " + $!.toString())
+  $2.getCurrentElement().toString().contains(name.toString())
+DO traceln(prefix.toString() + "EA: stack allocate " + $1.toString() + " on " + $2.getCurrentElement() + " (it does not escape)")
 ENDRULE
 
 RULE register node
 CLASS ConnectionGraphDotVisitor
 METHOD register
 AT EXIT
+BIND
+  name = linked("name");
+  th = Thread.currentThread();
+  prefix = "(" + th.getName() + ") ";
 IF
-  $this.connectionGraph.name.contains("java/util.Formatter$FormatSpecifier.print(Ljava/lang/StringBuilder;D")
-DO traceln("(" + Thread.currentThread().getName() + ") (" + $this.connectionGraph.name + ") register node " + $1.toString() + " returns " + $!.toString())
+  $this.connectionGraph.name.contains(name.toString())
+DO traceln(prefix.toString() + "(" + $this.connectionGraph.name + ") register node " + $1.toString() + " returns " + $!.toString())
 ENDRULE
 
 RULE show new node cg
