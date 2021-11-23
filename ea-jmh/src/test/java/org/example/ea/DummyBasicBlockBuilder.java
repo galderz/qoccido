@@ -1,6 +1,7 @@
 package org.example.ea;
 
 import org.qbicc.context.Location;
+import org.qbicc.graph.AsmHandle;
 import org.qbicc.graph.BasicBlock;
 import org.qbicc.graph.BasicBlockBuilder;
 import org.qbicc.graph.BlockEntry;
@@ -14,13 +15,11 @@ import org.qbicc.graph.PhiValue;
 import org.qbicc.graph.Value;
 import org.qbicc.graph.ValueHandle;
 import org.qbicc.graph.literal.BlockLiteral;
-import org.qbicc.object.Function;
-import org.qbicc.object.FunctionDeclaration;
 import org.qbicc.type.ArrayObjectType;
 import org.qbicc.type.ClassObjectType;
 import org.qbicc.type.CompoundType;
+import org.qbicc.type.FunctionType;
 import org.qbicc.type.ObjectType;
-import org.qbicc.type.ReferenceType;
 import org.qbicc.type.ValueType;
 import org.qbicc.type.WordType;
 import org.qbicc.type.definition.element.ConstructorElement;
@@ -36,9 +35,17 @@ import org.qbicc.type.descriptor.MethodDescriptor;
 import org.qbicc.type.descriptor.TypeDescriptor;
 
 import java.util.List;
+import java.util.Set;
 
 final class DummyBasicBlockBuilder implements BasicBlockBuilder
 {
+    final ExecutableElement executableElement;
+
+    DummyBasicBlockBuilder(ExecutableElement executableElement)
+    {
+        this.executableElement = executableElement;
+    }
+
     @Override
     public BasicBlockBuilder getFirstBuilder()
     {
@@ -54,7 +61,7 @@ final class DummyBasicBlockBuilder implements BasicBlockBuilder
     @Override
     public ExecutableElement getCurrentElement()
     {
-        return null;  // TODO: Customise this generated block
+        return executableElement;
     }
 
     @Override
@@ -382,13 +389,7 @@ final class DummyBasicBlockBuilder implements BasicBlockBuilder
     }
 
     @Override
-    public Value arrayLength(ValueHandle arrayHandle)
-    {
-        return null;  // TODO: Customise this generated block
-    }
-
-    @Override
-    public Value typeIdOf(ValueHandle valueHandle)
+    public ValueHandle lengthOf(ValueHandle arrayHandle)
     {
         return null;  // TODO: Customise this generated block
     }
@@ -436,7 +437,7 @@ final class DummyBasicBlockBuilder implements BasicBlockBuilder
     }
 
     @Override
-    public Value checkcast(Value value, Value toType, Value toDimensions, CheckCast.CastType kind, ReferenceType type)
+    public Value checkcast(Value value, Value toType, Value toDimensions, CheckCast.CastType kind, ObjectType expectedType)
     {
         return null;  // TODO: Customise this generated block
     }
@@ -514,7 +515,7 @@ final class DummyBasicBlockBuilder implements BasicBlockBuilder
     }
 
     @Override
-    public ValueHandle exactMethodOf(Value instance, MethodElement method)
+    public ValueHandle exactMethodOf(Value instance, MethodElement method, MethodDescriptor callSiteDescriptor, FunctionType callSiteType)
     {
         return null;  // TODO: Customise this generated block
     }
@@ -526,7 +527,7 @@ final class DummyBasicBlockBuilder implements BasicBlockBuilder
     }
 
     @Override
-    public ValueHandle virtualMethodOf(Value instance, MethodElement method)
+    public ValueHandle virtualMethodOf(Value instance, MethodElement method, MethodDescriptor callSiteDescriptor, FunctionType callSiteType)
     {
         return null;  // TODO: Customise this generated block
     }
@@ -538,7 +539,7 @@ final class DummyBasicBlockBuilder implements BasicBlockBuilder
     }
 
     @Override
-    public ValueHandle interfaceMethodOf(Value instance, MethodElement method)
+    public ValueHandle interfaceMethodOf(Value instance, MethodElement method, MethodDescriptor callSiteDescriptor, FunctionType callSiteType)
     {
         return null;  // TODO: Customise this generated block
     }
@@ -550,7 +551,7 @@ final class DummyBasicBlockBuilder implements BasicBlockBuilder
     }
 
     @Override
-    public ValueHandle staticMethod(MethodElement method)
+    public ValueHandle staticMethod(MethodElement method, MethodDescriptor callSiteDescriptor, FunctionType callSiteType)
     {
         return null;  // TODO: Customise this generated block
     }
@@ -562,7 +563,7 @@ final class DummyBasicBlockBuilder implements BasicBlockBuilder
     }
 
     @Override
-    public ValueHandle constructorOf(Value instance, ConstructorElement constructor)
+    public ValueHandle constructorOf(Value instance, ConstructorElement constructor, MethodDescriptor callSiteDescriptor, FunctionType callSiteType)
     {
         return null;  // TODO: Customise this generated block
     }
@@ -580,13 +581,7 @@ final class DummyBasicBlockBuilder implements BasicBlockBuilder
     }
 
     @Override
-    public ValueHandle functionOf(Function function)
-    {
-        return null;  // TODO: Customise this generated block
-    }
-
-    @Override
-    public ValueHandle functionOf(FunctionDeclaration function)
+    public ValueHandle asm(String instruction, String constraints, Set<AsmHandle.Flag> flags, FunctionType type)
     {
         return null;  // TODO: Customise this generated block
     }
@@ -713,6 +708,18 @@ final class DummyBasicBlockBuilder implements BasicBlockBuilder
 
     @Override
     public Value cmpAndSwap(ValueHandle target, Value expect, Value update, MemoryAtomicityMode successMode, MemoryAtomicityMode failureMode, CmpAndSwap.Strength strength)
+    {
+        return null;  // TODO: Customise this generated block
+    }
+
+    @Override
+    public Value deref(Value value)
+    {
+        return null;  // TODO: Customise this generated block
+    }
+
+    @Override
+    public Value vaArg(Value vaList, ValueType type)
     {
         return null;  // TODO: Customise this generated block
     }
@@ -851,24 +858,6 @@ final class DummyBasicBlockBuilder implements BasicBlockBuilder
 
     @Override
     public BasicBlock ret(Value address)
-    {
-        return null;  // TODO: Customise this generated block
-    }
-
-    @Override
-    public BasicBlock classCastException(Value fromType, Value toType)
-    {
-        return null;  // TODO: Customise this generated block
-    }
-
-    @Override
-    public BasicBlock noSuchMethodError(ObjectType owner, MethodDescriptor desc, String name)
-    {
-        return null;  // TODO: Customise this generated block
-    }
-
-    @Override
-    public BasicBlock classNotFoundError(String name)
     {
         return null;  // TODO: Customise this generated block
     }

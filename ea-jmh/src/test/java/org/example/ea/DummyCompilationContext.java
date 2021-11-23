@@ -5,18 +5,17 @@ import org.qbicc.context.ClassContext;
 import org.qbicc.context.CompilationContext;
 import org.qbicc.context.Diagnostic;
 import org.qbicc.context.Location;
+import org.qbicc.context.PhaseAttachmentKey;
 import org.qbicc.graph.BasicBlock;
 import org.qbicc.graph.Node;
 import org.qbicc.graph.NodeVisitor;
 import org.qbicc.graph.Value;
 import org.qbicc.graph.ValueHandle;
 import org.qbicc.graph.literal.LiteralFactory;
-import org.qbicc.graph.literal.SymbolLiteral;
 import org.qbicc.interpreter.Vm;
 import org.qbicc.interpreter.VmClassLoader;
 import org.qbicc.machine.arch.Platform;
 import org.qbicc.object.Function;
-import org.qbicc.object.FunctionDeclaration;
 import org.qbicc.object.ProgramModule;
 import org.qbicc.object.Section;
 import org.qbicc.type.FunctionType;
@@ -26,6 +25,7 @@ import org.qbicc.type.definition.NativeMethodConfigurator;
 import org.qbicc.type.definition.element.Element;
 import org.qbicc.type.definition.element.ExecutableElement;
 import org.qbicc.type.definition.element.FieldElement;
+import org.qbicc.type.definition.element.FunctionElement;
 import org.qbicc.type.definition.element.MemberElement;
 import org.qbicc.type.definition.element.MethodElement;
 
@@ -183,19 +183,13 @@ final class DummyCompilationContext implements CompilationContext
     }
 
     @Override
+    public FunctionElement establishExactFunction(ExecutableElement element, FunctionElement function)
+    {
+        return null;  // TODO: Customise this generated block
+    }
+
+    @Override
     public FunctionType getFunctionTypeForElement(ExecutableElement element)
-    {
-        return null;  // TODO: Customise this generated block
-    }
-
-    @Override
-    public FunctionDeclaration declareForeignFunction(ExecutableElement target, Function function, ExecutableElement current)
-    {
-        return null;  // TODO: Customise this generated block
-    }
-
-    @Override
-    public SymbolLiteral getCurrentThreadLocalSymbolLiteral()
     {
         return null;  // TODO: Customise this generated block
     }
@@ -292,6 +286,84 @@ final class DummyCompilationContext implements CompilationContext
 
     @Override
     public <T> T computeAttachment(AttachmentKey<T> key, java.util.function.Function<T, T> function)
+    {
+        return null;  // TODO: Customise this generated block
+    }
+
+    @Override
+    public <T> T getAttachment(PhaseAttachmentKey<T> key)
+    {
+        return null;  // TODO: Customise this generated block
+    }
+
+    @Override
+    public <T> T getAttachmentOrDefault(PhaseAttachmentKey<T> key, T defVal)
+    {
+        return null;  // TODO: Customise this generated block
+    }
+
+    @Override
+    public <T> T putAttachment(PhaseAttachmentKey<T> key, T value)
+    {
+        return null;  // TODO: Customise this generated block
+    }
+
+    @Override
+    public <T> T putAttachmentIfAbsent(PhaseAttachmentKey<T> key, T value)
+    {
+        return null;  // TODO: Customise this generated block
+    }
+
+    @Override
+    public <T> T removeAttachment(PhaseAttachmentKey<T> key)
+    {
+        return null;  // TODO: Customise this generated block
+    }
+
+    @Override
+    public <T> boolean removeAttachment(PhaseAttachmentKey<T> key, T expect)
+    {
+        return false;  // TODO: Customise this generated block
+    }
+
+    @Override
+    public <T> T replaceAttachment(PhaseAttachmentKey<T> key, T update)
+    {
+        return null;  // TODO: Customise this generated block
+    }
+
+    @Override
+    public <T> boolean replaceAttachment(PhaseAttachmentKey<T> key, T expect, T update)
+    {
+        return false;  // TODO: Customise this generated block
+    }
+
+    @Override
+    public <T> T computeAttachmentIfAbsent(PhaseAttachmentKey<T> key, Supplier<T> function)
+    {
+        return null;  // TODO: Customise this generated block
+    }
+
+    @Override
+    public <T> T computeAttachmentIfPresent(PhaseAttachmentKey<T> key, java.util.function.Function<T, T> function)
+    {
+        return null;  // TODO: Customise this generated block
+    }
+
+    @Override
+    public <T> T computeAttachment(PhaseAttachmentKey<T> key, java.util.function.Function<T, T> function)
+    {
+        return null;  // TODO: Customise this generated block
+    }
+
+    @Override
+    public void cyclePhaseAttachments()
+    {
+        // TODO: Customise this generated block
+    }
+
+    @Override
+    public <T> T getPreviousPhaseAttachment(PhaseAttachmentKey<T> key)
     {
         return null;  // TODO: Customise this generated block
     }
