@@ -1,0 +1,76 @@
+RULE init entry
+CLASS EscapeAnalysisIntraMethodBuilder
+METHOD <init>
+HELPER org.example.ea.helpers.EventPoet
+AT ENTRY
+BIND
+  name = $2.getCurrentElement().toString();
+IF
+  name.toString().contains("org/example/ea/samples.EASample_01_Basic.sample1")
+DO
+  link("name", name);
+  create(name);
+ENDRULE
+
+RULE start method
+CLASS EscapeAnalysisIntraMethodBuilder
+METHOD startMethod
+HELPER org.example.ea.helpers.EventPoet
+AT ENTRY
+BIND
+  name = linked("name");
+  th = Thread.currentThread();
+  prefix = "(" + th.getName() + ") ";
+  parameter : org.qbicc.graph.ParameterValue = $1.stream().findFirst().orElse(null);
+IF
+  $this.connectionGraph.name.equals(name)
+DO
+  traceln(prefix.toString() + "startMethod called with: " + $1.toString() + " which has valueType " + parameter.type.toString());
+  startMethod();
+ENDRULE
+
+RULE finish
+CLASS EscapeAnalysisIntraMethodBuilder
+METHOD finish
+HELPER org.example.ea.helpers.EventPoet
+AT ENTRY
+BIND
+  name = linked("name");
+IF
+  $this.connectionGraph.name.equals(name)
+DO
+  finish();
+ENDRULE
+
+RULE entry vm class initialize
+CLASS org.qbicc.interpreter.impl.VmClassImpl
+METHOD initialize
+AT ENTRY
+BIND
+  th = Thread.currentThread();
+  prefix = "(" + th.getName() + ") ";
+IF TRUE
+DO traceln(prefix.toString() + "Initialize (entry) vm " + $this.toString());
+ENDRULE
+
+RULE exit vm class initialize
+CLASS org.qbicc.interpreter.impl.VmClassImpl
+METHOD initialize
+AT EXIT
+BIND
+  th = Thread.currentThread();
+  prefix = "(" + th.getName() + ") ";
+IF TRUE
+DO traceln(prefix.toString() + "Initialize (exit) vm " + $this.toString());
+ENDRULE
+
+RULE element initialize
+CLASS org.qbicc.driver.ElementInitializer
+METHOD accept
+AT ENTRY
+BIND
+  th = Thread.currentThread();
+  prefix = "(" + th.getName() + ") ";
+IF TRUE
+DO traceln(prefix.toString() + "Initialize method " + $1.toString());
+ENDRULE

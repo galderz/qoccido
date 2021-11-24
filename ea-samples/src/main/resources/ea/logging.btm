@@ -19,7 +19,7 @@ BIND
   th = Thread.currentThread();
   prefix = "(" + th.getName() + ") ";
 IF
-  name.toString().contains("org/example/ea/samples.EASample_06_ParameterToStatic$AssignWrite.doAssignWrite")
+  name.toString().contains("org/example/ea/samples.EASample_01_Basic.sample1")
 DO
   link("name", name);
   traceln(prefix.toString() + "Method " + $1.toString() + " assigned output path: " + $!.toString());
@@ -34,7 +34,7 @@ BIND
   th = Thread.currentThread();
   prefix = "(" + th.getName() + ") ";
 IF
-  $2.getCurrentElement().toString().contains(name.toString())
+  $2.getCurrentElement().toString().equals(name)
 DO traceln(prefix.toString() + "EA: construct intra method analysis for " + name);
 ENDRULE
 
@@ -47,7 +47,7 @@ BIND
   th = Thread.currentThread();
   prefix = "(" + th.getName() + ") ";
 IF
-  $this.connectionGraph.name.contains(name.toString())
+  $this.connectionGraph.name.equals(name)
 DO traceln(prefix.toString() + "EA: in.toString()stanceFieldOf " + $1.toString())
 ENDRULE
 
@@ -60,7 +60,7 @@ BIND
   th = Thread.currentThread();
   prefix = "(" + th.getName() + ") ";
 IF
-  $this.connectionGraph.name.contains(name.toString())
+  $this.connectionGraph.name.equals(name)
 DO traceln(prefix.toString() + "EA: handleInstanceFieldOf " + $1.toString() + " with target " + $3.toString())
 ENDRULE
 
@@ -73,7 +73,7 @@ BIND
   th = Thread.currentThread();
   prefix = "(" + th.getName() + ") ";
 IF
-  $this.connectionGraph.name.contains(name.toString())
+  $this.connectionGraph.name.equals(name)
 DO traceln(prefix.toString() + "EA: store " + $2.toString() + " into " + $1.toString())
 ENDRULE
 
@@ -86,7 +86,7 @@ BIND
   th = Thread.currentThread();
   prefix = "(" + th.getName() + ") ";
 IF
-  $this.connectionGraph.name.contains(name.toString())
+  $this.connectionGraph.name.equals(name)
 DO traceln(prefix.toString() + "EA: call " + $1.toString() + " with " + $2.toString() + " returns " + $!)
 ENDRULE
 
@@ -99,7 +99,7 @@ BIND
   name = linked("name");
   prefix = "(" + th.getName() + ") ";
 IF
-  $this.connectionGraph.name.contains(name.toString())
+  $this.connectionGraph.name.equals(name)
 DO traceln(prefix.toString() + "EA: start method " + $this.getCurrentElement().toString() + " with " + $1.toString())
 ENDRULE
 
@@ -112,7 +112,7 @@ BIND
   th = Thread.currentThread();
   prefix = "(" + th.getName() + ") ";
 IF
-  $this.connectionGraph.name.contains(name.toString())
+  $this.connectionGraph.name.equals(name)
 DO traceln(prefix.toString() + "EA: return_ " + $1.toString() + " from " + $this.getCurrentElement().toString())
 ENDRULE
 
@@ -125,7 +125,7 @@ BIND
   th = Thread.currentThread();
   prefix = "(" + th.getName() + ") ";
 IF
-  $this.connectionGraph.name.contains(name.toString())
+  $this.connectionGraph.name.equals(name)
 DO traceln(prefix.toString() + "EA: throw_ " + $1.toString() + " from " + $this.getCurrentElement().toString())
 ENDRULE
 
@@ -138,7 +138,7 @@ BIND
   th = Thread.currentThread();
   prefix = "(" + th.getName() + ") ";
 IF
-  $this.connectionGraph.name.contains(name.toString())
+  $this.connectionGraph.name.equals(name)
 DO traceln(prefix.toString() + "EA: finish " + $this.getCurrentElement().toString())
 ENDRULE
 
@@ -151,7 +151,7 @@ BIND
   th = Thread.currentThread();
   prefix = "(" + th.getName() + ") ";
 IF
-  $this.name.contains(name.toString())
+  $this.name.equals(name)
 DO traceln(prefix.toString() + "EA: set escape value for " + $1.toString() + " in " + $this.name + " to " + $2.toString())
 ENDRULE
 
@@ -165,7 +165,7 @@ BIND
   th = Thread.currentThread();
   prefix = "(" + th.getName() + ") ";
 IF
-  $1.toString().contains(name.toString())
+  $1.toString().equals(name)
 DO traceln(prefix.toString() + "EA: track call " + $1.toString() + " to " + executable.getExecutable().toString())
 ENDRULE
 
@@ -179,7 +179,7 @@ BIND
   th = Thread.currentThread();
   prefix = "(" + th.getName() + ") ";
 IF
-  element.toString().contains(name.toString())
+  element.toString().equals(name)
 DO
   traceln(prefix.toString() + "EA: update connection graph for " + $1.toString())
 ENDRULE
@@ -193,7 +193,7 @@ BIND
   th = Thread.currentThread();
   prefix = "(" + th.getName() + ") ";
 IF
-  $1.toString().contains(name.toString())
+  $1.toString().equals(name)
 DO traceln(prefix.toString() + "EA: find interface connection graph for " + $1.toString())
 ENDRULE
 
@@ -206,7 +206,7 @@ BIND
   th = Thread.currentThread();
   prefix = "(" + th.getName() + ") ";
 IF
-  $1.toString().contains(name.toString())
+  $1.toString().equals(name)
 DO traceln(prefix.toString() + "EA: find reachable methods in type " + $2.getInternalName())
 ENDRULE
 
@@ -219,7 +219,7 @@ BIND
   th = Thread.currentThread();
   prefix = "(" + th.getName() + ") ";
 IF
-  $1.toString().contains(name.toString())
+  $1.toString().equals(name)
 DO traceln(prefix.toString() + "EA: implementors of interface method " + $1.toString() + " are: " + $!.toString())
 ENDRULE
 
@@ -240,7 +240,7 @@ BIND
   th = Thread.currentThread();
   prefix = "(" + th.getName() + ") ";
 IF
-  $this.name.contains(name.toString())
+  $this.name.equals(name)
 DO traceln(prefix.toString() + "EA: update at method entry " + $this.toString())
 ENDRULE
 
@@ -253,7 +253,7 @@ BIND
   th = Thread.currentThread();
   prefix = "(" + th.getName() + ") ";
 IF
-  $this.name.contains(name.toString())
+  $this.name.equals(name)
 DO traceln(prefix.toString() + "EA: update " + $this.toString() + " after invoking " + $2.name)
 ENDRULE
 
@@ -266,7 +266,7 @@ BIND
   th = Thread.currentThread();
   prefix = "(" + th.getName() + ") ";
 IF
-  $this.name.contains(name.toString())
+  $this.name.equals(name)
 DO traceln(prefix.toString() + "EA: update at method exit " + $this.toString())
 ENDRULE
 
@@ -279,7 +279,7 @@ BIND
   th = Thread.currentThread();
   prefix = "(" + th.getName() + ") ";
 IF
-  $this.name.contains(name.toString())
+  $this.name.equals(name)
 DO traceln(prefix.toString() + "EA: merge escape values of " + $this.escapeValues.toString() + " with " + $1.escapeValues.toString() + " returns " + $!.toString())
 ENDRULE
 
@@ -292,7 +292,7 @@ BIND
   th = Thread.currentThread();
   prefix = "(" + th.getName() + ") ";
 IF
-  $2.getCurrentElement().toString().contains(name.toString())
+  $2.getCurrentElement().toString().equals(name)
 DO traceln(prefix.toString() + "EA: stack allocate " + $1.toString() + " on " + $2.getCurrentElement() + " (it does not escape)")
 ENDRULE
 
@@ -305,7 +305,7 @@ BIND
   th = Thread.currentThread();
   prefix = "(" + th.getName() + ") ";
 IF
-  $this.connectionGraph.name.contains(name.toString())
+  $this.connectionGraph.name.equals(name)
 DO traceln(prefix.toString() + "(" + $this.connectionGraph.name + ") register node " + $1.toString() + " returns " + $!.toString())
 ENDRULE
 

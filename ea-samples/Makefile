@@ -91,17 +91,23 @@ EA ?= true
 ifeq ($(EA),true)
   ifdef VERIFY
     byteman_scripts := $(comma)script:$(resources_dir)/ea/verify.btm
+    classpath = $(qbicc_cp_runtime)
+  else ifdef EVENTS
+    byteman_scripts := $(comma)script:$(resources_dir)/ea/events.btm
+    classpath = $(qbicc_cp_runtime):$(jar):target/lib/javapoet-1.13.0.jar
   else
     byteman_scripts := $(comma)script:$(resources_dir)/ea/logging.btm
+    classpath = $(qbicc_cp_runtime)
   endif
 else
   byteman_scripts := $(comma)script:$(resources_dir)/main/logging.btm
+    classpath = $(qbicc_cp_runtime)
 endif
 
 run: $(qoccido_dir) $(jar)
 > CC=clang $(java) \
 >  -javaagent:$(byteman_jar)=boot:$(byteman_jar)$(byteman_scripts) \
->  -classpath $(qbicc_cp_runtime) \
+>  -classpath $(classpath) \
 >  org.qbicc.main.Main \
 >  --boot-path-append-file $(jar) \
 >  --output-path $(qoccido_dir) \
@@ -132,7 +138,7 @@ run-class: $(jar)
 > org.example.ea.samples.$(CLASS)
 
 $(jar): $(sources) $(qbicc_jar_runtime_api)
-> mvn package -Dea=$(EA)
+> mvn package dependency:copy-dependencies -Dea=$(EA) -DoutputDirectory=target/lib -DincludeArtifactIds=javapoet
 > touch $(jar)
 
 clean:

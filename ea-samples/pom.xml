@@ -48,6 +48,18 @@
             <artifactId>qbicc-plugin-dot</artifactId>
             <version>0.1.0-SNAPSHOT</version>
         </dependency>
+
+        <!-- Dependencies for code generation -->
+        <dependency>
+            <groupId>com.squareup</groupId>
+            <artifactId>javapoet</artifactId>
+            <version>1.13.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.byteman</groupId>
+            <artifactId>byteman</artifactId>
+            <version>4.0.17</version>
+        </dependency>
     </dependencies>
 
     <build>
