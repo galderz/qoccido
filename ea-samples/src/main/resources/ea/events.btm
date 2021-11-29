@@ -12,6 +12,21 @@ DO
   create(name);
 ENDRULE
 
+#RULE parameter
+#CLASS org.qbicc.graph.DelegatingBasicBlockBuilder
+#METHOD parameter
+#AT EXIT
+##BIND
+##  isIntra = org.qbicc.plugin.opt.ea.EscapeAnalysisIntraMethodBuilder.class.isInstance($this);
+##  intra : org.qbicc.plugin.opt.ea.EscapeAnalysisIntraMethodBuilder = (isIntra ? $this : null);
+##  name = linked("name");
+#IF
+##  isIntra
+#  TRUE
+#DO
+#  traceln("Called parameter on " + $this.getClass().toString());
+#ENDRULE
+
 RULE start method
 CLASS EscapeAnalysisIntraMethodBuilder
 METHOD startMethod
@@ -25,8 +40,8 @@ BIND
 IF
   $this.connectionGraph.name.equals(name)
 DO
-  traceln(prefix.toString() + "startMethod called with: " + $1.toString() + " which has valueType " + parameter.type.toString());
-  startMethod();
+  # traceln(prefix.toString() + "startMethod called with: " + $1.toString() + " which has valueType " + parameter.type.toString());
+  startMethod($1);
 ENDRULE
 
 RULE finish
@@ -40,37 +55,4 @@ IF
   $this.connectionGraph.name.equals(name)
 DO
   finish();
-ENDRULE
-
-RULE entry vm class initialize
-CLASS org.qbicc.interpreter.impl.VmClassImpl
-METHOD initialize
-AT ENTRY
-BIND
-  th = Thread.currentThread();
-  prefix = "(" + th.getName() + ") ";
-IF TRUE
-DO traceln(prefix.toString() + "Initialize (entry) vm " + $this.toString());
-ENDRULE
-
-RULE exit vm class initialize
-CLASS org.qbicc.interpreter.impl.VmClassImpl
-METHOD initialize
-AT EXIT
-BIND
-  th = Thread.currentThread();
-  prefix = "(" + th.getName() + ") ";
-IF TRUE
-DO traceln(prefix.toString() + "Initialize (exit) vm " + $this.toString());
-ENDRULE
-
-RULE element initialize
-CLASS org.qbicc.driver.ElementInitializer
-METHOD accept
-AT ENTRY
-BIND
-  th = Thread.currentThread();
-  prefix = "(" + th.getName() + ") ";
-IF TRUE
-DO traceln(prefix.toString() + "Initialize method " + $1.toString());
 ENDRULE
