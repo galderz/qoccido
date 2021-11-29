@@ -77,13 +77,3 @@ DO
     }
   ));
 ENDRULE
-
-RULE vm class initialize
-CLASS org.qbicc.interpreter.impl.VmClassImpl
-METHOD initialize
-BIND
-  th = Thread.currentThread();
-  prefix = "(" + th.getName() + ") ";
-IF TRUE
-DO traceln(prefix.toString() + "Initialize vm " + $this.toString());
-ENDRULE

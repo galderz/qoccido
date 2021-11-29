@@ -14,9 +14,9 @@ all: run
 
 # Qbicc
 QBICC_HOME := /opt/qbicc-qbicc
-QBICC_VERSION := 0.1.0-SNAPSHOT
+QBICC_VERSION := 0.2.0-SNAPSHOT
 
-qbicc_jars = $(shell find $(QBICC_HOME)/main/target/libs -type f -name '*.jar')
+qbicc_jars = $(shell find $(QBICC_HOME)/main/target/lib -type f -name '*.jar')
 qbicc_jar_main := $(QBICC_HOME)/main/target/qbicc-main-$(QBICC_VERSION).jar
 qbicc_jar_runtime_api := $(QBICC_HOME)/runtime/api/target/qbicc-runtime-api-$(QBICC_VERSION).jar
 qbicc_jar_runtime_unwind := $(QBICC_HOME)/runtime/unwind/target/qbicc-runtime-unwind-$(QBICC_VERSION).jar
@@ -32,7 +32,7 @@ noop=
 space = $(noop) $(noop)
 
 qbicc_cp_compile := $(qbicc_jar_runtime_api)
-qbicc_cp_runtime = $(qbicc_jar_main)
+qbicc_cp_runtime = $(qbicc_jar_main):$(subst $(space),:,$(qbicc_jars))
 
 qbicc_cp_boot_jars += $(qbicc_cp_compile)
 qbicc_cp_boot_jars += $(qbicc_jar_runtime_unwind)
@@ -44,6 +44,13 @@ qbicc_cp_boot = $(subst $(space),:,$(qbicc_cp_boot_jars))
 $(qbicc_jar_runtime_api): $(qbicc_sources)
 > cd $(QBICC_HOME)
 > mvn -DskipTests=true install
+> touch $@
+
+$(qbicc_jar_main): $(qbicc_jar_runtime_api)
+> cd $(QBICC_HOME)
+> mvn dependency:copy-dependencies \
+>   --projects main \
+>   -DoutputDirectory=target/lib
 > touch $@
 
 qbicc-rt-jar:
@@ -104,7 +111,7 @@ else
     classpath = $(qbicc_cp_runtime)
 endif
 
-run: $(qoccido_dir) $(jar)
+run: $(qoccido_dir) $(qbicc_jar_main) $(jar)
 > CC=clang $(java) \
 >  -javaagent:$(byteman_jar)=boot:$(byteman_jar)$(byteman_scripts) \
 >  -classpath $(classpath) \

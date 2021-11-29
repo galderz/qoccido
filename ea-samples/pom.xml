@@ -16,40 +16,41 @@
 
         <hamcrest.version>2.2</hamcrest.version>
         <junit.version>5.6.2</junit.version>
+        <qbicc.version>0.2.0-SNAPSHOT</qbicc.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.qbicc</groupId>
             <artifactId>qbicc-runtime-api</artifactId>
-            <version>0.1.0-SNAPSHOT</version>
+            <version>${qbicc.version}</version>
         </dependency>
 
         <!-- Dependencies only need for rule checking -->
         <dependency>
             <groupId>org.qbicc</groupId>
             <artifactId>qbicc-driver</artifactId>
-            <version>0.1.0-SNAPSHOT</version>
+            <version>${qbicc.version}</version>
         </dependency>
         <dependency>
             <groupId>org.qbicc</groupId>
             <artifactId>qbicc-interpreter</artifactId>
-            <version>0.1.0-SNAPSHOT</version>
+            <version>${qbicc.version}</version>
         </dependency>
         <dependency>
             <groupId>org.qbicc</groupId>
             <artifactId>qbicc-machine-tool-api</artifactId>
-            <version>0.1.0-SNAPSHOT</version>
+            <version>${qbicc.version}</version>
         </dependency>
         <dependency>
             <groupId>org.qbicc</groupId>
             <artifactId>qbicc-main</artifactId>
-            <version>0.1.0-SNAPSHOT</version>
+            <version>${qbicc.version}</version>
         </dependency>
         <dependency>
             <groupId>org.qbicc</groupId>
             <artifactId>qbicc-plugin-dot</artifactId>
-            <version>0.1.0-SNAPSHOT</version>
+            <version>${qbicc.version}</version>
         </dependency>
 
         <!-- Dependencies for code generation -->
