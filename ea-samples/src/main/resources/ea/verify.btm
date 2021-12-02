@@ -16,8 +16,12 @@ DO
     , "org/example/ea/samples.EASample_10_Subclasses$Abstract.ageInSaturn(I)I -> org/example/ea/samples/EASample_10_Subclasses$Abstract$Saturn@9"
     , "org/example/ea/samples.EASample_10_Subclasses$NonAbstract.weightInJupiter(D)D -> org/example/ea/samples/EASample_10_Subclasses$NonAbstract$Jupiter@9"
     , "org/example/ea/samples.EASample_10_Subclasses$NonAbstract.weightInMars(D)D -> org/example/ea/samples/EASample_10_Subclasses$NonAbstract$Mars@9"
-    , "org/example/ea/samples.EASample_11_Loops$ObjectIdentity.increment(I)I -> org/example/ea/samples/EASample_11_Loops$Counter@0"
-    , "org/example/ea/samples.EASample_11_Loops$ObjectIdentity.increment(I)I -> org/example/ea/samples/EASample_11_Loops$Counter@16"
+    , "org/example/ea/samples.EASample_11_Loops$ForLoop.forEachList(I)I -> org/example/ea/samples/EASample_11_Loops$Data$Int$List@0"
+    , "org/example/ea/samples.EASample_11_Loops$ForLoop.forEachList(I)I -> org/example/ea/samples/EASample_11_Loops$Data$Int@17"
+    , "org/example/ea/samples.EASample_11_Loops$ForLoop.forEachList(I)I -> org/example/ea/samples/EASample_11_Loops$Data$Int@37"
+    , "org/example/ea/samples.EASample_11_Loops$ForLoop.forEachList(I)I -> org/example/ea/samples/EASample_11_Loops$Data$Int@71"
+    , "org/example/ea/samples.EASample_11_Loops$ObjectIdentity.increment(I)I -> org/example/ea/samples/EASample_11_Loops$Data$Int@0"
+    , "org/example/ea/samples.EASample_11_Loops$ObjectIdentity.increment(I)I -> org/example/ea/samples/EASample_11_Loops$Data$Int@16"
   }));
   link("actual", "actual", new java.util.concurrent.CopyOnWriteArrayList());
 ENDRULE

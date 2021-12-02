@@ -2,11 +2,40 @@ package org.example.ea.samples;
 
 import org.example.ea.Main;
 
+import java.util.AbstractList;
+import java.util.Iterator;
+
 public class EASample_11_Loops
 {
     public static void main(String[] args)
     {
         ObjectIdentity.main();
+        ForLoop.main();
+    }
+
+    static class ForLoop
+    {
+        public static void main()
+        {
+            Main.print(forEachList(10) == 3_628_800 ? '.' : 'F');
+        }
+
+        static int forEachList(int max)
+        {
+            Data.Int.List values = new Data.Int.List(max);
+            for (int i = 0; i < max; i++)
+            {
+                values.add(new Data.Int(i + 1));
+            }
+
+            Data.Int result = new Data.Int(1);
+            for (Data.Int value : values)
+            {
+                result = new Data.Int(result.data * value.data);
+            }
+
+            return result.data;
+        }
     }
 
     static class ObjectIdentity
@@ -18,23 +47,79 @@ public class EASample_11_Loops
 
         static int increment(int current)
         {
-            Counter result = new Counter(current);
-            Counter initial = result;
+            Data.Int result = new Data.Int(current);
+            Data.Int initial = result;
             while (initial == result)
             {
-                result = new Counter(initial.count + 1);
+                result = new Data.Int(initial.data + 1);
             }
-            return result.count;
+            return result.data;
         }
     }
 
-    static final class Counter
+    static class Data
     {
-        final int count;
-
-        Counter(int count)
+        static final class Int
         {
-            this.count = count;
+            final int data;
+
+            Int(int data) {
+                this.data = data;
+            }
+
+            static final class List extends AbstractList<Data.Int>
+            {
+                final Int[] data;
+                int size;
+
+                List(int size)
+                {
+                    this.data = new Int[size];
+                }
+
+                @Override
+                public void add(int index, Int element)
+                {
+                    data[index] = element;
+                    size = size + 1;
+                }
+
+                @Override
+                public Int get(int index)
+                {
+                    return data[index];
+                }
+
+                @Override
+                public int size()
+                {
+                    return size;
+                }
+
+                @Override
+                public Iterator<Int> iterator() {
+                    return new Itr();
+                }
+
+                final class Itr implements Iterator<Int>
+                {
+                    int cursor = 0;
+
+                    @Override
+                    public boolean hasNext()
+                    {
+                        return cursor != size();
+                    }
+
+                    @Override
+                    public Int next()
+                    {
+                        Int next = get(cursor);
+                        cursor = cursor + 1;
+                        return next;
+                    }
+                }
+            }
         }
     }
 }
