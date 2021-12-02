@@ -10,6 +10,7 @@ import org.example.ea.samples.EASample_07_Runnable;
 import org.example.ea.samples.EASample_08_CallTwice;
 import org.example.ea.samples.EASample_09_Interfaces;
 import org.example.ea.samples.EASample_10_Subclasses;
+import org.example.ea.samples.EASample_11_Loops;
 
 import static org.qbicc.runtime.CNative.*;
 
@@ -27,6 +28,7 @@ public class Main
         EASample_08_CallTwice.main(args);
         EASample_09_Interfaces.main(args);
         EASample_10_Subclasses.main(args);
+        EASample_11_Loops.main(args);
         print('\n');
     }
 
