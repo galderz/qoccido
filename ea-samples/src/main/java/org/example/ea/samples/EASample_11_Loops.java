@@ -11,6 +11,29 @@ public class EASample_11_Loops
     {
         ObjectIdentity.main();
         ForLoop.main();
+        RecursiveLoop.main();
+    }
+
+    static class RecursiveLoop
+    {
+        public static void main()
+        {
+            final Data.Int input = new Data.Int(9);
+            Main.print(fibonacci(input).data == 34 ? '.' : 'F');
+        }
+
+        static Data.Int fibonacci(Data.Int n)
+        {
+            if (n.data <= 1)
+                return n;
+
+            final Data.Int nMinus1 = new Data.Int(n.data - 1);
+            final Data.Int nMinus1Fib = fibonacci(nMinus1);
+
+            final Data.Int nMinus2 = new Data.Int(n.data - 2);
+            final Data.Int nMinus2Fib = fibonacci(nMinus2);
+            return new Data.Int(nMinus1Fib.data + nMinus2Fib.data);
+        }
     }
 
     static class ForLoop
