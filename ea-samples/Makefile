@@ -14,7 +14,7 @@ all: run
 
 # Qbicc
 QBICC_HOME := /opt/qbicc-qbicc
-QBICC_VERSION := 0.2.0-SNAPSHOT
+QBICC_VERSION := 0.3.0-SNAPSHOT
 
 qbicc_jars = $(shell find $(QBICC_HOME)/main/target/lib -type f -name '*.jar')
 qbicc_jar_main := $(QBICC_HOME)/main/target/qbicc-main-$(QBICC_VERSION).jar
