@@ -111,6 +111,11 @@ else
     classpath = $(qbicc_cp_runtime)
 endif
 
+QBICC_PARAMS += --gen-graph
+ifdef NO_EA
+  QBICC_PARAMS += --no-escape-analysis
+endif
+
 run: $(qoccido_dir) $(qbicc_jar_main) $(jar)
 > CC=clang $(java) \
 >  -javaagent:$(byteman_jar)=boot:$(byteman_jar)$(byteman_scripts) \
@@ -118,7 +123,7 @@ run: $(qoccido_dir) $(qbicc_jar_main) $(jar)
 >  org.qbicc.main.Main \
 >  --boot-path-append-file $(jar) \
 >  --output-path $(qoccido_dir) \
->  --gen-graph \
+>  $(QBICC_PARAMS) \
 >  $(main) \
 >  | tee target/console.log
 > $(program)
