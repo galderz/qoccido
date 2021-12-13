@@ -1,7 +1,7 @@
 RULE init entry
 CLASS EscapeAnalysisIntraMethodBuilder
 METHOD <init>
-HELPER org.example.ea.helpers.EventPoet
+HELPER org.example.ea.helpers.EscapeAnalysisPoet
 AT ENTRY
 BIND
   name = $2.getCurrentElement().toString();
@@ -9,50 +9,122 @@ IF
   name.toString().contains("org/example/ea/samples.EASample_01_Basic.sample1")
 DO
   link("name", name);
-  create(name);
+  create(name, $2);
 ENDRULE
 
-#RULE parameter
-#CLASS org.qbicc.graph.DelegatingBasicBlockBuilder
-#METHOD parameter
-#AT EXIT
-##BIND
-##  isIntra = org.qbicc.plugin.opt.ea.EscapeAnalysisIntraMethodBuilder.class.isInstance($this);
-##  intra : org.qbicc.plugin.opt.ea.EscapeAnalysisIntraMethodBuilder = (isIntra ? $this : null);
-##  name = linked("name");
-#IF
-##  isIntra
-#  TRUE
-#DO
-#  traceln("Called parameter on " + $this.getClass().toString());
-#ENDRULE
+RULE new
+CLASS EscapeAnalysisIntraMethodBuilder
+METHOD new_
+HELPER org.example.ea.helpers.EscapeAnalysisPoet
+AT ENTRY
+BIND
+  name = linked("name");
+IF
+  $this.connectionGraph.name.equals(name)
+DO
+  callNew($1, $2, $3, $4);
+ENDRULE
+
+RULE instanceFieldOf
+CLASS EscapeAnalysisIntraMethodBuilder
+METHOD instanceFieldOf
+HELPER org.example.ea.helpers.EscapeAnalysisPoet
+AT ENTRY
+BIND
+  name = linked("name");
+IF
+  $this.connectionGraph.name.equals(name)
+DO
+  callInstanceFieldOf($1, $2);
+ENDRULE
+
+RULE store
+CLASS EscapeAnalysisIntraMethodBuilder
+METHOD store
+HELPER org.example.ea.helpers.EscapeAnalysisPoet
+AT ENTRY
+BIND
+  name = linked("name");
+IF
+  $this.connectionGraph.name.equals(name)
+DO
+  callStore($1, $2, $3);
+ENDRULE
+
+RULE call
+CLASS EscapeAnalysisIntraMethodBuilder
+METHOD call
+HELPER org.example.ea.helpers.EscapeAnalysisPoet
+AT ENTRY
+BIND
+  name = linked("name");
+IF
+  $this.connectionGraph.name.equals(name)
+DO
+  callCall($1, $2);
+ENDRULE
 
 RULE start method
 CLASS EscapeAnalysisIntraMethodBuilder
 METHOD startMethod
-HELPER org.example.ea.helpers.EventPoet
+HELPER org.example.ea.helpers.EscapeAnalysisPoet
 AT ENTRY
 BIND
   name = linked("name");
-  th = Thread.currentThread();
-  prefix = "(" + th.getName() + ") ";
-  parameter : org.qbicc.graph.ParameterValue = $1.stream().findFirst().orElse(null);
 IF
   $this.connectionGraph.name.equals(name)
 DO
-  # traceln(prefix.toString() + "startMethod called with: " + $1.toString() + " which has valueType " + parameter.type.toString());
-  startMethod($1);
+  callStartMethod($1);
+ENDRULE
+
+RULE return
+CLASS EscapeAnalysisIntraMethodBuilder
+METHOD return_
+HELPER org.example.ea.helpers.EscapeAnalysisPoet
+AT ENTRY
+BIND
+  name = linked("name");
+IF
+  $this.connectionGraph.name.equals(name)
+DO
+  callReturn($1);
+ENDRULE
+
+RULE throw
+CLASS EscapeAnalysisIntraMethodBuilder
+METHOD throw_
+HELPER org.example.ea.helpers.EscapeAnalysisPoet
+AT ENTRY
+BIND
+  name = linked("name");
+IF
+  $this.connectionGraph.name.equals(name)
+DO
+  callThrow($1);
+ENDRULE
+
+RULE checkcast
+CLASS EscapeAnalysisIntraMethodBuilder
+METHOD checkcast
+HELPER org.example.ea.helpers.EscapeAnalysisPoet
+AT ENTRY
+BIND
+  name = linked("name");
+IF
+  $this.connectionGraph.name.equals(name)
+DO
+  callCheckcast($1, $2, $3, $4, $5);
 ENDRULE
 
 RULE finish
 CLASS EscapeAnalysisIntraMethodBuilder
 METHOD finish
-HELPER org.example.ea.helpers.EventPoet
+HELPER org.example.ea.helpers.EscapeAnalysisPoet
 AT ENTRY
 BIND
   name = linked("name");
 IF
   $this.connectionGraph.name.equals(name)
 DO
-  finish();
+  callFinish();
 ENDRULE
