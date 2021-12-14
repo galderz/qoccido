@@ -129,19 +129,6 @@ IF
 DO traceln(prefix.toString() + "EA: throw_ " + $1.toString() + " from " + $this.getCurrentElement().toString())
 ENDRULE
 
-RULE finish
-CLASS EscapeAnalysisIntraMethodBuilder
-METHOD finish
-AT ENTRY
-BIND
-  name = linked("name");
-  th = Thread.currentThread();
-  prefix = "(" + th.getName() + ") ";
-IF
-  $this.connectionGraph.name.equals(name)
-DO traceln(prefix.toString() + "EA: finish " + $this.getCurrentElement().toString())
-ENDRULE
-
 RULE set arg escape
 CLASS ConnectionGraph
 METHOD setEscapeValue

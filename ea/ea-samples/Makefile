@@ -150,7 +150,7 @@ run-class: $(jar)
 > org.example.ea.samples.$(CLASS)
 
 $(jar): $(sources) $(qbicc_jar_runtime_api)
-> mvn package dependency:copy-dependencies -Dea=$(EA) -DoutputDirectory=target/lib -DincludeArtifactIds=javapoet
+> mvn install dependency:copy-dependencies -Dea=$(EA) -DoutputDirectory=target/lib -DincludeArtifactIds=javapoet
 > touch $(jar)
 
 clean:

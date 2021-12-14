@@ -10,26 +10,28 @@ import org.qbicc.graph.CheckCast;
 import org.qbicc.graph.ParameterValue;
 import org.qbicc.graph.Value;
 import org.qbicc.graph.ValueHandle;
+import org.qbicc.graph.atomic.ReadAccessMode;
 import org.qbicc.graph.atomic.WriteAccessMode;
 import org.qbicc.type.ClassObjectType;
 import org.qbicc.type.ObjectType;
+import org.qbicc.type.ValueType;
 import org.qbicc.type.definition.DefinedTypeDefinition;
 import org.qbicc.type.definition.element.FieldElement;
 import org.qbicc.type.definition.element.MethodElement;
-import org.qbicc.type.descriptor.ClassTypeDescriptor;
-import org.qbicc.type.descriptor.MethodDescriptor;
-import org.qbicc.type.generic.ClassSignature;
 
 import javax.lang.model.element.Modifier;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
 public class EscapeAnalysisPoet extends Helper
 {
-    static String name;
+    static String id;
     static MethodSpec.Builder main;
+    static String eaFactory;
+    static String intra;
 
     protected EscapeAnalysisPoet(Rule rule)
     {
@@ -39,24 +41,17 @@ public class EscapeAnalysisPoet extends Helper
     @SuppressWarnings("unused")
     public void create(String name, BasicBlockBuilder delegate)
     {
-        EscapeAnalysisPoet.name = name;
+        EscapeAnalysisPoet.id = name.replaceAll("[./()]", "_");
+        EscapeAnalysisPoet.eaFactory = "eaFactory";
+        EscapeAnalysisPoet.intra = "intra";
 
         final MethodElement element = (MethodElement) delegate.getCurrentElement();
         final DefinedTypeDefinition enclosingType = element.getEnclosingType();
-        main = MethodSpec.methodBuilder("main")
-            .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+        main = MethodSpec.methodBuilder("run")
+            .addModifiers(Modifier.PUBLIC)
             .returns(void.class)
-            .addParameter(String[].class, "args")
-            .addStatement("var eaFactory = $T.of()", EscapeAnalysisFactory.class)
-            .addStatement("var elementBuilder = $T.builder($S, $T.VOID_METHOD_DESCRIPTOR)"
-                , MethodElement.class
-                , element.getName()
-                , MethodDescriptor.class
-            )
-            .addStatement("methodElementBuilder.setEnclosingType(ea.definedType($S))"
-                , enclosingType.getInternalName()
-            )
-            .addStatement("var intra = ea.newIntraBuilder(methodElementBuilder.build())");
+            .addStatement("var $L = $T.of()", eaFactory, EscapeAnalysisFactory.class)
+            .addStatement("var $L = $L.newIntraBuilder(methodName, className)", intra, eaFactory);
     }
 
     @SuppressWarnings("unused")
@@ -64,13 +59,25 @@ public class EscapeAnalysisPoet extends Helper
     {
         // TODO should be recursive over the superclasses
         // TODO should take into account interfaces
+        String classObjectType = "classObjectType";
         main.addStatement(
-            "intra.new_(ea.classObjectType($S, $L), $S, $S, $S)"
+            "var $N = $N.classObjectType($S, $S)"
+            , classObjectType
+            , eaFactory
             , type.getDefinition().getInternalName()
             , type.hasSuperClass() ? type.getSuperClassType().getDefinition().getInternalName() : null
-            , show(typeId)
-            , show(size)
-            , show(align)
+        );
+        //     intra.new_(classObjectType, "class(org/example/ea/samples/EASample_01_Basic$A)::class org.qbicc.graph.literal.TypeLiteral", "s64 20::class org.qbicc.graph.literal.IntegerLiteral", "s32 8::class org.qbicc.graph.literal.IntegerLiteral");
+        main.addStatement(
+            "var new_ = $N.new_($N, $N.literalOfType($N), $N.literalOf($S), $N.literalOf($S))"
+            , intra
+            , classObjectType
+            , eaFactory
+            , classObjectType
+            , eaFactory
+            , size.toString()
+            , eaFactory
+            , align.toString()
         );
     }
 
@@ -92,45 +99,40 @@ public class EscapeAnalysisPoet extends Helper
     @SuppressWarnings("unused")
     public void callStore(ValueHandle handle, Value value, WriteAccessMode mode)
     {
-        main.addStatement(
-            "intra.store($S, $S, $S)"
-           , show(handle)
-            , show(value)
-            , show(mode)
-        );
+//        main.addStatement(
+//            "intra.store($S, $S, $S)"
+//           , show(handle)
+//            , show(value)
+//            , show(mode)
+//        );
     }
 
     @SuppressWarnings("unused")
     public void callCall(ValueHandle target, List<Value> arguments)
     {
-        main.addStatement(
-            "intra.call($S, $S)"
-            , show(target)
-            , show(arguments)
-        );
+//        main.addStatement(
+//            "intra.call($S, $S)"
+//            , show(target)
+//            , show(arguments)
+//        );
     }
 
     @SuppressWarnings("unused")
     public void callStartMethod(List<ParameterValue> params)
     {
-        main.addStatement("var bbb = intra.getDelegate()");
-        main.addStatement("var params = new $T()", ArrayList.class);
+        main.addStatement("var bbb = $L.getDelegate()", intra);
+        main.addStatement("var params = new $T<$T>()", ArrayList.class, ParameterValue.class);
         for (ParameterValue param : params)
         {
-            main.addStatement("params.add(bbb.parameter($L, $S, $L))", valueType(param), param.getLabel(), param.getIndex());
+            main.addStatement(
+                "params.add(bbb.parameter($N.valueType($S), $S, $L))"
+                , eaFactory
+                , param.getType().toString()
+                , param.getLabel()
+                , param.getIndex()
+            );
         }
         main.addStatement("intra.startMethod(params)");
-    }
-
-    private String valueType(ParameterValue param)
-    {
-        switch (param.getType().toString())
-        {
-            case "s32":
-                return "ts.getSignedInteger32Type()";
-            default:
-                throw new RuntimeException("NYI");
-        }
     }
 
     @SuppressWarnings("unused")
@@ -145,10 +147,10 @@ public class EscapeAnalysisPoet extends Helper
     @SuppressWarnings("unused")
     public void callThrow(Value value)
     {
-        main.addStatement(
-            "intra.throw_($S)"
-            , show(value)
-        );
+//        main.addStatement(
+//            "intra.throw_($S)"
+//            , show(value)
+//        );
     }
 
     @SuppressWarnings("unused")
@@ -168,21 +170,70 @@ public class EscapeAnalysisPoet extends Helper
     {
         main.addStatement("intra.finish()");
 
-        var helloWorld = TypeSpec.classBuilder("HelloWorld")
+        var allFieldsConstructor = MethodSpec.constructorBuilder()
+            .addModifiers(Modifier.PUBLIC)
+            .addParameter(String.class, "id")
+            .addParameter(String.class, "className")
+            .addParameter(String.class, "methodName")
+            .addStatement("this.$N = $N", "id", "id")
+            .addStatement("this.$N = $N", "className", "className")
+            .addStatement("this.$N = $N", "methodName", "methodName");
+
+        var emptyConstructor = MethodSpec.constructorBuilder()
+            .addModifiers(Modifier.PUBLIC)
+            .addStatement("this.$N = $S", "id", "org/example/ea/samples.EASample_01_Basic.sample1(I)I")
+            .addStatement("this.$N = $S", "className", "org/example/ea/samples/EASample_01_Basic")
+            .addStatement("this.$N = $S", "methodName", "sample1");
+
+        var helloWorld = TypeSpec.classBuilder(EscapeAnalysisPoet.id)
+            .addSuperinterface(Runnable.class)
             .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+            .addField(String.class, "id", Modifier.PRIVATE, Modifier.FINAL)
+            .addField(String.class, "className", Modifier.PRIVATE, Modifier.FINAL)
+            .addField(String.class, "methodName", Modifier.PRIVATE, Modifier.FINAL)
+            .addMethod(allFieldsConstructor.build())
+            .addMethod(emptyConstructor.build())
             .addMethod(main.build())
             .build();
 
-        var javaFile = JavaFile.builder("com.example.helloworld", helloWorld)
+        var javaFile = JavaFile.builder("org.example.ea", helloWorld)
             .build();
 
         try
         {
             javaFile.writeTo(System.out);
+            javaFile.writeTo(Path.of("..", "ea-jmh", "src", "main", "java"));
         }
         catch (IOException e)
         {
             throw new UncheckedIOException(e);
         }
+    }
+
+    @SuppressWarnings("unused")
+    public void callReferenceHandle(Value reference)
+    {
+        main.addStatement("var ref = intra.referenceHandle(new_)");
+    }
+
+    @SuppressWarnings("unused")
+    public void callParameter(ValueType type, String label, int index)
+    {
+        main.addStatement(
+            "intra.parameter($S, $S, $S)"
+            , show(type)
+            , show(label)
+            , show(index)
+        );
+    }
+
+    @SuppressWarnings("unused")
+    public void callLoad(ValueHandle handle, ReadAccessMode accessMode)
+    {
+        main.addStatement(
+            "intra.load($S, $S)"
+            , show(handle)
+            , show(accessMode)
+        );
     }
 }

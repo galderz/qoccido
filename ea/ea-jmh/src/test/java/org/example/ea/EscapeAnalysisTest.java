@@ -8,6 +8,6 @@ public class EscapeAnalysisTest
     public void test000()
     {
         System.out.println("hello");
-        EASample_01_Basic_Test.of().run();
+        new org_example_ea_samples_EASample_01_Basic_sample1_I_I().run();
     }
 }

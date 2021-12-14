@@ -6,6 +6,10 @@ import org.qbicc.driver.BaseDiagnosticContext;
 import org.qbicc.driver.Driver;
 import org.qbicc.graph.BasicBlockBuilder;
 import org.qbicc.graph.BlockLabel;
+import org.qbicc.graph.ParameterValue;
+import org.qbicc.graph.Value;
+import org.qbicc.graph.literal.IntegerLiteral;
+import org.qbicc.graph.literal.TypeLiteral;
 import org.qbicc.machine.arch.Platform;
 import org.qbicc.machine.object.ObjectFileProvider;
 import org.qbicc.machine.tool.CToolChain;
@@ -15,11 +19,12 @@ import org.qbicc.tool.llvm.LlcInvoker;
 import org.qbicc.tool.llvm.LlvmToolChain;
 import org.qbicc.tool.llvm.OptInvoker;
 import org.qbicc.type.ClassObjectType;
-import org.qbicc.type.InterfaceObjectType;
+import org.qbicc.type.SignedIntegerType;
 import org.qbicc.type.TypeSystem;
+import org.qbicc.type.ValueType;
 import org.qbicc.type.definition.DefinedTypeDefinition;
 import org.qbicc.type.definition.classfile.ClassFile;
-import org.qbicc.type.definition.element.ExecutableElement;
+import org.qbicc.type.definition.element.FieldElement;
 import org.qbicc.type.definition.element.MethodElement;
 import org.qbicc.type.descriptor.ClassTypeDescriptor;
 import org.qbicc.type.descriptor.MethodDescriptor;
@@ -34,16 +39,46 @@ public class EscapeAnalysisFactory
 {
     public final CompilationContext ctxt;
     public final ClassContext bootClassContext;
-    public final TypeSystem ts;
+    public final TypeSystem typeSystem;
+
+    public FieldElement fieldElement(String name, String typeName)
+    {
+        final ClassTypeDescriptor typeDescriptor = ClassTypeDescriptor.synthesize(bootClassContext, typeName);
+        return FieldElement.builder(name, typeDescriptor).build();
+    }
+
+    public ValueType valueType(String value)
+    {
+        return switch (value)
+        {
+            case "s32" -> typeSystem.getSignedInteger32Type();
+            default -> throw new IllegalArgumentException("Unknown value type: " + value);
+        };
+    }
+
+    public IntegerLiteral literalOf(String value)
+    {
+        final String[] elements = value.split(" ");
+        return switch (elements[0])
+        {
+            case "s64", "s32" -> ctxt.getLiteralFactory().literalOf(Long.parseLong(elements[1]));
+            default -> throw new IllegalArgumentException("Unknown literal: " + value);
+        };
+    }
+
+    public TypeLiteral literalOfType(ClassObjectType classObjectType)
+    {
+        return ctxt.getLiteralFactory().literalOfType(classObjectType);
+    }
 
     public ClassObjectType classObjectType(String name, String superclassName)
     {
         if (superclassName == null)
         {
-            return ts.generateClassObjectType(definedType("java/lang/Object"), null, null);
+            return typeSystem.generateClassObjectType(definedType("java/lang/Object"), null, null);
         }
 
-        return ts.generateClassObjectType(definedType(name), classObjectType("java/lang/Object", null), List.of());
+        return typeSystem.generateClassObjectType(definedType(name), classObjectType("java/lang/Object", null), List.of());
     }
 
     public DefinedTypeDefinition definedType(String name)
@@ -58,9 +93,14 @@ public class EscapeAnalysisFactory
         return builder.build();
     }
 
-    public EscapeAnalysisIntraMethodBuilder newIntraBuilder(final ExecutableElement element)
+    public EscapeAnalysisIntraMethodBuilder newIntraBuilder(String methodName, String className)
     {
-        final BasicBlockBuilder bbb = new SimpleOptBasicBlockBuilder(ctxt, BasicBlockBuilder.simpleBuilder(ts, element));
+        // TODO add support for method descriptor, for now assume void method
+        final MethodElement.Builder builder = MethodElement.builder(methodName, MethodDescriptor.VOID_METHOD_DESCRIPTOR);
+        builder.setEnclosingType(definedType(className));
+        final MethodElement element = builder.build();
+
+        final BasicBlockBuilder bbb = new SimpleOptBasicBlockBuilder(ctxt, BasicBlockBuilder.simpleBuilder(typeSystem, element));
         bbb.startMethod(List.of());
         bbb.begin(new BlockLabel());
 
@@ -104,11 +144,11 @@ public class EscapeAnalysisFactory
         return new EscapeAnalysisFactory(ctxt, bootClassContext, ts);
     }
 
-    private EscapeAnalysisFactory(CompilationContext ctxt, ClassContext bootClassContext, TypeSystem ts)
+    private EscapeAnalysisFactory(CompilationContext ctxt, ClassContext bootClassContext, TypeSystem typeSystem)
     {
         this.ctxt = ctxt;
         this.bootClassContext = bootClassContext;
-        this.ts = ts;
+        this.typeSystem = typeSystem;
     }
 
     private static final class DummyLlvmToolChain implements LlvmToolChain

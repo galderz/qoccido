@@ -117,14 +117,69 @@ DO
 ENDRULE
 
 RULE finish
-CLASS EscapeAnalysisIntraMethodBuilder
+CLASS org.qbicc.graph.DelegatingBasicBlockBuilder
 METHOD finish
 HELPER org.example.ea.helpers.EscapeAnalysisPoet
 AT ENTRY
 BIND
   name = linked("name");
+  isIntra = org.qbicc.plugin.opt.ea.EscapeAnalysisIntraMethodBuilder.class.isInstance($this);
+  aIntra : org.qbicc.plugin.opt.ea.EscapeAnalysisIntraMethodBuilder = (isIntra ? $this : null);
 IF
-  $this.connectionGraph.name.equals(name)
+  isIntra
+  AND
+  aIntra.connectionGraph.name.equals(name)
 DO
-  callFinish();
+  callFinish()
+ENDRULE
+
+RULE reference
+CLASS org.qbicc.graph.DelegatingBasicBlockBuilder
+METHOD referenceHandle
+HELPER org.example.ea.helpers.EscapeAnalysisPoet
+AT ENTRY
+BIND
+  name = linked("name");
+  isIntra = org.qbicc.plugin.opt.ea.EscapeAnalysisIntraMethodBuilder.class.isInstance($this);
+  aIntra : org.qbicc.plugin.opt.ea.EscapeAnalysisIntraMethodBuilder = (isIntra ? $this : null);
+IF
+  isIntra
+  AND
+  aIntra.connectionGraph.name.equals(name)
+DO
+  callReferenceHandle($1)
+ENDRULE
+
+RULE parameter
+CLASS org.qbicc.graph.DelegatingBasicBlockBuilder
+METHOD parameter
+HELPER org.example.ea.helpers.EscapeAnalysisPoet
+AT ENTRY
+BIND
+  name = linked("name");
+  isIntra = org.qbicc.plugin.opt.ea.EscapeAnalysisIntraMethodBuilder.class.isInstance($this);
+  aIntra : org.qbicc.plugin.opt.ea.EscapeAnalysisIntraMethodBuilder = (isIntra ? $this : null);
+IF
+  isIntra
+  AND
+  aIntra.connectionGraph.name.equals(name)
+DO
+  callParameter($1, $2, $3)
+ENDRULE
+
+RULE load
+CLASS org.qbicc.graph.DelegatingBasicBlockBuilder
+METHOD load
+HELPER org.example.ea.helpers.EscapeAnalysisPoet
+AT ENTRY
+BIND
+  name = linked("name");
+  isIntra = org.qbicc.plugin.opt.ea.EscapeAnalysisIntraMethodBuilder.class.isInstance($this);
+  aIntra : org.qbicc.plugin.opt.ea.EscapeAnalysisIntraMethodBuilder = (isIntra ? $this : null);
+IF
+  isIntra
+  AND
+  aIntra.connectionGraph.name.equals(name)
+DO
+  callLoad($1, $2)
 ENDRULE
