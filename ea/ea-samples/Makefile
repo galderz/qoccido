@@ -13,8 +13,13 @@ endif
 all: run
 
 # Qbicc
+JAVA_HOME := /opt/java-17
+MAVEN_HOME := /opt/maven
 QBICC_HOME := /opt/qbicc-qbicc
 QBICC_VERSION := 0.3.0-SNAPSHOT
+
+mvn += JAVA_HOME=$(JAVA_HOME)
+mvn += $(MAVEN_HOME)/bin/mvn
 
 qbicc_jars = $(shell find $(QBICC_HOME)/main/target/lib -type f -name '*.jar')
 qbicc_jar_main := $(QBICC_HOME)/main/target/qbicc-main-$(QBICC_VERSION).jar
@@ -43,24 +48,24 @@ qbicc_cp_boot = $(subst $(space),:,$(qbicc_cp_boot_jars))
 
 $(qbicc_jar_runtime_api): $(qbicc_sources)
 > cd $(QBICC_HOME)
-> mvn -DskipTests=true install
+> $(mvn) -DskipTests=true install
 > touch $@
 
 $(qbicc_jar_main): $(qbicc_jar_runtime_api)
 > cd $(QBICC_HOME)
-> mvn dependency:copy-dependencies \
+> $(mvn) dependency:copy-dependencies \
 >   --projects main \
 >   -DoutputDirectory=target/lib
 > touch $@
 
 qbicc-rt-jar:
 > cd $(qbicc_cl_home)
-> mvn install
+> $(mvn) install
 .PHONY: qbicc-rt-jar
 
 clean-qbicc:
 > cd $(QBICC_HOME)
-> mvn clean
+> $(mvn) clean
 .PHONY: clean-qbicc
 
 # Samples
@@ -80,7 +85,7 @@ jar := $(target_dir)/$(name).jar
 program := $(qoccido_dir)/a.out
 graphs_dir := $(target_dir)/graphs
 
-java += java
+java += $(JAVA_HOME)/bin/java
 java += -Xss16m # Big enough thread stack size to avoid https://github.com/quarkuscc/qcc/issues/262
 ifdef DEBUG
   java += -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:4004
@@ -95,6 +100,7 @@ comma := ,
 
 EA ?= true
 
+qbicc_params += --gen-graph
 ifeq ($(EA),true)
   ifdef VERIFY
     byteman_scripts := $(comma)script:$(resources_dir)/ea/verify.btm
@@ -108,12 +114,8 @@ ifeq ($(EA),true)
   endif
 else
   byteman_scripts := $(comma)script:$(resources_dir)/main/logging.btm
-    classpath = $(qbicc_cp_runtime)
-endif
-
-QBICC_PARAMS += --gen-graph
-ifdef NO_EA
-  QBICC_PARAMS += --no-escape-analysis
+  classpath = $(qbicc_cp_runtime)
+  qbicc_params += --no-escape-analysis
 endif
 
 run: $(qoccido_dir) $(qbicc_jar_main) $(jar)
@@ -123,7 +125,7 @@ run: $(qoccido_dir) $(qbicc_jar_main) $(jar)
 >  org.qbicc.main.Main \
 >  --boot-path-append-file $(jar) \
 >  --output-path $(qoccido_dir) \
->  $(QBICC_PARAMS) \
+>  $(qbicc_params) \
 >  $(main) \
 >  | tee target/console.log
 > $(program)
@@ -139,7 +141,7 @@ run-jar: $(jar)
 CLASS ?= EASample_01_Basic
 
 run-class: $(jar)
-> java \
+> $(java) \
 > -XX:-TieredCompilation \
 > -Xbatch \
 > -Xcomp \
@@ -150,7 +152,7 @@ run-class: $(jar)
 > org.example.ea.samples.$(CLASS)
 
 $(jar): $(sources) $(qbicc_jar_runtime_api)
-> mvn install dependency:copy-dependencies -Dea=$(EA) -DoutputDirectory=target/lib -DincludeArtifactIds=javapoet
+> $(mvn) install dependency:copy-dependencies -Dea=$(EA) -DoutputDirectory=target/lib -DincludeArtifactIds=javapoet
 > touch $(jar)
 
 clean:
