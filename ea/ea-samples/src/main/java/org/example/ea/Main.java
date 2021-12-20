@@ -28,7 +28,7 @@ public class Main
         EASample_07_Runnable.main(args);
         EASample_08_CallTwice.main(args);
         EASample_09_Interfaces.main(args);
-        EASample_10_gSubclasses.main(args);
+        EASample_10_Subclasses.main(args);
         EASample_11_Loops.main(args);
         EASample_12_ClassLiterals.main(args);
         print('\n');
