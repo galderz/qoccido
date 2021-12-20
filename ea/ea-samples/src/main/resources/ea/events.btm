@@ -117,18 +117,14 @@ DO
 ENDRULE
 
 RULE finish
-CLASS org.qbicc.graph.DelegatingBasicBlockBuilder
+CLASS EscapeAnalysisIntraMethodBuilder
 METHOD finish
 HELPER org.example.ea.helpers.EscapeAnalysisPoet
 AT ENTRY
 BIND
   name = linked("name");
-  isIntra = org.qbicc.plugin.opt.ea.EscapeAnalysisIntraMethodBuilder.class.isInstance($this);
-  aIntra : org.qbicc.plugin.opt.ea.EscapeAnalysisIntraMethodBuilder = (isIntra ? $this : null);
 IF
-  isIntra
-  AND
-  aIntra.connectionGraph.name.equals(name)
+  $this.connectionGraph.name.equals(name)
 DO
   callFinish()
 ENDRULE
