@@ -4,9 +4,10 @@ import java.lang.Runnable;
 import java.lang.String;
 import java.util.ArrayList;
 import java.util.List;
-import org.example.ea.helpers.EscapeAnalysisFactory;
 import org.qbicc.graph.ParameterValue;
 import org.qbicc.graph.atomic.AccessModes;
+import org.qbicc.plugin.opt.ea.EscapeAnalysisFactory;
+import org.qbicc.plugin.opt.ea.EscapeAnalysisIntraMethodBuilder;
 
 public final class org_example_ea_samples_EASample_01_Basic_sample1_I_I implements Runnable {
   private final String id;
@@ -15,22 +16,24 @@ public final class org_example_ea_samples_EASample_01_Basic_sample1_I_I implemen
 
   private final String methodName;
 
+  public final EscapeAnalysisFactory eaFactory;
+
+  public final EscapeAnalysisIntraMethodBuilder intra;
+
   public org_example_ea_samples_EASample_01_Basic_sample1_I_I(String id, String className,
       String methodName) {
     this.id = id;
     this.className = className;
     this.methodName = methodName;
+    this.eaFactory = EscapeAnalysisFactory.of();
+    this.intra = eaFactory.newIntraBuilder(methodName, className);
   }
 
   public org_example_ea_samples_EASample_01_Basic_sample1_I_I() {
-    this.id = "org/example/ea/samples.EASample_01_Basic.sample1(I)I";
-    this.className = "org/example/ea/samples/EASample_01_Basic";
-    this.methodName = "sample1";
+    this("org/example/ea/samples.EASample_01_Basic.sample1(I)I", "org/example/ea/samples/EASample_01_Basic", "sample1");
   }
 
   public void run() {
-    var eaFactory = EscapeAnalysisFactory.of();
-    var intra = eaFactory.newIntraBuilder(methodName, className);
     var bbb = intra.getDelegate();
     var params = new ArrayList<ParameterValue>();
     var p0 = bbb.parameter(eaFactory.valueType("s32"), "p", 0);

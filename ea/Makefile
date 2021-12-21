@@ -16,7 +16,13 @@ all: gen test
 test:
 > cd ea-jmh
 > mvn verify
+.PHONY: test
 
 gen:
 > cd ea-samples
 > EVENTS=true make
+.PHONY: gen
+
+bench:
+> java -jar ea-jmh/target/benchmarks.jar
+.PHONY: bench

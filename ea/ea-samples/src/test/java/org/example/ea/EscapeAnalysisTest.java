@@ -1,6 +1,6 @@
 package org.example.ea;
 
-import org.example.ea.helpers.EscapeAnalysisFactory;
+import org.qbicc.plugin.opt.ea.EscapeAnalysisFactory;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;

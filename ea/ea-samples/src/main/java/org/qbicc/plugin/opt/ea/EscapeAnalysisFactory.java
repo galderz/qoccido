@@ -1,4 +1,4 @@
-package org.example.ea.helpers;
+package org.qbicc.plugin.opt.ea;
 
 import org.qbicc.context.ClassContext;
 import org.qbicc.context.CompilationContext;
@@ -12,7 +12,6 @@ import org.qbicc.machine.arch.Platform;
 import org.qbicc.machine.object.ObjectFileProvider;
 import org.qbicc.machine.tool.CToolChain;
 import org.qbicc.plugin.opt.SimpleOptBasicBlockBuilder;
-import org.qbicc.plugin.opt.ea.EscapeAnalysisIntraMethodBuilder;
 import org.qbicc.tool.llvm.LlcInvoker;
 import org.qbicc.tool.llvm.LlvmToolChain;
 import org.qbicc.tool.llvm.OptInvoker;
@@ -43,6 +42,11 @@ public class EscapeAnalysisFactory
     public final CompilationContext ctxt;
     public final ClassContext bootClassContext;
     public final TypeSystem typeSystem;
+
+    public Object connectionGraph(EscapeAnalysisIntraMethodBuilder intra)
+    {
+        return EscapeAnalysisState.get(ctxt).getConnectionGraph(intra.getCurrentElement());
+    }
 
     public FunctionType functionType()
     {

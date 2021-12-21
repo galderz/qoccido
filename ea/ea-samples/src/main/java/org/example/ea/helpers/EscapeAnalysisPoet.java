@@ -13,6 +13,8 @@ import org.qbicc.graph.ValueHandle;
 import org.qbicc.graph.atomic.AccessModes;
 import org.qbicc.graph.atomic.ReadAccessMode;
 import org.qbicc.graph.atomic.WriteAccessMode;
+import org.qbicc.plugin.opt.ea.EscapeAnalysisFactory;
+import org.qbicc.plugin.opt.ea.EscapeAnalysisIntraMethodBuilder;
 import org.qbicc.type.ClassObjectType;
 import org.qbicc.type.FunctionType;
 import org.qbicc.type.ObjectType;
@@ -53,9 +55,7 @@ public class EscapeAnalysisPoet extends Helper
         final DefinedTypeDefinition enclosingType = element.getEnclosingType();
         main = MethodSpec.methodBuilder("run")
             .addModifiers(Modifier.PUBLIC)
-            .returns(void.class)
-            .addStatement("var $L = $T.of()", eaFactory, EscapeAnalysisFactory.class)
-            .addStatement("var $L = $L.newIntraBuilder(methodName, className)", intra, eaFactory);
+            .returns(void.class);
     }
 
     @SuppressWarnings("unused")
@@ -189,13 +189,18 @@ public class EscapeAnalysisPoet extends Helper
             .addParameter(String.class, "methodName")
             .addStatement("this.$N = $N", "id", "id")
             .addStatement("this.$N = $N", "className", "className")
-            .addStatement("this.$N = $N", "methodName", "methodName");
+            .addStatement("this.$N = $N", "methodName", "methodName")
+            .addStatement("this.$N = $T.of()", eaFactory, EscapeAnalysisFactory.class)
+            .addStatement("this.$N = $L.newIntraBuilder(methodName, className)", intra, eaFactory);
 
         var emptyConstructor = MethodSpec.constructorBuilder()
             .addModifiers(Modifier.PUBLIC)
-            .addStatement("this.$N = $S", "id", "org/example/ea/samples.EASample_01_Basic.sample1(I)I")
-            .addStatement("this.$N = $S", "className", "org/example/ea/samples/EASample_01_Basic")
-            .addStatement("this.$N = $S", "methodName", "sample1");
+            .addStatement(
+                "this($S, $S, $S)"
+                , "org/example/ea/samples.EASample_01_Basic.sample1(I)I"
+                , "org/example/ea/samples/EASample_01_Basic"
+                , "sample1"
+            );
 
         var helloWorld = TypeSpec.classBuilder(EscapeAnalysisPoet.id)
             .addSuperinterface(Runnable.class)
@@ -203,6 +208,8 @@ public class EscapeAnalysisPoet extends Helper
             .addField(String.class, "id", Modifier.PRIVATE, Modifier.FINAL)
             .addField(String.class, "className", Modifier.PRIVATE, Modifier.FINAL)
             .addField(String.class, "methodName", Modifier.PRIVATE, Modifier.FINAL)
+            .addField(EscapeAnalysisFactory.class, "eaFactory", Modifier.PUBLIC, Modifier.FINAL)
+            .addField(EscapeAnalysisIntraMethodBuilder.class, "intra", Modifier.PUBLIC, Modifier.FINAL)
             .addMethod(allFieldsConstructor.build())
             .addMethod(emptyConstructor.build())
             .addMethod(main.build())
