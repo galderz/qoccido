@@ -10,14 +10,18 @@ import org.qbicc.graph.CheckCast;
 import org.qbicc.graph.ParameterValue;
 import org.qbicc.graph.Value;
 import org.qbicc.graph.ValueHandle;
+import org.qbicc.graph.atomic.AccessModes;
 import org.qbicc.graph.atomic.ReadAccessMode;
 import org.qbicc.graph.atomic.WriteAccessMode;
 import org.qbicc.type.ClassObjectType;
+import org.qbicc.type.FunctionType;
 import org.qbicc.type.ObjectType;
 import org.qbicc.type.ValueType;
 import org.qbicc.type.definition.DefinedTypeDefinition;
+import org.qbicc.type.definition.element.ConstructorElement;
 import org.qbicc.type.definition.element.FieldElement;
 import org.qbicc.type.definition.element.MethodElement;
+import org.qbicc.type.descriptor.MethodDescriptor;
 
 import javax.lang.model.element.Modifier;
 import java.io.IOException;
@@ -61,13 +65,16 @@ public class EscapeAnalysisPoet extends Helper
         // TODO should take into account interfaces
         String classObjectType = "classObjectType";
         main.addStatement(
-            "var $N = $N.classObjectType($S, $S)"
-            , classObjectType
+            "var type = $N.definedType($S)"
             , eaFactory
             , type.getDefinition().getInternalName()
+        );
+        main.addStatement(
+            "var $N = $N.classObjectType(type, $S)"
+            , classObjectType
+            , eaFactory
             , type.hasSuperClass() ? type.getSuperClassType().getDefinition().getInternalName() : null
         );
-        //     intra.new_(classObjectType, "class(org/example/ea/samples/EASample_01_Basic$A)::class org.qbicc.graph.literal.TypeLiteral", "s64 20::class org.qbicc.graph.literal.IntegerLiteral", "s32 8::class org.qbicc.graph.literal.IntegerLiteral");
         main.addStatement(
             "var new_ = $N.new_($N, $N.literalOfType($N), $N.literalOf($S), $N.literalOf($S))"
             , intra
@@ -90,31 +97,32 @@ public class EscapeAnalysisPoet extends Helper
     public void callInstanceFieldOf(ValueHandle handle, FieldElement field)
     {
         main.addStatement(
-            "intra.instanceFieldOf($S, $S)"
-            , show(handle)
-            , show(field)
+            "var fieldOf = intra.instanceFieldOf($N, $N.fieldElement($S, $N.typeDescriptor($S), type))"
+            , "ref"
+            , eaFactory
+            , field.getName()
+            , eaFactory
+            , field.getTypeDescriptor().toString()
         );
     }
 
     @SuppressWarnings("unused")
     public void callStore(ValueHandle handle, Value value, WriteAccessMode mode)
     {
-//        main.addStatement(
-//            "intra.store($S, $S, $S)"
-//           , show(handle)
-//            , show(value)
-//            , show(mode)
-//        );
+        main.addStatement(
+            "intra.store(fieldOf, p0, $T.$L)"
+            , AccessModes.class
+            , mode.toString()
+        );
     }
 
     @SuppressWarnings("unused")
     public void callCall(ValueHandle target, List<Value> arguments)
     {
-//        main.addStatement(
-//            "intra.call($S, $S)"
-//            , show(target)
-//            , show(arguments)
-//        );
+        main.addStatement(
+            "intra.call(ctor, $T.of())"
+            , List.class
+        );
     }
 
     @SuppressWarnings("unused")
@@ -125,10 +133,15 @@ public class EscapeAnalysisPoet extends Helper
         for (ParameterValue param : params)
         {
             main.addStatement(
-                "params.add(bbb.parameter($N.valueType($S), $S, $L))"
+                "var p$L = bbb.parameter($N.valueType($S), $S, $L)"
+                , param.getIndex()
                 , eaFactory
                 , param.getType().toString()
                 , param.getLabel()
+                , param.getIndex()
+            );
+            main.addStatement(
+                "params.add(p$L)"
                 , param.getIndex()
             );
         }
@@ -139,18 +152,17 @@ public class EscapeAnalysisPoet extends Helper
     public void callReturn(Value value)
     {
         main.addStatement(
-            "intra.return_($S)"
-            , show(value)
+            "intra.return_(load)"
         );
     }
 
     @SuppressWarnings("unused")
     public void callThrow(Value value)
     {
-//        main.addStatement(
-//            "intra.throw_($S)"
-//            , show(value)
-//        );
+        main.addStatement(
+            "intra.throw_($S)"
+            , show(value)
+        );
     }
 
     @SuppressWarnings("unused")
@@ -231,9 +243,20 @@ public class EscapeAnalysisPoet extends Helper
     public void callLoad(ValueHandle handle, ReadAccessMode accessMode)
     {
         main.addStatement(
-            "intra.load($S, $S)"
-            , show(handle)
-            , show(accessMode)
+            "var load = intra.load(fieldOf, $T.$L)"
+            , AccessModes.class
+            , accessMode.toString()
+        );
+    }
+
+    @SuppressWarnings("unused")
+    public void callConstructorOf(Value instance, ConstructorElement constructor, MethodDescriptor callSiteDescriptor, FunctionType callSiteType)
+    {
+        main.addStatement(
+            "var ctor = intra.constructorOf(new_, $N.constructorElement(type), $N.methodDescriptor(), $N.functionType())"
+            , eaFactory
+            , eaFactory
+            , eaFactory
         );
     }
 }

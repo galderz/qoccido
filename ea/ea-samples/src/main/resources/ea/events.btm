@@ -179,3 +179,20 @@ IF
 DO
   callLoad($1, $2)
 ENDRULE
+
+RULE constructorOf
+CLASS org.qbicc.graph.DelegatingBasicBlockBuilder
+METHOD constructorOf(Value, ConstructorElement, MethodDescriptor, FunctionType)
+HELPER org.example.ea.helpers.EscapeAnalysisPoet
+AT ENTRY
+BIND
+  name = linked("name");
+  isIntra = org.qbicc.plugin.opt.ea.EscapeAnalysisIntraMethodBuilder.class.isInstance($this);
+  aIntra : org.qbicc.plugin.opt.ea.EscapeAnalysisIntraMethodBuilder = (isIntra ? $this : null);
+IF
+  isIntra
+  AND
+  aIntra.connectionGraph.name.equals(name)
+DO
+  callConstructorOf($1, $2, $3, $4)
+ENDRULE

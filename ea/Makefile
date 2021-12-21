@@ -10,10 +10,10 @@ ifeq ($(origin .RECIPEPREFIX), undefined)
 endif
 .RECIPEPREFIX = >
 
-all: test
+all: gen test
 .PHONY: all
 
-test: gen
+test:
 > cd ea-jmh
 > mvn test
 
