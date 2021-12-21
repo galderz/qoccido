@@ -15,7 +15,7 @@ all: gen test
 
 test:
 > cd ea-jmh
-> mvn test
+> mvn verify
 
 gen:
 > cd ea-samples
