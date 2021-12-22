@@ -10,6 +10,11 @@ ifeq ($(origin .RECIPEPREFIX), undefined)
 endif
 .RECIPEPREFIX = >
 
+JAVA_HOME = /opt/adopt-17.0.1+12
+ASYNC_HOME = /opt/async-profiler
+
+java = $(JAVA_HOME)/bin/java
+
 all: gen test
 .PHONY: all
 
@@ -24,5 +29,9 @@ gen:
 .PHONY: gen
 
 bench:
-> java -jar ea-jmh/target/benchmarks.jar
+> $(java) -jar ea-jmh/target/benchmarks.jar
 .PHONY: bench
+
+async:
+> LD_LIBRARY_PATH=$(ASYNC_HOME)/build $(java) -jar ea-jmh/target/benchmarks.jar -prof async:output=flamegraph -i 1 -wi 1 -f 1
+.PHONY: async
