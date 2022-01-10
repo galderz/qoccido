@@ -8,8 +8,7 @@ public class EscapeAnalysisSamplesTest
     public void test000()
     {
         var sample = new org_example_ea_samples_EASample_01_Basic_sample1_I_I();
-        sample.run();
-        consume(sample.eaFactory.connectionGraph(sample.intra));
+        consume(sample.eaFactory.connectionGraph(sample.get()));
     }
 
     void consume(Object o)

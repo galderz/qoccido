@@ -32,17 +32,25 @@
 package org.example.ea;
 
 import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
+import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.infra.Blackhole;
 
+@State(Scope.Thread)
 public class MyBenchmark
 {
+    org_example_ea_samples_EASample_01_Basic_sample1_I_I sample;
+
+    @Setup
+    public void prepare()
+    {
+        sample = new org_example_ea_samples_EASample_01_Basic_sample1_I_I();
+    }
+
     @Benchmark
     public void testIntra_01_Basic(Blackhole bh)
     {
-        // This is a demo/sample template for building your JMH benchmarks. Edit as needed.
-        // Put your benchmark code here.
-        var sample = new org_example_ea_samples_EASample_01_Basic_sample1_I_I();
-        sample.run();
-        bh.consume(sample.eaFactory.connectionGraph(sample.intra));
+        bh.consume(sample.eaFactory.connectionGraph(sample.get()));
     }
 }

@@ -10,17 +10,20 @@ ifeq ($(origin .RECIPEPREFIX), undefined)
 endif
 .RECIPEPREFIX = >
 
-JAVA_HOME = /opt/adopt-17.0.1+12
 ASYNC_HOME = /opt/async-profiler
+JAVA_HOME = /opt/adopt-17.0.1+12
+MAVEN_HOME := /opt/maven
 
 java = $(JAVA_HOME)/bin/java
+mvn += JAVA_HOME=$(JAVA_HOME)
+mvn += $(MAVEN_HOME)/bin/mvn
 
 all: gen test
 .PHONY: all
 
 test:
 > cd ea-jmh
-> mvn verify
+> $(mvn) verify
 .PHONY: test
 
 gen:

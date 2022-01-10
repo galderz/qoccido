@@ -2,6 +2,7 @@ package org.example.ea.helpers;
 
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeSpec;
 import org.jboss.byteman.rule.Rule;
 import org.jboss.byteman.rule.helper.Helper;
@@ -31,6 +32,7 @@ import java.io.UncheckedIOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 public class EscapeAnalysisPoet extends Helper
 {
@@ -53,9 +55,9 @@ public class EscapeAnalysisPoet extends Helper
 
         final MethodElement element = (MethodElement) delegate.getCurrentElement();
         final DefinedTypeDefinition enclosingType = element.getEnclosingType();
-        main = MethodSpec.methodBuilder("run")
+        main = MethodSpec.methodBuilder("get")
             .addModifiers(Modifier.PUBLIC)
-            .returns(void.class);
+            .returns(EscapeAnalysisIntraMethodBuilder.class);
     }
 
     @SuppressWarnings("unused")
@@ -128,6 +130,7 @@ public class EscapeAnalysisPoet extends Helper
     @SuppressWarnings("unused")
     public void callStartMethod(List<ParameterValue> params)
     {
+        main.addStatement("var $N = $L.newIntraBuilder(methodName, className)", intra, eaFactory);
         main.addStatement("var bbb = $L.getDelegate()", intra);
         main.addStatement("var params = new $T<$T>()", ArrayList.class, ParameterValue.class);
         for (ParameterValue param : params)
@@ -181,6 +184,7 @@ public class EscapeAnalysisPoet extends Helper
     public void callFinish()
     {
         main.addStatement("intra.finish()");
+        main.addStatement("return intra");
 
         var allFieldsConstructor = MethodSpec.constructorBuilder()
             .addModifiers(Modifier.PUBLIC)
@@ -190,8 +194,7 @@ public class EscapeAnalysisPoet extends Helper
             .addStatement("this.$N = $N", "id", "id")
             .addStatement("this.$N = $N", "className", "className")
             .addStatement("this.$N = $N", "methodName", "methodName")
-            .addStatement("this.$N = $T.of()", eaFactory, EscapeAnalysisFactory.class)
-            .addStatement("this.$N = $L.newIntraBuilder(methodName, className)", intra, eaFactory);
+            .addStatement("this.$N = $T.of()", eaFactory, EscapeAnalysisFactory.class);
 
         var emptyConstructor = MethodSpec.constructorBuilder()
             .addModifiers(Modifier.PUBLIC)
@@ -203,13 +206,12 @@ public class EscapeAnalysisPoet extends Helper
             );
 
         var helloWorld = TypeSpec.classBuilder(EscapeAnalysisPoet.id)
-            .addSuperinterface(Runnable.class)
+            .addSuperinterface(ParameterizedTypeName.get(Supplier.class, EscapeAnalysisIntraMethodBuilder.class))
             .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
             .addField(String.class, "id", Modifier.PRIVATE, Modifier.FINAL)
             .addField(String.class, "className", Modifier.PRIVATE, Modifier.FINAL)
             .addField(String.class, "methodName", Modifier.PRIVATE, Modifier.FINAL)
             .addField(EscapeAnalysisFactory.class, "eaFactory", Modifier.PUBLIC, Modifier.FINAL)
-            .addField(EscapeAnalysisIntraMethodBuilder.class, "intra", Modifier.PUBLIC, Modifier.FINAL)
             .addMethod(allFieldsConstructor.build())
             .addMethod(emptyConstructor.build())
             .addMethod(main.build())
