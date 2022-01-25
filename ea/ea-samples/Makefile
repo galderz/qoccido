@@ -13,9 +13,9 @@ endif
 all: run
 
 # Qbicc
-JAVA_HOME := /opt/java-17
-MAVEN_HOME := /opt/maven
-QBICC_HOME := /opt/qbicc-qbicc
+JAVA_HOME ?= /opt/adopt-17
+MAVEN_HOME ?= /opt/maven
+QBICC_HOME ?= /opt/qbicc-qbicc
 QBICC_VERSION := 0.4.0-SNAPSHOT
 
 mvn += JAVA_HOME=$(JAVA_HOME)

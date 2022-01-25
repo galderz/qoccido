@@ -24,7 +24,9 @@ import org.qbicc.type.definition.DefinedTypeDefinition;
 import org.qbicc.type.definition.element.ConstructorElement;
 import org.qbicc.type.definition.element.FieldElement;
 import org.qbicc.type.definition.element.MethodElement;
+import org.qbicc.type.descriptor.ClassTypeDescriptor;
 import org.qbicc.type.descriptor.MethodDescriptor;
+import org.qbicc.type.descriptor.TypeDescriptor;
 
 import javax.lang.model.element.Modifier;
 import java.io.IOException;
@@ -90,6 +92,11 @@ public class EscapeAnalysisPoet extends Helper
         );
     }
 
+    public void callNew(ClassTypeDescriptor desc)
+    {
+        // TODO
+    }
+
     private String show(Object obj)
     {
         return obj.toString() + "::" + obj.getClass().toString();
@@ -106,6 +113,11 @@ public class EscapeAnalysisPoet extends Helper
             , eaFactory
             , field.getTypeDescriptor().toString()
         );
+    }
+
+    public void callInstanceFieldOf(ValueHandle handle, TypeDescriptor owner, String name, TypeDescriptor type)
+    {
+        // TODO
     }
 
     @SuppressWarnings("unused")
@@ -178,6 +190,11 @@ public class EscapeAnalysisPoet extends Helper
             , show(kind)
             , show(expectedType)
         );
+    }
+
+    public void callCheckcast(Value value, TypeDescriptor desc)
+    {
+        // TODO
     }
 
     @SuppressWarnings("unused")

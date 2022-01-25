@@ -12,9 +12,9 @@ DO
   create(name, $2);
 ENDRULE
 
-RULE new
+RULE new type
 CLASS EscapeAnalysisIntraMethodBuilder
-METHOD new_
+METHOD new_(ClassObjectType, Value, Value, Value)
 HELPER org.example.ea.helpers.EscapeAnalysisPoet
 AT ENTRY
 BIND
@@ -25,9 +25,22 @@ DO
   callNew($1, $2, $3, $4);
 ENDRULE
 
-RULE instanceFieldOf
+#RULE new desc
+#CLASS EscapeAnalysisIntraMethodBuilder
+#METHOD new_(ClassTypeDescriptor)
+#HELPER org.example.ea.helpers.EscapeAnalysisPoet
+#AT ENTRY
+#BIND
+#  name = linked("name");
+#IF
+#  $this.connectionGraph.name.equals(name)
+#DO
+#  callNew($1);
+#ENDRULE
+
+RULE instanceFieldOf field element
 CLASS EscapeAnalysisIntraMethodBuilder
-METHOD instanceFieldOf
+METHOD instanceFieldOf(ValueHandle, FieldElement)
 HELPER org.example.ea.helpers.EscapeAnalysisPoet
 AT ENTRY
 BIND
@@ -37,6 +50,19 @@ IF
 DO
   callInstanceFieldOf($1, $2);
 ENDRULE
+
+#RULE instanceFieldOf 4 type descriptor
+#CLASS EscapeAnalysisIntraMethodBuilder
+#METHOD instanceFieldOf(ValueHandle, TypeDescriptor, String, TypeDescriptor)
+#HELPER org.example.ea.helpers.EscapeAnalysisPoet
+#AT ENTRY
+#BIND
+#  name = linked("name");
+#IF
+#  $this.connectionGraph.name.equals(name)
+#DO
+#  callInstanceFieldOf($1, $2, $3, $4);
+#ENDRULE
 
 RULE store
 CLASS EscapeAnalysisIntraMethodBuilder
@@ -103,9 +129,9 @@ DO
   callThrow($1);
 ENDRULE
 
-RULE checkcast
+RULE checkcast type
 CLASS EscapeAnalysisIntraMethodBuilder
-METHOD checkcast
+METHOD checkcast(Value, Value, Value, org.qbicc.graph.CheckCast$CastType, ObjectType)
 HELPER org.example.ea.helpers.EscapeAnalysisPoet
 AT ENTRY
 BIND
@@ -115,6 +141,19 @@ IF
 DO
   callCheckcast($1, $2, $3, $4, $5);
 ENDRULE
+
+#RULE checkcast desc
+#CLASS EscapeAnalysisIntraMethodBuilder
+#METHOD checkcast(Value, TypeDescriptor)
+#HELPER org.example.ea.helpers.EscapeAnalysisPoet
+#AT ENTRY
+#BIND
+#  name = linked("name");
+#IF
+#  $this.connectionGraph.name.equals(name)
+#DO
+#  callCheckcast($1, $2);
+#ENDRULE
 
 RULE finish
 CLASS EscapeAnalysisIntraMethodBuilder

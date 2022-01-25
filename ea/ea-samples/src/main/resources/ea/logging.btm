@@ -19,7 +19,10 @@ BIND
   th = Thread.currentThread();
   prefix = "(" + th.getName() + ") ";
 IF
-  name.toString().contains("org/example/ea/samples.EASample_01_Basic.sample1")
+#  name.toString().contains("org/example/ea/samples.EASample_01_Basic.sample1")
+#  name.toString().contains("org/example/ea/samples.EASample_02_StaticAssignment.sample1")
+#  name.toString().contains("org/example/ea/samples.EASample_03_ParameterEscape.sample1")
+  name.toString().contains("org/example/ea/samples.EASample_03_ParameterEscape.sample2")
 DO
   link("name", name);
   traceln(prefix.toString() + "Method " + $1.toString() + " assigned output path: " + $!.toString());
@@ -141,6 +144,103 @@ IF
   $this.connectionGraph.name.equals(name)
 DO traceln(prefix.toString() + "EA: finish " + $this.getCurrentElement().toString())
 ENDRULE
+
+RULE set supported
+CLASS EscapeAnalysisIntraMethodBuilder$SupportContext
+METHOD setSupported
+AT ENTRY
+BIND
+  name = linked("name");
+  th = Thread.currentThread();
+  prefix = "(" + th.getName() + ") ";
+IF
+  $this.name.equals(name)
+DO traceln(prefix.toString() + "EA: set support " + $2 + " for " + $1.toString())
+ENDRULE
+
+RULE switch to unsupported
+CLASS EscapeAnalysisIntraMethodBuilder$SupportContext
+METHOD switchToUnsupported
+AT EXIT
+BIND
+  name = linked("name");
+  th = Thread.currentThread();
+  prefix = "(" + th.getName() + ") ";
+  updated = $!;
+IF
+  $this.name.equals(name)
+  AND
+  updated
+DO traceln(prefix.toString() + "EA: switched to unsupported " + $1.toString())
+ENDRULE
+
+RULE add unsupported
+CLASS EscapeAnalysisIntraMethodBuilder$SupportContext
+METHOD addUnsupported
+AT EXIT
+BIND
+  name = linked("name");
+  th = Thread.currentThread();
+  prefix = "(" + th.getName() + ") ";
+  updated = $!;
+IF
+  $this.name.equals(name)
+  AND
+  updated
+DO traceln(prefix.toString() + "EA: add unsupported " + $1.toString())
+ENDRULE
+
+#RULE verify lattice
+#CLASS EscapeAnalysisIntraMethodBuilder$EscapeLattice
+#METHOD verify()
+#AT ENTRY
+#BIND
+#  name = linked("name");
+#  th = Thread.currentThread();
+#  prefix = "(" + th.getName() + ") ";
+#IF
+#  $this.connectionGraph.name.equals(name)
+#DO traceln(prefix.toString() + "EA: verify lattice")
+#ENDRULE
+
+#RULE verify node entry
+#CLASS EscapeAnalysisIntraMethodBuilder$EscapeLattice
+#METHOD verify(Node)
+#AT ENTRY
+#BIND
+#  name = linked("name");
+#  th = Thread.currentThread();
+#  prefix = "(" + th.getName() + ") ";
+#IF
+#  $this.connectionGraph.name.equals(name)
+#DO traceln(prefix.toString() + "EA: verify node " + $1.toString())
+#ENDRULE
+
+#RULE verify node exit
+#CLASS EscapeAnalysisIntraMethodBuilder$EscapeLattice
+#METHOD verify(Node)
+#AT EXIT
+#BIND
+#  name = linked("name");
+#  th = Thread.currentThread();
+#  prefix = "(" + th.getName() + ") ";
+#IF
+#  $this.connectionGraph.name.equals(name)
+#DO traceln(prefix.toString() + "EA: verify node " + $!.toString() + " for "+ $1.toString())
+#ENDRULE
+
+#RULE verify dependency
+#CLASS EscapeAnalysisIntraMethodBuilder$EscapeLattice
+#METHOD verifyDependency
+#AT ENTRY
+#BIND
+#  name = linked("name");
+#  th = Thread.currentThread();
+#  prefix = "(" + th.getName() + ") ";
+#IF
+#  $this.connectionGraph.name.equals(name)
+#DO traceln(prefix.toString() + "EA: verify dependency " + $1.toString())
+#ENDRULE
 
 RULE set arg escape
 CLASS ConnectionGraph

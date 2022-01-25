@@ -10,8 +10,8 @@ ifeq ($(origin .RECIPEPREFIX), undefined)
 endif
 .RECIPEPREFIX = >
 
-ASYNC_HOME = /opt/async-profiler
-JAVA_HOME = /opt/adopt-17.0.1+12
+ASYNC_HOME ?= /opt/async-profiler
+JAVA_HOME ?= /opt/adopt-17
 MAVEN_HOME := /opt/maven
 
 java = $(JAVA_HOME)/bin/java
