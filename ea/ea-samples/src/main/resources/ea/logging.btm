@@ -22,7 +22,11 @@ IF
 #  name.toString().contains("org/example/ea/samples.EASample_01_Basic.sample1")
 #  name.toString().contains("org/example/ea/samples.EASample_02_StaticAssignment.sample1")
 #  name.toString().contains("org/example/ea/samples.EASample_03_ParameterEscape.sample1")
-  name.toString().contains("org/example/ea/samples.EASample_03_ParameterEscape.sample2")
+#  name.toString().contains("org/example/ea/samples.EASample_03_ParameterEscape.sample2")
+#  name.toString().contains("org/example/ea/samples.EASample_07_Runnable.sample1")
+#  name.toString().contains("org/example/ea/samples.EASample_09_Interfaces$NonGeneric.isInfinite")
+#  name.toString().contains("org/example/ea/samples.EASample_11_Loops$ForLoop.forEachList")
+  name.toString().contains("org/example/ea/samples.EASample_11_Loops$RecursiveLoop.fibonacci")
 DO
   link("name", name);
   traceln(prefix.toString() + "Method " + $1.toString() + " assigned output path: " + $!.toString());
