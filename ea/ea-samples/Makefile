@@ -16,7 +16,7 @@ all: run
 JAVA_HOME ?= /opt/adopt-17
 MAVEN_HOME ?= /opt/maven
 QBICC_HOME ?= /opt/qbicc-qbicc
-QBICC_VERSION := 0.4.0-SNAPSHOT
+QBICC_VERSION := 0.7.0-SNAPSHOT
 
 mvn += JAVA_HOME=$(JAVA_HOME)
 mvn += $(MAVEN_HOME)/bin/mvn
@@ -164,7 +164,7 @@ graphs:
 > rm -drf $(graphs_dir)
 > mkdir -p $(graphs_dir)
 > cp -r $(qoccido_dir)/org/example/ea/samples/EASample* $(graphs_dir)
-> cp -r $(qoccido_dir)/org/qbicc/runtime/main/Main* $(graphs_dir)
+> cp -r $(qoccido_dir)/org/qbicc/runtime/main $(graphs_dir)
 > find $(graphs_dir) -depth -name '*$$*' -execdir bash -c 'mv -- "$$1" "$${1//\$$/_}"' bash {} \;
 > find $(graphs_dir) -iname '*.dot' -exec bash -c 'dot -Tsvg "{}" > "{}".svg' \;
 .PHONY: graphs
