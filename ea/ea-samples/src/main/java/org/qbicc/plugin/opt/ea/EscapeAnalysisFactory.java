@@ -61,14 +61,14 @@ public class EscapeAnalysisFactory
 
     public ConstructorElement constructorElement(DefinedTypeDefinition enclosingType)
     {
-        final ConstructorElement.Builder ctorBuilder = ConstructorElement.builder(methodDescriptor());
+        final ConstructorElement.Builder ctorBuilder = ConstructorElement.builder(methodDescriptor(), 0);
         ctorBuilder.setEnclosingType(enclosingType);
         return ctorBuilder.build();
     }
 
     public FieldElement fieldElement(String name, TypeDescriptor typeDescriptor, DefinedTypeDefinition enclosingType)
     {
-        final FieldElement.Builder fieldBuilder = FieldElement.builder(name, typeDescriptor);
+        final FieldElement.Builder fieldBuilder = FieldElement.builder(name, typeDescriptor, 0);
         fieldBuilder.setEnclosingType(enclosingType);
         fieldBuilder.setSignature(BaseTypeSignature.I); // TODO hardcoded
         return fieldBuilder.build();
@@ -130,7 +130,7 @@ public class EscapeAnalysisFactory
     public EscapeAnalysisIntraMethodBuilder newIntraBuilder(String methodName, String className)
     {
         // TODO add support for method descriptor, for now assume void method
-        final MethodElement.Builder builder = MethodElement.builder(methodName, methodDescriptor());
+        final MethodElement.Builder builder = MethodElement.builder(methodName, methodDescriptor(), 0);
         builder.setEnclosingType(definedType(className));
         final MethodElement element = builder.build();
 
