@@ -1,0 +1,62 @@
+RULE set unsupported node expectations
+CLASS org.qbicc.main.Main
+METHOD <init>
+AT EXIT
+IF TRUE
+DO
+  link("actualUnsupportedNodes", "actualUnsupportedNodes", new java.util.concurrent.CopyOnWriteArrayList());
+ENDRULE
+
+RULE record unsupported nodes
+CLASS EscapeAnalysisIntraMethodBuilder$AnalysisContext
+METHOD setSupported
+AT ENTRY
+BIND
+  supported = $2;
+IF
+  $this.connectionGraph.name.contains("ea/samples")
+  AND
+  !supported
+DO
+  incrementCounter($this.connectionGraph.name)
+ENDRULE
+
+RULE finish unsupported nodes
+CLASS EscapeAnalysisIntraMethodBuilder
+METHOD finish
+AT EXIT
+BIND
+  unsupportedCount = readCounter($this.connectionGraph.name);
+  actual : java.util.List = linked("actualUnsupportedNodes", "actualUnsupportedNodes");
+IF
+  $this.connectionGraph.name.contains("ea/samples")
+  AND
+  !java.util.Objects.equals(0, unsupportedCount)
+DO
+  actual.add(String.format(
+    "%s -> %s"
+    , new Object[]{
+      $this.connectionGraph.name
+      , unsupportedCount
+    }
+  ));
+ENDRULE
+
+RULE unsupported nodes failure
+CLASS org.qbicc.main.Main
+METHOD call
+AT EXIT
+BIND
+  actualList : java.util.List = linked("actualUnsupportedNodes", "actualUnsupportedNodes");
+  actual : java.util.List = actualList.stream().sorted().collect(java.util.stream.Collectors.toList());
+IF
+  !actual.isEmpty()
+DO
+  traceln(String.format(
+    "%nTest node allocations failure:%nFailure!%nExpected none but got (%d):%n%s%n"
+    , new Object[]{
+       actual.size()
+      , String.join("\n", actual)
+    }
+  ));
+ENDRULE

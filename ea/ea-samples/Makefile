@@ -103,7 +103,7 @@ EA ?= true
 qbicc_params += --gen-graph
 ifeq ($(EA),true)
   ifdef VERIFY
-    byteman_scripts := $(comma)script:$(resources_dir)/ea/verify.btm
+    byteman_scripts := $(comma)script:$(resources_dir)/ea/verify-stack-allocations.btm$(comma)script:$(resources_dir)/ea/verify-node-support.btm
     classpath = $(qbicc_cp_runtime)
   else ifdef EVENTS
     byteman_scripts := $(comma)script:$(resources_dir)/ea/events.btm
@@ -165,6 +165,8 @@ graphs:
 > mkdir -p $(graphs_dir)
 > cp -r $(qoccido_dir)/org/example/ea/samples/EASample* $(graphs_dir)
 > cp -r $(qoccido_dir)/org/qbicc/runtime/main $(graphs_dir)
+> cp -r $(qoccido_dir)/sun/nio/cs/StreamEncoder $(graphs_dir)
+> cp -r $(qoccido_dir)/java/util/concurrent/locks/ReentrantLock $(graphs_dir)
 > find $(graphs_dir) -depth -name '*$$*' -execdir bash -c 'mv -- "$$1" "$${1//\$$/_}"' bash {} \;
 > find $(graphs_dir) -iname '*.dot' -exec bash -c 'dot -Tsvg "{}" > "{}".svg' \;
 .PHONY: graphs

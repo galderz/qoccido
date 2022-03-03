@@ -1,10 +1,10 @@
-RULE set expectations
+RULE set stack allocation expectations
 CLASS org.qbicc.main.Main
 METHOD <init>
 AT EXIT
 IF TRUE
 DO
-  link("expected", "expected", java.util.List.of(new Object[]{
+  link("expectedStackAllocations", "expectedStackAllocations", java.util.List.of(new Object[]{
     "org/example/ea/samples.EASample_01_Basic.sample1(I)I -> org/example/ea/samples/EASample_01_Basic$A@0"
     , "org/example/ea/samples.EASample_03_ParameterEscape.sample1()I -> org/example/ea/samples/EASample_03_ParameterEscape$A@0"
     , "org/example/ea/samples.EASample_07_Runnable.sample1()C -> org/example/ea/samples/EASample_07_Runnable$SampleRunnable@0"
@@ -24,7 +24,7 @@ DO
     , "org/example/ea/samples.EASample_11_Loops$RecursiveLoop.fibonacci(Lorg/example/ea/samples/EASample_11_Loops$Data$Int;)Lorg/example/ea/samples/EASample_11_Loops$Data$Int; -> org/example/ea/samples/EASample_11_Loops$Data$Int@29"
     , "org/example/ea/samples.EASample_11_Loops$RecursiveLoop.main()V -> org/example/ea/samples/EASample_11_Loops$Data$Int@0"
   }));
-  link("actual", "actual", new java.util.concurrent.CopyOnWriteArrayList());
+  link("actualStackAllocations", "actualStackAllocations", new java.util.concurrent.CopyOnWriteArrayList());
 ENDRULE
 
 RULE record stack allocations
@@ -33,7 +33,7 @@ METHOD stackAllocate
 AT ENTRY
 BIND
   aNew : org.qbicc.graph.New = $1;
-  actual : java.util.List = linked("actual", "actual");
+  actual : java.util.List = linked("actualStackAllocations", "actualStackAllocations");
 IF
   $1.getClassObjectType().toString().contains("ea/samples")
 DO
@@ -52,30 +52,30 @@ CLASS org.qbicc.main.Main
 METHOD call
 AT EXIT
 BIND
-  expectedList : java.util.List = linked("expected", "expected");
-  actualList : java.util.List = linked("actual", "actual");
+  expectedList : java.util.List = linked("expectedStackAllocations", "expectedStackAllocations");
+  actualList : java.util.List = linked("actualStackAllocations", "actualStackAllocations");
   expected : java.util.List = expectedList.stream().sorted().collect(java.util.stream.Collectors.toList());
   actual : java.util.List = actualList.stream().sorted().collect(java.util.stream.Collectors.toList());
 IF
   java.util.Objects.equals(expected, actual)
 DO
-  traceln(String.format("%nTest allocations:%nSuccess%n", new Object[]{}));
+  traceln(String.format("%nTest stack allocations:%nSuccess%n", new Object[]{}));
 ENDRULE
 
-RULE main call failure
+RULE stack allocations failure
 CLASS org.qbicc.main.Main
 METHOD call
 AT EXIT
 BIND
-  expectedList : java.util.List = linked("expected", "expected");
-  actualList : java.util.List = linked("actual", "actual");
+  expectedList : java.util.List = linked("expectedStackAllocations", "expectedStackAllocations");
+  actualList : java.util.List = linked("actualStackAllocations", "actualStackAllocations");
   expected : java.util.List = expectedList.stream().sorted().collect(java.util.stream.Collectors.toList());
   actual : java.util.List = actualList.stream().sorted().collect(java.util.stream.Collectors.toList());
 IF
   !java.util.Objects.equals(expected, actual)
 DO
   traceln(String.format(
-    "%nTest allocations:%nFailure!%nExpected (%d):%n%s%n,but got (%d):%n%s%n"
+    "%nTest stack allocations:%nFailure!%nExpected (%d):%n%s%n,but got (%d):%n%s%n"
     , new Object[]{
       expected.size()
       , String.join("\n", expected)
