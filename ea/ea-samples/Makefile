@@ -16,7 +16,7 @@ all: run
 JAVA_HOME ?= /opt/adopt-17
 MAVEN_HOME ?= /opt/maven
 QBICC_HOME ?= /opt/qbicc-qbicc
-QBICC_VERSION := 0.14.0-SNAPSHOT
+QBICC_VERSION := 0.19.0-SNAPSHOT
 
 mvn += JAVA_HOME=$(JAVA_HOME)
 mvn += $(MAVEN_HOME)/bin/mvn
@@ -102,6 +102,7 @@ EA ?= true
 
 qbicc_params += --gen-graph
 ifeq ($(EA),true)
+  qbicc_params += --escape-analysis
   ifdef VERIFY
     byteman_scripts := $(comma)script:$(resources_dir)/ea/verify.btm
     classpath = $(qbicc_cp_runtime)
@@ -115,7 +116,6 @@ ifeq ($(EA),true)
 else
   byteman_scripts := $(comma)script:$(resources_dir)/main/logging.btm
   classpath = $(qbicc_cp_runtime)
-  qbicc_params += --no-escape-analysis
 endif
 
 run: $(qoccido_dir) $(qbicc_jar_main) $(jar)
