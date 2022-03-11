@@ -167,6 +167,7 @@ graphs:
 > cp -r $(qoccido_dir)/org/qbicc/runtime/main $(graphs_dir)
 > find $(graphs_dir) -depth -name '*$$*' -execdir bash -c 'mv -- "$$1" "$${1//\$$/_}"' bash {} \;
 > find $(graphs_dir) -iname '*.dot' -exec bash -c 'dot -Tsvg "{}" > "{}".svg' \;
+#> find $(graphs_dir) -iname '*.dot' -exec bash -c 'echo "{}" && dot -Tsvg "{}" > "{}".svg' \;
 .PHONY: graphs
 
 open_graphs_dir := /opt/qbicc-graphs
