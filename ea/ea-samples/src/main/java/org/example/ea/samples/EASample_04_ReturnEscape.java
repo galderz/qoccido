@@ -1,37 +1,57 @@
 package org.example.ea.samples;
 
-import org.example.ea.Main;
+import org.example.ea.Asserts;
+
+import java.util.List;
 
 public class EASample_04_ReturnEscape
 {
-    /*
-     * This sample showcases the effects of new objects that escape via objects returned by methods.
-     * 
-     * The below sample2 method instantiates an A instance,
-     * but this is returned to the caller,
-     * so it can't be stack allocated.
-     */
-
-    static int sample1()
-    {
-        A result = sample2();
-        return result.aField;
-    }
-
-    static A sample2()
-    {
-        A a = new A();
-        a.aField = 10;
-        return a;
-    }
-
     public static void main(String[] args)
     {
-        Main.print(sample1() == 10 ? '.' : 'F');
+        returnSetField();
+        returnInline();
+        returnWrapped();
     }
 
-    public static class A
+    static void returnSetField()
     {
-        int aField;
+        Train train = setField();
+        Asserts.equals("New Jersey Freighter", train.name);
+    }
+
+    static Train setField()
+    {
+        Train train = new Train();
+        train.name = "New Jersey Freighter";
+        train.speed = 65;
+        return train;
+    }
+
+    static void returnInline()
+    {
+        Train train = inline();
+        Asserts.equals(0, train.speed);
+    }
+
+    static Train inline()
+    {
+        return new Train();
+    }
+
+    static void returnWrapped()
+    {
+        final List<Train> trains = wrapped();
+        Asserts.equals(0, trains.get(0).speed);
+    }
+
+    static List<Train> wrapped()
+    {
+        return List.of(new Train());
+    }
+
+    static class Train
+    {
+        String name;
+        int speed;
     }
 }

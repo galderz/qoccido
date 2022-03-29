@@ -91,24 +91,24 @@ public class EASample_09_Interfaces
     {
         static void main()
         {
-            Main.print(inverse(10, 20).x == -10 ? '.' : 'F');
-            Main.print(inverse(30, 40).y == -40 ? '.' : 'F');
-            Main.print(identity(50, 60).x == 50 ? '.' : 'F');
-            Main.print(identity(70, 80).y == 80 ? '.' : 'F');
+            Main.print(inverseX(10, 20) == -10 ? '.' : 'F');
+            Main.print(inverseX(30, 40) == -30 ? '.' : 'F');
+            Main.print(identityX(50, 60) == 50 ? '.' : 'F');
+            Main.print(identityX(70, 80) == 70 ? '.' : 'F');
         }
 
-        static Point inverse(int x, int y)
+        static int inverseX(int x, int y)
         {
             final Point point = new Point(x, y);
             final Inverse inverse = new Inverse();
-            return apply1Point(point, inverse);
+            return apply1Point(point, inverse).x;
         }
 
-        static Point identity(int x, int y)
+        static int identityX(int x, int y)
         {
             final Point point = new Point(x, y);
             final Identity identity = new Identity();
-            return apply1Point(point, identity);
+            return apply1Point(point, identity).x;
         }
 
         private static Point apply1Point(Point point, Function1<Point, Point> f)
