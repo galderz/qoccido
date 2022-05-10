@@ -11,7 +11,6 @@ endif
 .RECIPEPREFIX = >
 
 QBICC_HOME := /opt/qbicc-qbicc
-QBICC_CL_HOME := /opt/qbicc-class-library
 
 all: hello
 .PHONY: all
@@ -30,7 +29,6 @@ endef
 
 pull:
 > $(call pull,$(QBICC_HOME))
-> $(call pull,$(QBICC_CL_HOME))
 
 define pull
 cd ${1}
@@ -46,15 +44,11 @@ test-qbicc:
 > cd $(QBICC_HOME)
 > mvn install
 
-install-qbicc-class-library:
-> cd $(QBICC_CL_HOME)
-> mvn clean install
-
 copy-dependencies:
 > cd $(QBICC_HOME)
 > mvn -pl main dependency:copy-dependencies -DoutputDirectory=\$${project.build.directory}/libs
 
-refresh: pull install-qbicc install-qbicc-class-library copy-dependencies
+refresh: pull install-qbicc copy-dependencies
 
 ea-examples += ea-01
 ea-examples += ea-02
