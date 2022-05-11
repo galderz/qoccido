@@ -19,14 +19,14 @@ BIND
   th = Thread.currentThread();
   prefix = "(" + th.getName() + ") ";
 IF
-#  name.toString().contains("org/example/ea/samples.EASample_01_Basic.sample1")
+  name.toString().contains("org/example/ea/samples.EASample_01_Basic.sample1")
 #  name.toString().contains("org/example/ea/samples.EASample_02_StaticAssignment.sample1")
 #  name.toString().contains("org/example/ea/samples.EASample_03_ParameterEscape.sample1")
 #  name.toString().contains("org/example/ea/samples.EASample_03_ParameterEscape.sample2")
-#   name.toString().contains("04_ReturnEscape.wrapped")
+#  name.toString().contains("04_ReturnEscape.wrapped")
 #  name.toString().contains("org/example/ea/samples.EASample_07_Runnable.sample1")
 #  name.toString().contains("org/example/ea/samples.EASample_09_Interfaces$NonGeneric.isInfinite")
-   name.toString().contains("9_Interfaces$Generic.identityX")
+#  name.toString().contains("09_Interfaces$Generic.identityX")
 #  name.toString().contains("org/example/ea/samples.EASample_11_Loops$ForLoop.forEachList")
 #  name.toString().contains("org/example/ea/samples.EASample_11_Loops$RecursiveLoop.fibonacci")
 DO
@@ -350,7 +350,7 @@ IF
 DO traceln(prefix.toString() + "EA: update at method entry " + $this.toString())
 ENDRULE
 
-RULE update after invoking method
+RULE entry update after invoking method
 CLASS ConnectionGraph
 METHOD updateAfterInvokingMethod
 AT ENTRY
@@ -360,7 +360,20 @@ BIND
   prefix = "(" + th.getName() + ") ";
 IF
   $this.name.equals(name)
-DO traceln(prefix.toString() + "EA: update " + $this.toString() + " after invoking " + $2.name)
+DO traceln(prefix.toString() + "EA: enter after invoke of method " + $2.name + ", whose escape values are: " + $2.escapeValues)
+ENDRULE
+
+RULE exit update after invoking method
+CLASS ConnectionGraph
+METHOD updateAfterInvokingMethod
+AT EXIT
+BIND
+  name = linked("name");
+  th = Thread.currentThread();
+  prefix = "(" + th.getName() + ") ";
+IF
+  $this.name.equals(name)
+DO traceln(prefix.toString() + "EA: exit after invoke of method " + $2.name + ", updated escape values are: " + $this.escapeValues)
 ENDRULE
 
 RULE update at method exit

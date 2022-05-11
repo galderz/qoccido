@@ -16,7 +16,7 @@ all: run
 JAVA_HOME ?= /opt/adopt-17
 MAVEN_HOME ?= /opt/maven
 QBICC_HOME ?= /opt/qbicc-qbicc
-QBICC_VERSION := 0.24.0-SNAPSHOT
+QBICC_VERSION := 0.30.0-SNAPSHOT
 
 mvn += JAVA_HOME=$(JAVA_HOME)
 mvn += $(MAVEN_HOME)/bin/mvn
@@ -69,9 +69,9 @@ clean-qbicc:
 .PHONY: clean-qbicc
 
 # Samples
-BYTEMAN_HOME := /opt/byteman
+BYTEMAN_HOME := /opt/byteman/byteman/target
 
-byteman_jar := $(BYTEMAN_HOME)/lib/byteman.jar
+byteman_jar := $(BYTEMAN_HOME)/byteman-4.0.18.jar
 main := org.example.ea.Main
 name := ea-samples
 qoccido_dir := /tmp/qoccido/$(notdir $(shell pwd))
