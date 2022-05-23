@@ -20,7 +20,7 @@ AT ENTRY
 BIND
   name = linked("name");
 IF
-  $this.connectionGraph.name.equals(name)
+  $this.connectionGraph.element.toString().equals(name)
 DO
   callNew($1, $2, $3, $4);
 ENDRULE
@@ -33,7 +33,7 @@ ENDRULE
 #BIND
 #  name = linked("name");
 #IF
-#  $this.connectionGraph.name.equals(name)
+#  $this.connectionGraph.element.toString().equals(name)
 #DO
 #  callNew($1);
 #ENDRULE
@@ -46,7 +46,7 @@ AT ENTRY
 BIND
   name = linked("name");
 IF
-  $this.connectionGraph.name.equals(name)
+  $this.connectionGraph.element.toString().equals(name)
 DO
   callInstanceFieldOf($1, $2);
 ENDRULE
@@ -59,7 +59,7 @@ ENDRULE
 #BIND
 #  name = linked("name");
 #IF
-#  $this.connectionGraph.name.equals(name)
+#  $this.connectionGraph.element.toString().equals(name)
 #DO
 #  callInstanceFieldOf($1, $2, $3, $4);
 #ENDRULE
@@ -72,7 +72,7 @@ AT ENTRY
 BIND
   name = linked("name");
 IF
-  $this.connectionGraph.name.equals(name)
+  $this.connectionGraph.element.toString().equals(name)
 DO
   callStore($1, $2, $3);
 ENDRULE
@@ -85,7 +85,7 @@ AT ENTRY
 BIND
   name = linked("name");
 IF
-  $this.connectionGraph.name.equals(name)
+  $this.connectionGraph.element.toString().equals(name)
 DO
   callCall($1, $2);
 ENDRULE
@@ -98,7 +98,7 @@ AT ENTRY
 BIND
   name = linked("name");
 IF
-  $this.connectionGraph.name.equals(name)
+  $this.connectionGraph.element.toString().equals(name)
 DO
   callStartMethod($1);
 ENDRULE
@@ -111,7 +111,7 @@ AT ENTRY
 BIND
   name = linked("name");
 IF
-  $this.connectionGraph.name.equals(name)
+  $this.connectionGraph.element.toString().equals(name)
 DO
   callReturn($1);
 ENDRULE
@@ -124,7 +124,7 @@ AT ENTRY
 BIND
   name = linked("name");
 IF
-  $this.connectionGraph.name.equals(name)
+  $this.connectionGraph.element.toString().equals(name)
 DO
   callThrow($1);
 ENDRULE
@@ -137,7 +137,7 @@ AT ENTRY
 BIND
   name = linked("name");
 IF
-  $this.connectionGraph.name.equals(name)
+  $this.connectionGraph.element.toString().equals(name)
 DO
   callCheckcast($1, $2, $3, $4, $5);
 ENDRULE
@@ -150,7 +150,7 @@ ENDRULE
 #BIND
 #  name = linked("name");
 #IF
-#  $this.connectionGraph.name.equals(name)
+#  $this.connectionGraph.element.toString().equals(name)
 #DO
 #  callCheckcast($1, $2);
 #ENDRULE
@@ -163,7 +163,7 @@ AT ENTRY
 BIND
   name = linked("name");
 IF
-  $this.connectionGraph.name.equals(name)
+  $this.connectionGraph.element.toString().equals(name)
 DO
   callFinish()
 ENDRULE
@@ -180,7 +180,7 @@ BIND
 IF
   isIntra
   AND
-  aIntra.connectionGraph.name.equals(name)
+  aIntra.connectionGraph.element.toString().equals(name)
 DO
   callReferenceHandle($1)
 ENDRULE
@@ -197,7 +197,7 @@ BIND
 IF
   isIntra
   AND
-  aIntra.connectionGraph.name.equals(name)
+  aIntra.connectionGraph.element.toString().equals(name)
 DO
   callParameter($1, $2, $3)
 ENDRULE
@@ -214,14 +214,14 @@ BIND
 IF
   isIntra
   AND
-  aIntra.connectionGraph.name.equals(name)
+  aIntra.connectionGraph.element.toString().equals(name)
 DO
   callLoad($1, $2)
 ENDRULE
 
 RULE constructorOf
 CLASS org.qbicc.graph.DelegatingBasicBlockBuilder
-METHOD constructorOf(Value, ConstructorElement, MethodDescriptor, FunctionType)
+METHOD constructorOf(Value, ConstructorElement, MethodDescriptor, InstanceMethodType)
 HELPER org.example.ea.helpers.EscapeAnalysisPoet
 AT ENTRY
 BIND
@@ -231,7 +231,7 @@ BIND
 IF
   isIntra
   AND
-  aIntra.connectionGraph.name.equals(name)
+  aIntra.connectionGraph.element.toString().equals(name)
 DO
   callConstructorOf($1, $2, $3, $4)
 ENDRULE

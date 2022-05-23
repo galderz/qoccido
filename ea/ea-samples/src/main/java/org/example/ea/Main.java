@@ -30,7 +30,7 @@ public class Main
         EASample_09_Interfaces.main(args);
         EASample_10_Subclasses.main(args);
         EASample_11_Loops.main(args);
-        EASample_12_ClassLiterals.main(args);
+//        EASample_12_ClassLiterals.main(args);
         print('\n');
     }
 

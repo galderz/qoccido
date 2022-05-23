@@ -16,7 +16,7 @@ all: run
 JAVA_HOME ?= /opt/adopt-17
 MAVEN_HOME ?= /opt/maven
 QBICC_HOME ?= /opt/qbicc-qbicc
-QBICC_VERSION := 0.30.0-SNAPSHOT
+QBICC_VERSION := 0.31.0-SNAPSHOT
 
 mvn += JAVA_HOME=$(JAVA_HOME)
 mvn += $(MAVEN_HOME)/bin/mvn

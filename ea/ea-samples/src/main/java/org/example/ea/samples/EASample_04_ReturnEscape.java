@@ -10,7 +10,8 @@ public class EASample_04_ReturnEscape
     {
         returnSetField();
         returnInline();
-        returnWrapped();
+        returnWrappedOne();
+        returnWrappedMany();
     }
 
     static void returnSetField()
@@ -38,15 +39,26 @@ public class EASample_04_ReturnEscape
         return new Train();
     }
 
-    static void returnWrapped()
+    static void returnWrappedOne()
     {
-        final List<Train> trains = wrapped();
+        final List<Train> trains = wrappedOne();
         Asserts.equals(0, trains.get(0).speed);
     }
 
-    static List<Train> wrapped()
+    static List<Train> wrappedOne()
     {
         return List.of(new Train());
+    }
+
+    static void returnWrappedMany()
+    {
+        final List<Train> trains = wrappedMany();
+        Asserts.equals(0, trains.get(0).speed);
+    }
+
+    static List<Train> wrappedMany()
+    {
+        return List.of(new Train(), new Train());
     }
 
     static class Train

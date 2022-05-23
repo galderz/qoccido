@@ -41,6 +41,7 @@ public class EASample_11_Loops
         public static void main()
         {
             Main.print(forEachList(10) == 3_628_800 ? '.' : 'F');
+            Main.print(listOf(10).size == 10 ? '.' : 'F');
         }
 
         static int forEachList(int max)
@@ -58,6 +59,16 @@ public class EASample_11_Loops
             }
 
             return result.data;
+        }
+
+        static Data.Int.List listOf(int max)
+        {
+            Data.Int.List values = new Data.Int.List(max);
+            for (int i = 0; i < max; i++)
+            {
+                values.add(new Data.Int(i + 1));
+            }
+            return values;
         }
     }
 

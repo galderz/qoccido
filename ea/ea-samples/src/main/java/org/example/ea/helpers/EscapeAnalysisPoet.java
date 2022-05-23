@@ -18,6 +18,7 @@ import org.qbicc.plugin.opt.ea.EscapeAnalysisFactory;
 import org.qbicc.plugin.opt.ea.EscapeAnalysisIntraMethodBuilder;
 import org.qbicc.type.ClassObjectType;
 import org.qbicc.type.FunctionType;
+import org.qbicc.type.InstanceMethodType;
 import org.qbicc.type.ObjectType;
 import org.qbicc.type.ValueType;
 import org.qbicc.type.definition.DefinedTypeDefinition;
@@ -276,10 +277,10 @@ public class EscapeAnalysisPoet extends Helper
     }
 
     @SuppressWarnings("unused")
-    public void callConstructorOf(Value instance, ConstructorElement constructor, MethodDescriptor callSiteDescriptor, FunctionType callSiteType)
+    public void callConstructorOf(Value instance, ConstructorElement constructor, MethodDescriptor callSiteDescriptor, InstanceMethodType callSiteType)
     {
         main.addStatement(
-            "var ctor = intra.constructorOf(new_, $N.constructorElement(type), $N.methodDescriptor(), $N.functionType())"
+            "var ctor = intra.constructorOf(new_, $N.constructorElement(type), $N.methodDescriptor(), $N.callSiteType())"
             , eaFactory
             , eaFactory
             , eaFactory
