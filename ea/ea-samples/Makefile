@@ -17,6 +17,7 @@ JAVA_HOME ?= /opt/adopt-17
 MAVEN_HOME ?= /opt/maven
 QBICC_HOME ?= /opt/qbicc-qbicc
 QBICC_VERSION := 0.31.0-SNAPSHOT
+DEBUG_INFO ?= false
 
 mvn += JAVA_HOME=$(JAVA_HOME)
 mvn += $(MAVEN_HOME)/bin/mvn
@@ -152,7 +153,12 @@ run-class: $(jar)
 > org.example.ea.samples.$(CLASS)
 
 $(jar): $(sources) $(qbicc_jar_runtime_api)
-> $(mvn) install dependency:copy-dependencies -Dea=$(EA) -DoutputDirectory=target/lib -DincludeArtifactIds=javapoet
+> $(mvn) install \
+>   dependency:copy-dependencies \
+>   -Dea=$(EA) \
+>   -DincludeArtifactIds=javapoet \
+>   -Dmaven.compiler.debug=$(DEBUG_INFO) \
+>   -DoutputDirectory=target/lib
 > touch $(jar)
 
 clean:
