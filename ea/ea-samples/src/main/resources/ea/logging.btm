@@ -36,121 +36,56 @@ DO
   traceln(prefix.toString() + "Method " + $1.toString() + " assigned output path: " + $!.toString());
 ENDRULE
 
-RULE set up ea bbb
-CLASS EscapeAnalysisIntraMethodBuilder
-METHOD <init>
-AT EXIT
-BIND
-  name = linked("name");
-  th = Thread.currentThread();
-  prefix = "(" + th.getName() + ") ";
-IF
-  $2.getCurrentElement().toString().equals(name)
-DO traceln(prefix.toString() + "EA: construct intra method analysis for " + name);
-ENDRULE
-
-RULE instance field of
-CLASS EscapeAnalysisIntraMethodBuilder
-METHOD instanceFieldOf
-AT ENTRY
-BIND
-  name = linked("name");
-  th = Thread.currentThread();
-  prefix = "(" + th.getName() + ") ";
-IF
-  $this.connectionGraph.element.toString().equals(name)
-DO traceln(prefix.toString() + "EA: in.toString()stanceFieldOf " + $1.toString())
-ENDRULE
-
-RULE handle reference
-CLASS EscapeAnalysisIntraMethodBuilder
-METHOD handleInstanceFieldOf
-AT ENTRY
-BIND
-  name = linked("name");
-  th = Thread.currentThread();
-  prefix = "(" + th.getName() + ") ";
-IF
-  $this.connectionGraph.element.toString().equals(name)
-DO traceln(prefix.toString() + "EA: handleInstanceFieldOf " + $1.toString() + " with target " + $3.toString())
-ENDRULE
-
 RULE store
-CLASS EscapeAnalysisIntraMethodBuilder
-METHOD store
+CLASS EscapeAnalysisIntraMethodAnalysis$AnalysisVisitor
+METHOD visit(EscapeAnalysisIntraMethodAnalysis$AnalysisContext, Store)
 AT ENTRY
 BIND
   name = linked("name");
   th = Thread.currentThread();
   prefix = "(" + th.getName() + ") ";
 IF
-  $this.connectionGraph.element.toString().equals(name)
-DO traceln(prefix.toString() + "EA: store " + $2.toString() + " into " + $1.toString())
+  $1.connectionGraph.name.equals(name)
+DO traceln(prefix.toString() + "EA: store " + $2.getValue().toString() + " into " + $2.getValueHandle().toString())
 ENDRULE
 
 RULE call method
-CLASS EscapeAnalysisIntraMethodBuilder
-METHOD call
+CLASS EscapeAnalysisIntraMethodAnalysis$AnalysisVisitor
+METHOD visit(EscapeAnalysisIntraMethodAnalysis$AnalysisContext, Call)
 AT EXIT
 BIND
   name = linked("name");
   th = Thread.currentThread();
   prefix = "(" + th.getName() + ") ";
 IF
-  $this.connectionGraph.element.toString().equals(name)
-DO traceln(prefix.toString() + "EA: call " + $1.toString() + " with " + $2.toString() + " returns " + $!)
-ENDRULE
-
-RULE start method
-CLASS EscapeAnalysisIntraMethodBuilder
-METHOD startMethod
-AT ENTRY
-BIND
-  th = Thread.currentThread();
-  name = linked("name");
-  prefix = "(" + th.getName() + ") ";
-IF
-  $this.connectionGraph.element.toString().equals(name)
-DO traceln(prefix.toString() + "EA: start method " + $this.getCurrentElement().toString() + " with " + $1.toString())
+  $1.connectionGraph.name.equals(name)
+DO traceln(prefix.toString() + "EA: call " + $2.getValueHandle().toString() + " with " + $2.getArguments().toString() + " returns " + $!)
 ENDRULE
 
 RULE return_
-CLASS EscapeAnalysisIntraMethodBuilder
-METHOD return_
+CLASS EscapeAnalysisIntraMethodAnalysis$AnalysisVisitor
+METHOD visit(EscapeAnalysisIntraMethodAnalysis$AnalysisContext, ValueReturn)
 AT ENTRY
 BIND
   name = linked("name");
   th = Thread.currentThread();
   prefix = "(" + th.getName() + ") ";
 IF
-  $this.connectionGraph.element.toString().equals(name)
-DO traceln(prefix.toString() + "EA: return_ " + $1.toString() + " from " + $this.getCurrentElement().toString())
+  $1.connectionGraph.name.equals(name)
+DO traceln(prefix.toString() + "EA: return " + $2.getReturnValue().toString() + " from " + $this.element.toString())
 ENDRULE
 
 RULE throw_
-CLASS EscapeAnalysisIntraMethodBuilder
-METHOD throw_
+CLASS EscapeAnalysisIntraMethodAnalysis$AnalysisVisitor
+METHOD visit(EscapeAnalysisIntraMethodAnalysis$AnalysisContext, Throw)
 AT ENTRY
 BIND
   name = linked("name");
   th = Thread.currentThread();
   prefix = "(" + th.getName() + ") ";
 IF
-  $this.connectionGraph.element.toString().equals(name)
-DO traceln(prefix.toString() + "EA: throw_ " + $1.toString() + " from " + $this.getCurrentElement().toString())
-ENDRULE
-
-RULE finish
-CLASS EscapeAnalysisIntraMethodBuilder
-METHOD finish
-AT ENTRY
-BIND
-  name = linked("name");
-  th = Thread.currentThread();
-  prefix = "(" + th.getName() + ") ";
-IF
-  $this.connectionGraph.element.toString().equals(name)
-DO traceln(prefix.toString() + "EA: finish " + $this.getCurrentElement().toString())
+  $1.connectionGraph.name.equals(name)
+DO traceln(prefix.toString() + "EA: throw_ " + $2.getThrownValue().toString() + " from " + $this.element.toString())
 ENDRULE
 
 RULE set supported
@@ -162,7 +97,7 @@ BIND
   th = Thread.currentThread();
   prefix = "(" + th.getName() + ") ";
 IF
-  $this.connectionGraph.element.toString().equals(name)
+  $this.connectionGraph.name.equals(name)
 DO traceln(prefix.toString() + "EA: set support " + $2 + " for " + $1.toString())
 ENDRULE
 
@@ -176,7 +111,7 @@ BIND
   prefix = "(" + th.getName() + ") ";
   updated = $!;
 IF
-  $this.connectionGraph.element.toString().equals(name)
+  $this.connectionGraph.name.equals(name)
   AND
   updated
 DO traceln(prefix.toString() + "EA: switched to unsupported " + $1.toString())
@@ -192,7 +127,7 @@ BIND
   prefix = "(" + th.getName() + ") ";
   updated = $!;
 IF
-  $this.connectionGraph.element.toString().equals(name)
+  $this.connectionGraph.name.equals(name)
   AND
   updated
 DO traceln(prefix.toString() + "EA: add unsupported " + $1.toString())
@@ -207,41 +142,15 @@ BIND
   th = Thread.currentThread();
   prefix = "(" + th.getName() + ") ";
 IF
-  $this.element.toString().equals(name)
+  $this.name.equals(name)
   AND
   $!
-DO traceln(prefix.toString() + "EA: set escape value for " + $1.toString() + " in " + $this.element.toString() + " to " + $2.toString())
-ENDRULE
-
-RULE add points to edge
-CLASS ConnectionGraph
-METHOD addPointsToEdge
-AT RETURN
-BIND
-  name = linked("name");
-  th = Thread.currentThread();
-  prefix = "(" + th.getName() + ") ";
-IF
-  $this.element.toString().equals(name)
-DO traceln(prefix.toString() + "EA: add points to edge " + $1.toString() + " => " + $2.toString())
-ENDRULE
-
-RULE add deferred edge
-CLASS ConnectionGraph
-METHOD addDeferredEdge
-AT RETURN
-BIND
-  name = linked("name");
-  th = Thread.currentThread();
-  prefix = "(" + th.getName() + ") ";
-IF
-  $this.element.toString().equals(name)
-DO traceln(prefix.toString() + "EA: add deferred edge " + $1.toString() + " => " + $2.toString())
+DO traceln(prefix.toString() + "EA: set escape value for " + $1.toString() + " in " + $this.name + " to " + $2.toString())
 ENDRULE
 
 RULE call graph calls
 CLASS EscapeAnalysisState
-METHOD trackCall
+METHOD addCall
 AT ENTRY
 BIND
   executable : org.qbicc.graph.Executable = $2.getValueHandle();
@@ -315,19 +224,6 @@ ENDRULE
 #DO traceln("(" + Thread.currentThread().getName() + ") EA: find abstract connection graph for " + $1.toString())
 #ENDRULE
 
-RULE update at method entry
-CLASS ConnectionGraph
-METHOD updateAtMethodEntry
-AT ENTRY
-BIND
-  name = linked("name");
-  th = Thread.currentThread();
-  prefix = "(" + th.getName() + ") ";
-IF
-  $this.element.toString().equals(name)
-DO traceln(prefix.toString() + "EA: update at method entry " + $this.toString())
-ENDRULE
-
 RULE entry update after invoking method
 CLASS ConnectionGraph
 METHOD updateAfterInvokingMethod
@@ -337,8 +233,8 @@ BIND
   th = Thread.currentThread();
   prefix = "(" + th.getName() + ") ";
 IF
-  $this.element.toString().equals(name)
-DO traceln(prefix.toString() + "EA: enter after invoke of method " + $2.element.toString() + ", whose escape values are: " + $2.escapeValues)
+  $this.name.equals(name)
+DO traceln(prefix.toString() + "EA: enter after invoke of method " + $2.name + ", whose escape values are: " + $2.escapeValues)
 ENDRULE
 
 RULE exit update after invoking method
@@ -350,8 +246,8 @@ BIND
   th = Thread.currentThread();
   prefix = "(" + th.getName() + ") ";
 IF
-  $this.element.toString().equals(name)
-DO traceln(prefix.toString() + "EA: exit after invoke of method " + $2.element.toString() + ", updated escape values are: " + $this.escapeValues)
+  $this.name.equals(name)
+DO traceln(prefix.toString() + "EA: exit after invoke of method " + $2.name + ", updated escape values are: " + $this.escapeValues)
 ENDRULE
 
 RULE update at method exit
@@ -363,7 +259,7 @@ BIND
   th = Thread.currentThread();
   prefix = "(" + th.getName() + ") ";
 IF
-  $this.element.toString().equals(name)
+  $this.name.equals(name)
 DO traceln(prefix.toString() + "EA: update at method exit " + $this.toString())
 ENDRULE
 
@@ -376,7 +272,7 @@ BIND
   th = Thread.currentThread();
   prefix = "(" + th.getName() + ") ";
 IF
-  $this.element.toString().equals(name)
+  $this.name.equals(name)
 DO traceln(prefix.toString() + "EA: merge escape values of " + $this.escapeValues.toString() + " with " + $1.escapeValues.toString() + " returns " + $!.toString())
 ENDRULE
 
