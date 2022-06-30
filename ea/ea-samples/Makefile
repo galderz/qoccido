@@ -172,10 +172,23 @@ graphs:
 > cp -r $(qoccido_dir)/org/example/ea/samples/EASample* $(graphs_dir)
 > cp -r $(qoccido_dir)/org/qbicc/runtime/main $(graphs_dir)
 > cp -r $(qoccido_dir)/java/lang/System $(graphs_dir)
-> find $(graphs_dir) -depth -name '*$$*' -execdir bash -c 'mv -- "$$1" "$${1//\$$/_}"' bash {} \;
-> find $(graphs_dir) -iname '*.dot' -exec bash -c 'dot -Tsvg "{}" > "{}".svg' \;
+> docker build -t dot-to-svg:v1 .
+> docker run -t -i --rm \
+>   -v $(PWD):/data \
+>   dot-to-svg:v1 \
+>   ./dot-to-svg.sh
+#> find $(graphs_dir) -depth -name '*$$*' -execdir bash -c 'mv -- "$$1" "$${1//\$$/_}"' bash {} \;
+#> find $(graphs_dir) -iname '*.dot' -exec bash -c 'dot -Tsvg "{}" > "{}".svg' \;
 #> find $(graphs_dir) -iname '*.dot' -exec bash -c 'echo "{}" && dot -Tsvg "{}" > "{}".svg' \;
 .PHONY: graphs
+
+docker-graphs:
+> docker build -t dot-to-svg:v1 .
+> docker run -t -i --rm \
+>   -v $(PWD):/data \
+>   dot-to-svg:v1 \
+>   /bin/bash
+.PHONY: docker-graphs
 
 open_graphs_dir := /opt/qbicc-graphs
 
